@@ -567,7 +567,7 @@ function exportJSON(){
 
 /* ----------------------------- Editor ----------------------------- */
 let editRows=[], editTargets={}, editBand=5, editEmail='';
-function openEditor(){ editRows=JSON.parse(JSON.stringify(state.holdings)); editRows.forEach((h,i)=>{ if(h.apy>0) h.qty=+liveQty(state.holdings[i]).toFixed(8); }); editTargets={...state.targets}; editBand=state.band; editEmail=state.email||''; renderEditor(); document.getElementById('editor').classList.add('show'); }
+function openEditor(){ editRows=JSON.parse(JSON.stringify(state.holdings)); editRows.forEach(h=>{ h.apyStartStr = h.apyTs ? new Date(h.apyTs).toISOString().slice(0,10) : ''; }); editTargets={...state.targets}; editBand=state.band; editEmail=state.email||''; renderEditor(); document.getElementById('editor').classList.add('show'); }
 function closeEditor(){ document.getElementById('editor').classList.remove('show'); }
 function refLabel(s){ return s==='crypto'?'ID CoinGecko':s==='stock'?'Símbolo Stooq':'Sin feed'; }
 function refPH(s){ return s==='crypto'?'bitcoin':s==='stock'?'aapl.us':''; }
@@ -595,6 +595,7 @@ function renderEditor(){
     <label>Cantidad<input type="number" step="any" value="${h.qty||0}" oninput="editRows[${i}].qty=+this.value"></label>
     <label>Precio €${h.src!=='manual'?' (fallback)':''}<input type="number" step="any" value="${h.price||0}" oninput="editRows[${i}].price=+this.value"></label>
     <label title="Rendimiento anual estimado: stablecoins, staking, depósitos… Deja 0 si no aplica.">APY anual %<input type="number" step="any" value="${h.apy||0}" oninput="editRows[${i}].apy=+this.value"></label>
+    <label title="Fecha desde la que cuenta el rendimiento. La cantidad de arriba es el saldo en esa fecha. Solo aplica con APY.">Rendimiento desde<input type="date" value="${h.apyStartStr||''}" oninput="editRows[${i}].apyStartStr=this.value"></label>
     </div><div style="text-align:right;margin-top:10px"><button class="del" onclick="delRow(${i})">Eliminar</button></div></div>`).join('');
   document.getElementById('editorBody').innerHTML=t+(cards||'<div class="muted" style="padding:18px 0">Sin activos todavía. Pulsa “＋ Añadir activo” para empezar tu cartera.</div>');
 }
@@ -604,7 +605,10 @@ function addRow(){ editRows.push({name:'',ticker:'',cls:'broker',qty:0,price:0,s
 function delRow(i){ editRows.splice(i,1); renderEditor(); }
 function clearAll(){ if(confirm('¿Vaciar todos los activos y empezar de cero con tu cartera real?')){ editRows=[]; renderEditor(); } }
 function saveEditor(){
-  state.holdings=editRows.filter(h=>(h.name||h.ticker)).map((h,i)=>{ if(!h.id)h.id=(h.ticker||'act').toLowerCase()+'-'+i+'-'+Date.now(); if(h.apy>0) h.apyTs=Date.now(); else delete h.apyTs; return h; });
+  state.holdings=editRows.filter(h=>(h.name||h.ticker)).map((h,i)=>{
+    if(!h.id)h.id=(h.ticker||'act').toLowerCase()+'-'+i+'-'+Date.now();
+    if(h.apy>0){ h.apyTs = h.apyStartStr ? new Date(h.apyStartStr).getTime() : (h.apyTs||Date.now()); } else { delete h.apyTs; }
+    delete h.apyStartStr; return h; });
   state.targets={broker:+editTargets.broker||0,fondos:+editTargets.fondos||0,cripto:+editTargets.cripto||0};
   state.band=+editBand||0; state.email=(editEmail||'').trim(); state.snapshots={}; lastTotal=0;
   recordSnapshot(); save(); closeEditor(); render(); refresh();
