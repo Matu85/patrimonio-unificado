@@ -1,0 +1,10 @@
+# Vercel
+.vercel
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Node (por si se añaden herramientas)
+node_modules
