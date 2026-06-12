@@ -372,7 +372,10 @@ async function refresh(){
 }
 
 /* ----------------------------- Cálculos ----------------------------- */
-function valueOf(h){ return h.qty*h.price; }
+/* Cantidad efectiva: las monedas crecen con el APY (compuesto) desde apyTs */
+function liveQty(h){ if(h.apy>0 && h.apyTs){ const yrs=(Date.now()-h.apyTs)/31557600000; return h.qty*Math.pow(1+h.apy/100, yrs); } return h.qty; }
+function valueOf(h){ return liveQty(h)*h.price; }
+function normalizeApy(){ let ch=false; state.holdings.forEach(h=>{ if(h.apy>0 && !h.apyTs){ h.apyTs=Date.now(); ch=true; } }); if(ch) save(); }
 function totals(){ const cls={broker:0,fondos:0,cripto:0}; let tot=0;
   state.holdings.forEach(h=>{ const v=valueOf(h); cls[h.cls]+=v; tot+=v; }); return {cls,tot}; }
 function recordSnapshot(){
@@ -478,20 +481,21 @@ function wAvgApy(ys){ const cap=ys.reduce((s,h)=>s+valueOf(h),0); return cap? (y
 function drawYields(){
   const card=document.getElementById('yieldCard'); const ys=state.holdings.filter(h=>h.apy>0);
   if(!ys.length){ card.style.display='none'; return; } card.style.display='';
-  let totA=0; const cap=ys.reduce((s,h)=>s+valueOf(h),0);
-  const rows=ys.map(h=>{ const c=valueOf(h), a=c*h.apy/100; totA+=a;
+  let totA=0, totAcc=0; const cap=ys.reduce((s,h)=>s+valueOf(h),0);
+  const rows=ys.map(h=>{ const c=valueOf(h), a=c*h.apy/100, accCoins=liveQty(h)-h.qty, accEur=accCoins*h.price; totA+=a; totAcc+=accEur;
     return `<tr><td><b>${h.name}</b> <span class="muted">${h.ticker||''}</span></td>
-      <td>${fmt(c)}</td><td>${(+h.apy).toFixed(2)}%</td>
-      <td><b style="color:var(--fondos)">${fmt2(a)}</b></td><td>${fmt2(a/12)}</td></tr>`; }).join('');
+      <td>${fmt2(c)}</td><td>${(+h.apy).toFixed(2)}%</td>
+      <td><b style="color:var(--fondos)">+${fmt2(accEur)}</b> <span class="muted">(+${accCoins.toFixed(4)} ${h.ticker||''})</span></td>
+      <td>${fmt2(a)}</td></tr>`; }).join('');
   document.getElementById('yields').innerHTML=`
     <div class="delta-grid" style="margin-bottom:15px">
       ${dcell('Interés anual estimado', fmt(totA), '≈ '+fmt2(totA/12)+' / mes', true)}
-      ${dcell('Capital con rendimiento', fmt(cap), ys.length+' activo'+(ys.length>1?'s':''), true)}
-      ${dcell('APY medio ponderado', wAvgApy(ys)+'%', 'sobre ese capital', true)}
+      ${dcell('Acumulado hasta hoy', '+'+fmt2(totAcc), 'desde que lo activaste', true)}
+      ${dcell('APY medio ponderado', wAvgApy(ys)+'%', 'sobre '+fmt(cap), true)}
     </div>
-    <table><thead><tr><th>Activo</th><th>Capital</th><th>APY</th><th>Interés/año</th><th>Interés/mes</th></tr></thead>
+    <table><thead><tr><th>Activo</th><th>Capital (live)</th><th>APY</th><th>Acumulado</th><th>Interés/año</th></tr></thead>
       <tbody>${rows}</tbody></table>
-    <div class="muted" style="margin-top:11px">Estimación lineal con el APY que defines por activo (interés simple, no compuesto). Para stablecoins con rendimiento (p. ej. tu USDC en Airtm), staking o depósitos.</div>`;
+    <div class="muted" style="margin-top:11px">Las monedas crecen con el APY (compuesto) desde que lo activas, y se valoran al precio en vivo de la stable. “Acumulado” = monedas ganadas hasta hoy valoradas al precio actual.</div>`;
 }
 function drawTrend(){
   const keys=Object.keys(state.snapshots||{}).sort(), pts=keys.map(k=>state.snapshots[k].total).filter(v=>v>0), svg=document.getElementById('trend');
@@ -514,11 +518,11 @@ function drawPositions(tot){
     const badge=h.src==='manual'?'<span class="badge man">VNL</span>':h.live?'<span class="badge live">LIVE</span>':'<span class="badge stale">último</span>';
     return `<tr><td><b>${h.name}</b> <span class="muted">${h.ticker||''}</span> ${badge}</td>
       <td><span class="clschip"><span class="dot" style="width:9px;height:9px;background:${CLASSES[h.cls].color};--c:${CLASSES[h.cls].color}88"></span>${h.cls}</span></td>
-      <td><input class="q" type="number" step="any" value="${h.qty}" onchange="setQty(${i},this.value)"></td>
+      <td><input class="q" type="number" step="any" value="${parseFloat(liveQty(h).toFixed(8))}" onchange="setQty(${i},this.value)"></td>
       <td>${fmt2(h.price)}</td><td><b>${fmt(v)}</b></td><td>${tot?(v/tot*100).toFixed(1):0}%</td></tr>`;
   }).join('');
 }
-function setQty(i,v){ state.holdings[i].qty=parseFloat(v)||0; recordSnapshot(); save(); render(); }
+function setQty(i,v){ const h=state.holdings[i]; h.qty=parseFloat(v)||0; if(h.apy>0) h.apyTs=Date.now(); recordSnapshot(); save(); render(); }
 function setTarget(k,v){ state.targets[k]=Math.max(0,+v||0); save(); render(); }
 function setBand(v){ state.band=Math.max(0,+v||0); save(); render(); }
 
@@ -556,14 +560,14 @@ document.getElementById('modal').addEventListener('click',e=>{ if(e.target.id===
 function exportJSON(){
   const out={currency:'EUR',owner_email:state.email||'',band:state.band,targets:state.targets,
     holdings:state.holdings.map(h=>{ const o={id:h.id,name:h.name,ticker:h.ticker,cls:h.cls,qty:h.qty,price:h.price,src:h.src};
-      if(h.cg)o.cg=h.cg; if(h.stooq)o.stooq=h.stooq; if(h.apy)o.apy=h.apy; return o; })};
+      if(h.cg)o.cg=h.cg; if(h.stooq)o.stooq=h.stooq; if(h.apy){o.apy=h.apy; if(h.apyTs)o.apyTs=h.apyTs;} return o; })};
   const blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'}), a=document.createElement('a');
   a.href=URL.createObjectURL(blob); a.download='portfolio.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(a.href);
 }
 
 /* ----------------------------- Editor ----------------------------- */
 let editRows=[], editTargets={}, editBand=5, editEmail='';
-function openEditor(){ editRows=JSON.parse(JSON.stringify(state.holdings)); editTargets={...state.targets}; editBand=state.band; editEmail=state.email||''; renderEditor(); document.getElementById('editor').classList.add('show'); }
+function openEditor(){ editRows=JSON.parse(JSON.stringify(state.holdings)); editRows.forEach((h,i)=>{ if(h.apy>0) h.qty=+liveQty(state.holdings[i]).toFixed(8); }); editTargets={...state.targets}; editBand=state.band; editEmail=state.email||''; renderEditor(); document.getElementById('editor').classList.add('show'); }
 function closeEditor(){ document.getElementById('editor').classList.remove('show'); }
 function refLabel(s){ return s==='crypto'?'ID CoinGecko':s==='stock'?'Símbolo Stooq':'Sin feed'; }
 function refPH(s){ return s==='crypto'?'bitcoin':s==='stock'?'aapl.us':''; }
@@ -600,14 +604,15 @@ function addRow(){ editRows.push({name:'',ticker:'',cls:'broker',qty:0,price:0,s
 function delRow(i){ editRows.splice(i,1); renderEditor(); }
 function clearAll(){ if(confirm('¿Vaciar todos los activos y empezar de cero con tu cartera real?')){ editRows=[]; renderEditor(); } }
 function saveEditor(){
-  state.holdings=editRows.filter(h=>(h.name||h.ticker)).map((h,i)=>{ if(!h.id)h.id=(h.ticker||'act').toLowerCase()+'-'+i+'-'+Date.now(); return h; });
+  state.holdings=editRows.filter(h=>(h.name||h.ticker)).map((h,i)=>{ if(!h.id)h.id=(h.ticker||'act').toLowerCase()+'-'+i+'-'+Date.now(); if(h.apy>0) h.apyTs=Date.now(); else delete h.apyTs; return h; });
   state.targets={broker:+editTargets.broker||0,fondos:+editTargets.fondos||0,cripto:+editTargets.cripto||0};
   state.band=+editBand||0; state.email=(editEmail||'').trim(); state.snapshots={}; lastTotal=0;
   recordSnapshot(); save(); closeEditor(); render(); refresh();
 }
 
 /* ----------------------------- Init ----------------------------- */
-recordSnapshot(); render(); refresh();
+normalizeApy(); recordSnapshot(); render(); refresh();
+setInterval(render, 60000);   /* recalcula el devengo de las monedas cada minuto */
 </script>
 </body>
 </html>
