@@ -249,6 +249,11 @@
       <div class="muted" id="trendLbl" style="margin-top:8px"></div>
     </div>
 
+    <div class="card full" id="yieldCard" style="display:none">
+      <div class="card-h"><span class="kicker">Rendimientos estimados</span></div>
+      <div id="yields"></div>
+    </div>
+
     <div class="card full">
       <div class="card-h"><span class="kicker">Posiciones</span></div>
       <table id="positions">
@@ -346,11 +351,18 @@ async function fetchCrypto(){
   }catch(e){ state.holdings.forEach(h=>{ if(h.src==='crypto') h.live=false; }); }
 }
 async function fetchStock(h){
-  try{
-    const r=await fetch(`https://stooq.com/q/l/?s=${h.stooq}&f=sd2t2ohlcv&h&e=csv`,{cache:'no-store'});
-    if(!r.ok) throw 0; const t=await r.text(); const c=(t.trim().split('\n')[1]||'').split(',');
-    const close=parseFloat(c[6]); if(close>0){ h.price=close; h.live=true; } else h.live=false;
-  }catch(e){ h.live=false; }
+  const su=`https://stooq.com/q/l/?s=${h.stooq}&f=sd2t2ohlcv&h&e=csv`;
+  // Stooq no envía cabeceras CORS → probamos directo y, si falla, vía proxies CORS
+  const urls=[su, `https://api.allorigins.win/raw?url=${encodeURIComponent(su)}`, `https://corsproxy.io/?url=${encodeURIComponent(su)}`];
+  for(const u of urls){
+    try{
+      const r=await fetch(u,{cache:'no-store'}); if(!r.ok) continue;
+      const t=await r.text(); const c=(t.trim().split('\n')[1]||'').split(',');
+      const close=parseFloat(c[6]);
+      if(close>0){ h.price=close; h.live=true; return; }
+    }catch(e){}
+  }
+  h.live=false;
 }
 async function refresh(){
   document.getElementById('updated').textContent='actualizando…';
@@ -400,7 +412,7 @@ function render(){
   document.getElementById('updated').textContent='actualizado '+new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
 
   drawDonut(cls,tot); drawLegend(cls,tot); drawClasses(cls,tot);
-  drawAlerts(cls,tot); drawDeltas(cls,tot); drawTrend(); drawPositions(tot);
+  drawAlerts(cls,tot); drawDeltas(cls,tot); drawTrend(); drawYields(); drawPositions(tot);
 }
 function drawDonut(cls,tot){
   const svg=document.getElementById('donut'), r=74, cx=105, cy=105, C=2*Math.PI*r, gap=C*0.02;
@@ -462,6 +474,25 @@ function drawDeltas(cls,tot){
   document.getElementById('deltas').innerHTML=cells.join('');
 }
 function dcell(lbl,big,sub,up){ return `<div class="dcell"><div class="lbl">${lbl}</div><div class="big">${big}</div><div class="sub ${up?'up':'down'}">${sub}</div></div>`; }
+function wAvgApy(ys){ const cap=ys.reduce((s,h)=>s+valueOf(h),0); return cap? (ys.reduce((s,h)=>s+valueOf(h)*h.apy,0)/cap).toFixed(2) : '0.00'; }
+function drawYields(){
+  const card=document.getElementById('yieldCard'); const ys=state.holdings.filter(h=>h.apy>0);
+  if(!ys.length){ card.style.display='none'; return; } card.style.display='';
+  let totA=0; const cap=ys.reduce((s,h)=>s+valueOf(h),0);
+  const rows=ys.map(h=>{ const c=valueOf(h), a=c*h.apy/100; totA+=a;
+    return `<tr><td><b>${h.name}</b> <span class="muted">${h.ticker||''}</span></td>
+      <td>${fmt(c)}</td><td>${(+h.apy).toFixed(2)}%</td>
+      <td><b style="color:var(--fondos)">${fmt2(a)}</b></td><td>${fmt2(a/12)}</td></tr>`; }).join('');
+  document.getElementById('yields').innerHTML=`
+    <div class="delta-grid" style="margin-bottom:15px">
+      ${dcell('Interés anual estimado', fmt(totA), '≈ '+fmt2(totA/12)+' / mes', true)}
+      ${dcell('Capital con rendimiento', fmt(cap), ys.length+' activo'+(ys.length>1?'s':''), true)}
+      ${dcell('APY medio ponderado', wAvgApy(ys)+'%', 'sobre ese capital', true)}
+    </div>
+    <table><thead><tr><th>Activo</th><th>Capital</th><th>APY</th><th>Interés/año</th><th>Interés/mes</th></tr></thead>
+      <tbody>${rows}</tbody></table>
+    <div class="muted" style="margin-top:11px">Estimación lineal con el APY que defines por activo (interés simple, no compuesto). Para stablecoins con rendimiento (p. ej. tu USDC en Airtm), staking o depósitos.</div>`;
+}
 function drawTrend(){
   const keys=Object.keys(state.snapshots||{}).sort(), pts=keys.map(k=>state.snapshots[k].total).filter(v=>v>0), svg=document.getElementById('trend');
   if(pts.length<2){ svg.innerHTML=''; document.getElementById('trendLbl').textContent=''; return; }
@@ -525,7 +556,7 @@ document.getElementById('modal').addEventListener('click',e=>{ if(e.target.id===
 function exportJSON(){
   const out={currency:'EUR',owner_email:state.email||'',band:state.band,targets:state.targets,
     holdings:state.holdings.map(h=>{ const o={id:h.id,name:h.name,ticker:h.ticker,cls:h.cls,qty:h.qty,price:h.price,src:h.src};
-      if(h.cg)o.cg=h.cg; if(h.stooq)o.stooq=h.stooq; return o; })};
+      if(h.cg)o.cg=h.cg; if(h.stooq)o.stooq=h.stooq; if(h.apy)o.apy=h.apy; return o; })};
   const blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'}), a=document.createElement('a');
   a.href=URL.createObjectURL(blob); a.download='portfolio.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(a.href);
 }
@@ -559,6 +590,7 @@ function renderEditor(){
     <label>${refLabel(h.src)}<input ${h.src==='manual'?'disabled':''} placeholder="${refPH(h.src)}" value="${refVal(h)}" oninput="edRef(${i},this.value)"></label>
     <label>Cantidad<input type="number" step="any" value="${h.qty||0}" oninput="editRows[${i}].qty=+this.value"></label>
     <label>Precio €${h.src!=='manual'?' (fallback)':''}<input type="number" step="any" value="${h.price||0}" oninput="editRows[${i}].price=+this.value"></label>
+    <label title="Rendimiento anual estimado: stablecoins, staking, depósitos… Deja 0 si no aplica.">APY anual %<input type="number" step="any" value="${h.apy||0}" oninput="editRows[${i}].apy=+this.value"></label>
     </div><div style="text-align:right;margin-top:10px"><button class="del" onclick="delRow(${i})">Eliminar</button></div></div>`).join('');
   document.getElementById('editorBody').innerHTML=t+(cards||'<div class="muted" style="padding:18px 0">Sin activos todavía. Pulsa “＋ Añadir activo” para empezar tu cartera.</div>');
 }
