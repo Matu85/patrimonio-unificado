@@ -8,3 +8,7 @@ desktop.ini
 
 # Node (por si se añaden herramientas)
 node_modules
+
+# Config local privada — contiene tu email; la usa la tarea local del
+# resumen semanal. NO se versiona ni se publica.
+portfolio.json

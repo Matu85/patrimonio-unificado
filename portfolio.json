@@ -1,7 +1,0 @@
-{
-  "currency": "EUR",
-  "owner_email": "matiasferraris@gmail.com",
-  "band": 5,
-  "targets": { "broker": 40, "fondos": 35, "cripto": 25 },
-  "holdings": []
-}

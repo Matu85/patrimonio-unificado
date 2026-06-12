@@ -20,7 +20,7 @@ No hay backend ni base de datos. **Cada visitante guarda su cartera en el `local
 ## Estructura
 
 - `index.html` — la aplicación completa (HTML + CSS + JS, sin dependencias).
-- `portfolio.json` — plantilla de cartera (la usa una tarea local opcional que compone un email semanal; no afecta al sitio público).
+- `portfolio.json` *(local, no versionado — no se publica)* — configuración privada (incluye tu email) que usa una tarea local opcional para componer el resumen semanal.
 
 ## Tecnología
 

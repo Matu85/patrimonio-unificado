@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- Patrimonio Unificado · despliegue continuo GitHub -> Vercel · v1 -->
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -261,8 +260,8 @@
   </div>
 
   <div class="foot">
-    Dashboard persistente · alerta de rebalanceo en vivo · email semanal cada <b>lunes 08:00</b> con el delta.<br>
-    Todo editable: activos, fuentes de precio y objetivos. Hecho para Matías.
+    Dashboard de patrimonio · precios en vivo · alerta de rebalanceo · resumen semanal con delta.<br>
+    Todo editable y <b>privado</b>: tus datos se guardan solo en tu navegador, nunca se suben a ningún servidor.
   </div>
 </div>
 
@@ -271,9 +270,9 @@
   <div class="modal">
     <div class="mailhead"><b>✉️ Email semanal — vista previa</b><button class="x" onclick="closeMail()">✕</button></div>
     <div class="mailmeta">
-      <div><b>Para:</b> matiasferraris@gmail.com</div>
+      <div><b>Para:</b> <span id="mTo"></span></div>
       <div><b>Asunto:</b> <span id="mSubject"></span></div>
-      <div><b>Envío programado:</b> lunes 08:00 (Europe/Madrid)</div>
+      <div><b>Resumen:</b> semanal · lunes 08:00</div>
     </div>
     <div class="mailbody" id="mailbody"></div>
   </div>
@@ -309,7 +308,7 @@ const CLASSES = {
   cripto: {label:'Cripto',                color:'#f5b65a', light:'#ffd591'}
 };
 const DEFAULT = {
-  band:5, targets:{broker:40,fondos:35,cripto:25},
+  band:5, email:'', targets:{broker:40,fondos:35,cripto:25},
   holdings:[]   /* cartera vacía — usa “✎ Editar cartera” para añadir tus activos reales */
 };
 const KEY='patrimonio-unificado-v2';
@@ -518,13 +517,13 @@ function buildMail(){
       ${alerts.length?`<div style="font-size:14px;line-height:1.9">${alerts.join('<br>')}</div>`:`<div style="font-size:14px;color:#3fb950">🟢 Cartera equilibrada — todas las clases dentro de ±${state.band}%.</div>`}
       <div style="margin-top:22px;font-size:12px;color:#9aa3b4;border-top:1px solid #283142;padding-top:12px">Generado automáticamente cada lunes 08:00 · precios de CoinGecko / Stooq.</div></div>`;
 }
-function openMail(){ document.getElementById('mailbody').innerHTML=buildMail(); document.getElementById('modal').classList.add('show'); }
+function openMail(){ document.getElementById('mTo').textContent = state.email || '— configúralo en “✎ Editar cartera” —'; document.getElementById('mailbody').innerHTML=buildMail(); document.getElementById('modal').classList.add('show'); }
 function closeMail(){ document.getElementById('modal').classList.remove('show'); }
 document.getElementById('modal').addEventListener('click',e=>{ if(e.target.id==='modal') closeMail(); });
 
 /* ----------------------------- Export ----------------------------- */
 function exportJSON(){
-  const out={currency:'EUR',owner_email:'matiasferraris@gmail.com',band:state.band,targets:state.targets,
+  const out={currency:'EUR',owner_email:state.email||'',band:state.band,targets:state.targets,
     holdings:state.holdings.map(h=>{ const o={id:h.id,name:h.name,ticker:h.ticker,cls:h.cls,qty:h.qty,price:h.price,src:h.src};
       if(h.cg)o.cg=h.cg; if(h.stooq)o.stooq=h.stooq; return o; })};
   const blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'}), a=document.createElement('a');
@@ -532,8 +531,8 @@ function exportJSON(){
 }
 
 /* ----------------------------- Editor ----------------------------- */
-let editRows=[], editTargets={}, editBand=5;
-function openEditor(){ editRows=JSON.parse(JSON.stringify(state.holdings)); editTargets={...state.targets}; editBand=state.band; renderEditor(); document.getElementById('editor').classList.add('show'); }
+let editRows=[], editTargets={}, editBand=5, editEmail='';
+function openEditor(){ editRows=JSON.parse(JSON.stringify(state.holdings)); editTargets={...state.targets}; editBand=state.band; editEmail=state.email||''; renderEditor(); document.getElementById('editor').classList.add('show'); }
 function closeEditor(){ document.getElementById('editor').classList.remove('show'); }
 function refLabel(s){ return s==='crypto'?'ID CoinGecko':s==='stock'?'Símbolo Stooq':'Sin feed'; }
 function refPH(s){ return s==='crypto'?'bitcoin':s==='stock'?'aapl.us':''; }
@@ -543,7 +542,9 @@ function renderEditor(){
     <label>Broker % <input type="number" value="${editTargets.broker}" oninput="editTargets.broker=+this.value"></label>
     <label>Fondos % <input type="number" value="${editTargets.fondos}" oninput="editTargets.fondos=+this.value"></label>
     <label>Cripto % <input type="number" value="${editTargets.cripto}" oninput="editTargets.cripto=+this.value"></label>
-    <label>Banda ±% <input type="number" value="${editBand}" oninput="editBand=+this.value"></label></div>`;
+    <label>Banda ±% <input type="number" value="${editBand}" oninput="editBand=+this.value"></label></div>
+  <div class="edtargets" style="margin-top:10px"><span class="muted">Email del resumen semanal (privado · solo en tu navegador):</span>
+    <label><input type="email" value="${(editEmail||'').replace(/"/g,'&quot;')}" oninput="editEmail=this.value" placeholder="tucorreo@ejemplo.com" style="width:240px;color:var(--tx);font-weight:400;text-align:left"></label></div>`;
   const cards=editRows.map((h,i)=>`<div class="edcard"><div class="edgrid">
     <label>Nombre<input value="${(h.name||'').replace(/"/g,'&quot;')}" oninput="editRows[${i}].name=this.value"></label>
     <label>Ticker<input value="${(h.ticker||'').replace(/"/g,'&quot;')}" oninput="editRows[${i}].ticker=this.value.toUpperCase()"></label>
@@ -569,7 +570,7 @@ function clearAll(){ if(confirm('¿Vaciar todos los activos y empezar de cero co
 function saveEditor(){
   state.holdings=editRows.filter(h=>(h.name||h.ticker)).map((h,i)=>{ if(!h.id)h.id=(h.ticker||'act').toLowerCase()+'-'+i+'-'+Date.now(); return h; });
   state.targets={broker:+editTargets.broker||0,fondos:+editTargets.fondos||0,cripto:+editTargets.cripto||0};
-  state.band=+editBand||0; state.snapshots={}; lastTotal=0;
+  state.band=+editBand||0; state.email=(editEmail||'').trim(); state.snapshots={}; lastTotal=0;
   recordSnapshot(); save(); closeEditor(); render(); refresh();
 }
 
