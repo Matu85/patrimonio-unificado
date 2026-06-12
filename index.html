@@ -71,7 +71,7 @@
 
   /* ---------- Grid + cards ---------- */
   .grid{display:grid;grid-template-columns:1.05fr 1fr;gap:20px}
-  @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  @media(max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
   .full{grid-column:1/-1}
   .card{position:relative;border:1px solid var(--line2);border-radius:var(--rad);padding:22px;
     background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:var(--shadow);
@@ -127,8 +127,8 @@
   .ico.calm{background:rgba(86,224,142,.16);color:var(--good)}
 
   /* Delta */
-  .delta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-  @media(max-width:760px){.delta-grid{grid-template-columns:repeat(2,1fr)}}
+  .delta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:14px}
+  @media(max-width:760px){.delta-grid{grid-template-columns:repeat(auto-fit,minmax(130px,1fr))}}
   .dcell{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:15px}
   .dcell .lbl{font-size:10.5px;color:var(--mut);text-transform:uppercase;letter-spacing:1.3px;font-weight:600}
   .dcell .big{font-size:21px;font-weight:700;margin-top:8px}
@@ -188,6 +188,30 @@
   .catrow .catobj input{width:56px;background:rgba(0,0,0,.4);border:1px solid var(--line2);color:var(--gold);border-radius:8px;padding:6px 7px;font-size:13px;text-align:right;font-weight:700;font-family:inherit}
   .catrow .catcolor{width:36px;height:36px;flex:none;border:1px solid var(--line2);border-radius:9px;background:transparent;padding:2px;cursor:pointer}
   .catrow .catname:focus,.catrow .catobj input:focus{outline:none;border-color:var(--gold)}
+  .tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  @media(max-width:600px){
+    .shell{padding:16px 12px 48px}
+    .topbar{margin-bottom:18px;gap:12px}
+    .brand-name{font-size:16px} .brand-sub{font-size:11.5px}
+    .mark{width:36px;height:36px;border-radius:10px;font-size:16px}
+    .actions{gap:7px;width:100%}
+    .actions .btn{flex:1 1 40%;justify-content:center;padding:9px 8px;font-size:12px}
+    .hero{padding:18px 15px;border-radius:18px;gap:16px}
+    .total-num{font-size:40px}
+    .hero-right{width:100%;gap:8px}
+    .mini{flex:1 1 0;min-width:0;padding:10px 8px;text-align:center}
+    .mini-l{font-size:9.5px;letter-spacing:.8px} .mini-v{font-size:17px}
+    .card{padding:15px 14px;border-radius:14px} .card-h{margin-bottom:14px}
+    .donutwrap{justify-content:center;gap:12px}
+    .legend{flex-basis:100%;min-width:0}
+    .dcell .big{font-size:17px}
+    table{font-size:13px} th,td{padding:9px 6px} th{font-size:10px;letter-spacing:.3px}
+    input.q{width:68px}
+    .edgrid{grid-template-columns:repeat(auto-fit,minmax(108px,1fr))}
+    .catrow{flex-wrap:wrap} .catrow .catname{flex:1 1 100%;order:-1}
+    .modal{border-radius:16px;max-height:90vh}
+    .mailhead,.mailmeta,.mailbody{padding-left:15px;padding-right:15px}
+  }
 </style>
 </head>
 <body>
@@ -264,10 +288,10 @@
 
     <div class="card full">
       <div class="card-h"><span class="kicker">Posiciones</span></div>
-      <table id="positions">
-        <thead><tr><th>Activo</th><th>Clase</th><th>Cantidad</th><th>Precio</th><th>Valor</th><th>% cartera</th></tr></thead>
+      <div class="tablewrap"><table id="positions">
+        <thead><tr><th>Activo</th><th>Categoría</th><th>Cantidad</th><th>Precio</th><th>Valor</th><th>% cartera</th></tr></thead>
         <tbody></tbody>
-      </table>
+      </table></div>
       <div class="muted" style="margin-top:12px">Cripto vía CoinGecko · Acciones/ETF vía Stooq · Fondos por VNL manual. Edita la cantidad en línea — se guarda en tu navegador.</div>
     </div>
   </div>
@@ -512,8 +536,8 @@ function drawYields(){
       ${dcell('Acumulado hasta hoy', '+'+fmt2(totAcc), 'desde que lo activaste', true)}
       ${dcell('APY medio ponderado', wAvgApy(ys)+'%', 'sobre '+fmt(cap), true)}
     </div>
-    <table><thead><tr><th>Activo</th><th>Capital (live)</th><th>APY</th><th>Acumulado</th><th>Interés/año</th></tr></thead>
-      <tbody>${rows}</tbody></table>
+    <div class="tablewrap"><table><thead><tr><th>Activo</th><th>Capital (live)</th><th>APY</th><th>Acumulado</th><th>Interés/año</th></tr></thead>
+      <tbody>${rows}</tbody></table></div>
     <div class="muted" style="margin-top:11px">Las monedas crecen con el APY (compuesto) desde que lo activas, y se valoran al precio en vivo de la stable. “Acumulado” = monedas ganadas hasta hoy valoradas al precio actual.</div>`;
 }
 function drawTrend(){
