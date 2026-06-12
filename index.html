@@ -180,6 +180,14 @@
   .edgrid input:disabled{opacity:.35}
   .del{cursor:pointer;font-size:11px;padding:6px 12px;border-radius:9px;font-weight:600;background:rgba(251,122,142,.12);border:1px solid rgba(251,122,142,.3);color:var(--bad)}
   .edactions{display:flex;gap:9px;align-items:center;margin-top:18px;flex-wrap:wrap}
+  .catmgr{padding-bottom:4px}
+  .catmgr-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+  .catrow{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+  .catrow .catname{flex:1;min-width:120px;background:rgba(0,0,0,.4);border:1px solid var(--line2);color:var(--tx);border-radius:9px;padding:8px 10px;font-size:13.5px;font-family:inherit}
+  .catrow .catobj{font-size:12px;color:var(--mut);display:flex;align-items:center;gap:6px;white-space:nowrap}
+  .catrow .catobj input{width:56px;background:rgba(0,0,0,.4);border:1px solid var(--line2);color:var(--gold);border-radius:8px;padding:6px 7px;font-size:13px;text-align:right;font-weight:700;font-family:inherit}
+  .catrow .catcolor{width:36px;height:36px;flex:none;border:1px solid var(--line2);border-radius:9px;background:transparent;padding:2px;cursor:pointer}
+  .catrow .catname:focus,.catrow .catobj input:focus{outline:none;border-color:var(--gold)}
 </style>
 </head>
 <body>
@@ -307,13 +315,15 @@
 
 <script>
 /* ----------------------------- Modelo ----------------------------- */
-const CLASSES = {
-  broker: {label:'Broker (Acciones/ETF)', color:'#6aa0ff', light:'#9cc4ff'},
-  fondos: {label:'Fondos de inversión',   color:'#3fe0b0', light:'#84f1d2'},
-  cripto: {label:'Cripto',                color:'#f5b65a', light:'#ffd591'}
-};
+const PALETTE = ['#6aa0ff','#3fe0b0','#f5b65a','#b98bff','#ff7a9c','#5ad1f5','#9be15d','#ffd166','#ff9f6a','#7ee0c0'];
+function lighten(hex,f){ try{ const n=parseInt(hex.slice(1),16),R=n>>16&255,G=n>>8&255,B=n&255,m=c=>Math.round(c+(255-c)*f);
+  return '#'+[m(R),m(G),m(B)].map(x=>x.toString(16).padStart(2,'0')).join(''); }catch(e){ return hex; } }
+function catOf(key){ return (state.categories||[]).find(c=>c.key===key) || {key,label:key,color:'#8b949e',target:0}; }
 const DEFAULT = {
-  band:5, email:'', targets:{broker:40,fondos:35,cripto:25},
+  band:5, email:'',
+  categories:[ {key:'broker',label:'Broker (Acciones/ETF)',color:'#6aa0ff',target:40},
+               {key:'fondos',label:'Fondos de inversión',color:'#3fe0b0',target:35},
+               {key:'cripto',label:'Cripto',color:'#f5b65a',target:25} ],
   holdings:[]   /* cartera vacía — usa “✎ Editar cartera” para añadir tus activos reales */
 };
 const KEY='patrimonio-unificado-v2';
@@ -323,8 +333,17 @@ const pct = n => (n>=0?'+':'') + n.toFixed(1) + '%';
 let state = load(), lastTotal = 0;
 
 function load(){
-  try{ const s=JSON.parse(localStorage.getItem(KEY)); if(s&&s.holdings) return s; }catch(e){}
-  const s=JSON.parse(JSON.stringify(DEFAULT)); s.snapshots={}; return s;
+  let s=null;
+  try{ s=JSON.parse(localStorage.getItem(KEY)); }catch(e){}
+  if(!s||!s.holdings){ s=JSON.parse(JSON.stringify(DEFAULT)); s.snapshots={}; }
+  if(!s.categories){ /* migración desde el modelo antiguo de 3 clases fijas */
+    const t=s.targets||{broker:40,fondos:35,cripto:25};
+    s.categories=[ {key:'broker',label:'Broker (Acciones/ETF)',color:'#6aa0ff',target:+t.broker||0},
+                   {key:'fondos',label:'Fondos de inversión',color:'#3fe0b0',target:+t.fondos||0},
+                   {key:'cripto',label:'Cripto',color:'#f5b65a',target:+t.cripto||0} ];
+    delete s.targets;
+  }
+  return s;
 }
 function save(){ try{ localStorage.setItem(KEY,JSON.stringify(state)); }catch(e){} }
 function isoWeekKey(dt){
@@ -376,8 +395,8 @@ async function refresh(){
 function liveQty(h){ if(h.apy>0 && h.apyTs){ const yrs=(Date.now()-h.apyTs)/31557600000; return h.qty*Math.pow(1+h.apy/100, yrs); } return h.qty; }
 function valueOf(h){ return liveQty(h)*h.price; }
 function normalizeApy(){ let ch=false; state.holdings.forEach(h=>{ if(h.apy>0 && !h.apyTs){ h.apyTs=Date.now(); ch=true; } }); if(ch) save(); }
-function totals(){ const cls={broker:0,fondos:0,cripto:0}; let tot=0;
-  state.holdings.forEach(h=>{ const v=valueOf(h); cls[h.cls]+=v; tot+=v; }); return {cls,tot}; }
+function totals(){ const cls={}; state.categories.forEach(c=>cls[c.key]=0); let tot=0;
+  state.holdings.forEach(h=>{ const v=valueOf(h); if(cls[h.cls]===undefined)cls[h.cls]=0; cls[h.cls]+=v; tot+=v; }); return {cls,tot}; }
 function recordSnapshot(){
   const {cls,tot}=totals(); const k=isoWeekKey(new Date()); state.snapshots=state.snapshots||{};
   Object.keys(state.snapshots).forEach(key=>{ const s=state.snapshots[key];
@@ -404,8 +423,8 @@ function render(){
   document.getElementById('posCount').textContent=state.holdings.length;
 
   let ok=0,al=0;
-  if(tot>0) Object.keys(CLASSES).forEach(k=>{ const a=cls[k]/tot*100; (Math.abs(a-state.targets[k])>state.band?al++:ok++); });
-  document.getElementById('okCount').textContent = tot>0? ok+'/3' : '—';
+  if(tot>0) state.categories.forEach(c=>{ const a=cls[c.key]/tot*100; (Math.abs(a-c.target)>state.band?al++:ok++); });
+  document.getElementById('okCount').textContent = tot>0? ok+'/'+state.categories.length : '—';
   document.getElementById('alertCount').textContent = al;
 
   const prev=prevWeekSnapshot(), pill=document.getElementById('wowPill');
@@ -419,13 +438,13 @@ function render(){
 }
 function drawDonut(cls,tot){
   const svg=document.getElementById('donut'), r=74, cx=105, cy=105, C=2*Math.PI*r, gap=C*0.02;
-  const defs=`<defs>${Object.keys(CLASSES).map(k=>`<linearGradient id="g-${k}" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="${CLASSES[k].light}"/><stop offset="1" stop-color="${CLASSES[k].color}"/></linearGradient>`).join('')}
+  const defs=`<defs>${state.categories.map(c=>`<linearGradient id="g-${c.key}" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="${lighten(c.color,.35)}"/><stop offset="1" stop-color="${c.color}"/></linearGradient>`).join('')}
     <filter id="glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="3" result="b"/>
       <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`;
   let off=0, arcs=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="22"/>`;
-  Object.keys(CLASSES).forEach(k=>{ const frac=tot?cls[k]/tot:0, len=Math.max(frac*C-gap,0);
-    if(len>0) arcs+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="url(#g-${k})" stroke-width="22"
+  state.categories.forEach(c=>{ const frac=tot?cls[c.key]/tot:0, len=Math.max(frac*C-gap,0);
+    if(len>0) arcs+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="url(#g-${c.key})" stroke-width="22"
       stroke-linecap="round" filter="url(#glow)" stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-(off+gap/2)}"
       transform="rotate(-90 ${cx} ${cy})"/>`;
     off+=frac*C; });
@@ -434,46 +453,46 @@ function drawDonut(cls,tot){
      <text x="${cx}" y="${cy+17}" text-anchor="middle" fill="#9aa3b4" font-size="10.5" letter-spacing="2" font-family="Manrope">PATRIMONIO</text>`;
 }
 function drawLegend(cls,tot){
-  document.getElementById('legend').innerHTML=Object.keys(CLASSES).map(k=>{ const p=tot?cls[k]/tot*100:0;
-    return `<div class="leg"><span class="dot" style="background:${CLASSES[k].color};--c:${CLASSES[k].color}88"></span>
-      <span class="nm">${CLASSES[k].label}</span><span class="pc">${p.toFixed(1)}%</span><span class="am">${fmt(cls[k])}</span></div>`;
+  document.getElementById('legend').innerHTML=state.categories.map(c=>{ const p=tot?cls[c.key]/tot*100:0;
+    return `<div class="leg"><span class="dot" style="background:${c.color};--c:${c.color}88"></span>
+      <span class="nm">${c.label}</span><span class="pc">${p.toFixed(1)}%</span><span class="am">${fmt(cls[c.key])}</span></div>`;
   }).join('');
 }
 function drawClasses(cls,tot){
-  document.getElementById('classes').innerHTML=Object.keys(CLASSES).map(k=>{
-    const actual=tot?cls[k]/tot*100:0, tgt=state.targets[k], dev=actual-tgt;
+  document.getElementById('classes').innerHTML=state.categories.map(c=>{
+    const actual=tot?cls[c.key]/tot*100:0, tgt=c.target, dev=actual-tgt;
     let tag='ok',txt='en objetivo';
     if(!tot){tag='neutral';txt='objetivo '+tgt+'%';}
     else if(dev>state.band){tag='over';txt='+'+dev.toFixed(1)+'% sobre objetivo';}
     else if(dev<-state.band){tag='under';txt=dev.toFixed(1)+'% bajo objetivo';}
     return `<div class="classcard">
-      <div class="cc-top"><div class="cc-name"><span class="dot" style="background:${CLASSES[k].color};--c:${CLASSES[k].color}88"></span>${CLASSES[k].label}</div>
+      <div class="cc-top"><div class="cc-name"><span class="dot" style="background:${c.color};--c:${c.color}88"></span>${c.label}</div>
         <span class="tag ${tag}">${txt}</span></div>
-      <div class="bar"><div class="fill" style="width:${Math.min(100,actual)}%;background:linear-gradient(90deg,${CLASSES[k].color},${CLASSES[k].light});--c:${CLASSES[k].color}66"></div>
+      <div class="bar"><div class="fill" style="width:${Math.min(100,actual)}%;background:linear-gradient(90deg,${c.color},${lighten(c.color,.35)});--c:${c.color}66"></div>
         <div class="tgt" style="left:${Math.min(100,tgt)}%"></div></div>
-      <div class="cc-meta"><span>Actual <b>${actual.toFixed(1)}%</b> · ${fmt(cls[k])}</span>
-        <span>Objetivo <input class="tgt-input" type="number" min="0" value="${tgt}" onchange="setTarget('${k}',this.value)">%</span></div>
+      <div class="cc-meta"><span>Actual <b>${actual.toFixed(1)}%</b> · ${fmt(cls[c.key])}</span>
+        <span>Objetivo <input class="tgt-input" type="number" min="0" value="${tgt}" onchange="setTarget('${c.key}',this.value)">%</span></div>
     </div>`;
   }).join('');
 }
 function drawAlerts(cls,tot){
-  if(!tot){ document.getElementById('alerts').innerHTML=`<div class="alert calm"><span class="ico calm">＋</span><div><b>Tu cartera está vacía.</b><br>Pulsa <b style="color:var(--gold)">✎ Editar cartera</b> para añadir tus activos (broker, fondos y cripto). Verás aquí la distribución, las alertas de rebalanceo y el delta semanal.</div></div>`; return; }
+  if(!tot){ document.getElementById('alerts').innerHTML=`<div class="alert calm"><span class="ico calm">＋</span><div><b>Tu cartera está vacía.</b><br>Pulsa <b style="color:var(--gold)">✎ Editar cartera</b> para añadir tus activos. Verás aquí la distribución, las alertas de rebalanceo y el delta semanal.</div></div>`; return; }
   const al=[];
-  Object.keys(CLASSES).forEach(k=>{ const actual=tot?cls[k]/tot*100:0, tgt=state.targets[k], dev=actual-tgt, diff=cls[k]-tot*tgt/100;
+  state.categories.forEach(c=>{ const actual=cls[c.key]/tot*100, tgt=c.target, dev=actual-tgt, diff=cls[c.key]-tot*tgt/100;
     if(dev>state.band) al.push(`<div class="alert over"><span class="ico over">▲</span><div>
-      <b>${CLASSES[k].label} supera el objetivo de rebalanceo.</b><br>Pesa <b>${actual.toFixed(1)}%</b> frente al objetivo de ${tgt}% (banda ±${state.band}%). Considera <b>vender ${fmt(diff)}</b> para volver al equilibrio.</div></div>`);
+      <b>${c.label} supera el objetivo de rebalanceo.</b><br>Pesa <b>${actual.toFixed(1)}%</b> frente al objetivo de ${tgt}% (banda ±${state.band}%). Considera <b>vender ${fmt(diff)}</b> para volver al equilibrio.</div></div>`);
     else if(dev<-state.band) al.push(`<div class="alert under"><span class="ico under">▼</span><div>
-      <b>${CLASSES[k].label} por debajo del objetivo.</b><br>Pesa <b>${actual.toFixed(1)}%</b> frente a ${tgt}%. Considera <b>comprar ${fmt(Math.abs(diff))}</b>.</div></div>`);
+      <b>${c.label} por debajo del objetivo.</b><br>Pesa <b>${actual.toFixed(1)}%</b> frente a ${tgt}%. Considera <b>comprar ${fmt(Math.abs(diff))}</b>.</div></div>`);
   });
   document.getElementById('alerts').innerHTML = al.length? al.join('')
-    : `<div class="alert calm"><span class="ico calm">✓</span><div>Todas las clases dentro de la banda de tolerancia. Cartera equilibrada — sin acción necesaria.</div></div>`;
+    : `<div class="alert calm"><span class="ico calm">✓</span><div>Todas las categorías dentro de la banda de tolerancia. Cartera equilibrada — sin acción necesaria.</div></div>`;
 }
 function drawDeltas(cls,tot){
   const prev=prevWeekSnapshot(), cells=[];
   const dTot=prev&&prev.total?tot-prev.total:0, pTot=prev&&prev.total?dTot/prev.total*100:0;
   cells.push(dcell('Patrimonio total',fmt(tot),prev?`${dTot>=0?'+':''}${fmt(dTot)} (${pct(pTot)})`:'sin histórico',dTot>=0));
-  Object.keys(CLASSES).forEach(k=>{ const pc=prev&&prev.classes&&prev.classes[k]!==undefined?cls[k]-prev.classes[k]:null;
-    cells.push(dcell(CLASSES[k].label,fmt(cls[k]),pc===null?'—':`${pc>=0?'+':''}${fmt(pc)}`,pc===null?true:pc>=0)); });
+  state.categories.forEach(c=>{ const pc=prev&&prev.classes&&prev.classes[c.key]!==undefined?cls[c.key]-prev.classes[c.key]:null;
+    cells.push(dcell(c.label,fmt(cls[c.key]),pc===null?'—':`${pc>=0?'+':''}${fmt(pc)}`,pc===null?true:pc>=0)); });
   document.getElementById('deltas').innerHTML=cells.join('');
 }
 function dcell(lbl,big,sub,up){ return `<div class="dcell"><div class="lbl">${lbl}</div><div class="big">${big}</div><div class="sub ${up?'up':'down'}">${sub}</div></div>`; }
@@ -517,13 +536,13 @@ function drawPositions(tot){
     const v=valueOf(h);
     const badge=h.src==='manual'?'<span class="badge man">VNL</span>':h.live?'<span class="badge live">LIVE</span>':'<span class="badge stale">último</span>';
     return `<tr><td><b>${h.name}</b> <span class="muted">${h.ticker||''}</span> ${badge}</td>
-      <td><span class="clschip"><span class="dot" style="width:9px;height:9px;background:${CLASSES[h.cls].color};--c:${CLASSES[h.cls].color}88"></span>${h.cls}</span></td>
+      <td><span class="clschip"><span class="dot" style="width:9px;height:9px;background:${catOf(h.cls).color};--c:${catOf(h.cls).color}88"></span>${catOf(h.cls).label}</span></td>
       <td><input class="q" type="number" step="any" value="${parseFloat(liveQty(h).toFixed(8))}" onchange="setQty(${i},this.value)"></td>
       <td>${fmt2(h.price)}</td><td><b>${fmt(v)}</b></td><td>${tot?(v/tot*100).toFixed(1):0}%</td></tr>`;
   }).join('');
 }
 function setQty(i,v){ const h=state.holdings[i]; h.qty=parseFloat(v)||0; if(h.apy>0) h.apyTs=Date.now(); recordSnapshot(); save(); render(); }
-function setTarget(k,v){ state.targets[k]=Math.max(0,+v||0); save(); render(); }
+function setTarget(k,v){ const c=catOf(k); if(c)c.target=Math.max(0,+v||0); save(); render(); }
 function setBand(v){ state.band=Math.max(0,+v||0); save(); render(); }
 
 /* ----------------------------- Email ----------------------------- */
@@ -533,13 +552,13 @@ function buildMail(){
   const subject=prev&&prev.total?`Tu cartera esta semana: ${dTot>=0?'+':''}${fmt(dTot)} (${pct(pTot)})`:`Tu cartera esta semana: ${fmt(tot)}`;
   document.getElementById('mSubject').textContent=subject;
   const alerts=[];
-  Object.keys(CLASSES).forEach(k=>{ const a=tot?cls[k]/tot*100:0,t=state.targets[k],dev=a-t,diff=cls[k]-tot*t/100;
-    if(dev>state.band) alerts.push(`🔴 <b>${CLASSES[k].label}</b> al ${a.toFixed(1)}% (objetivo ${t}%) — vender ${fmt(diff)}`);
-    else if(dev<-state.band) alerts.push(`🟡 <b>${CLASSES[k].label}</b> al ${a.toFixed(1)}% (objetivo ${t}%) — comprar ${fmt(Math.abs(diff))}`); });
-  const rows=Object.keys(CLASSES).map(k=>{ const pc=prev&&prev.classes&&prev.classes[k]!==undefined?cls[k]-prev.classes[k]:null;
+  state.categories.forEach(c=>{ const a=tot?cls[c.key]/tot*100:0,t=c.target,dev=a-t,diff=cls[c.key]-tot*t/100;
+    if(dev>state.band) alerts.push(`🔴 <b>${c.label}</b> al ${a.toFixed(1)}% (objetivo ${t}%) — vender ${fmt(diff)}`);
+    else if(dev<-state.band) alerts.push(`🟡 <b>${c.label}</b> al ${a.toFixed(1)}% (objetivo ${t}%) — comprar ${fmt(Math.abs(diff))}`); });
+  const rows=state.categories.map(c=>{ const pc=prev&&prev.classes&&prev.classes[c.key]!==undefined?cls[c.key]-prev.classes[c.key]:null;
     const col=pc===null?'#9aa3b4':(pc>=0?'#3fb950':'#f85149');
-    return `<tr><td style="padding:7px 0">${CLASSES[k].label}</td><td style="text-align:right">${fmt(cls[k])}</td>
-      <td style="text-align:right">${tot?(cls[k]/tot*100).toFixed(1):0}%</td>
+    return `<tr><td style="padding:7px 0">${c.label}</td><td style="text-align:right">${fmt(cls[c.key])}</td>
+      <td style="text-align:right">${tot?(cls[c.key]/tot*100).toFixed(1):0}%</td>
       <td style="text-align:right;color:${col}">${pc===null?'—':(pc>=0?'+':'')+fmt(pc)}</td></tr>`; }).join('');
   return `<div style="font-family:system-ui,Arial;color:#eef1f7">
       <div style="font-size:13px;color:#9aa3b4">Resumen semanal · ${new Date().toLocaleDateString('es-ES',{day:'numeric',month:'long',year:'numeric'})}</div>
@@ -558,7 +577,7 @@ document.getElementById('modal').addEventListener('click',e=>{ if(e.target.id===
 
 /* ----------------------------- Export ----------------------------- */
 function exportJSON(){
-  const out={currency:'EUR',owner_email:state.email||'',band:state.band,targets:state.targets,
+  const out={currency:'EUR',owner_email:state.email||'',band:state.band,categories:state.categories,
     holdings:state.holdings.map(h=>{ const o={id:h.id,name:h.name,ticker:h.ticker,cls:h.cls,qty:h.qty,price:h.price,src:h.src};
       if(h.cg)o.cg=h.cg; if(h.stooq)o.stooq=h.stooq; if(h.apy){o.apy=h.apy; if(h.apyTs)o.apyTs=h.apyTs;} return o; })};
   const blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'}), a=document.createElement('a');
@@ -566,27 +585,32 @@ function exportJSON(){
 }
 
 /* ----------------------------- Editor ----------------------------- */
-let editRows=[], editTargets={}, editBand=5, editEmail='';
-function openEditor(){ editRows=JSON.parse(JSON.stringify(state.holdings)); editRows.forEach(h=>{ h.apyStartStr = h.apyTs ? new Date(h.apyTs).toISOString().slice(0,10) : ''; }); editTargets={...state.targets}; editBand=state.band; editEmail=state.email||''; renderEditor(); document.getElementById('editor').classList.add('show'); }
+let editRows=[], editCats=[], editBand=5, editEmail='';
+function openEditor(){ editRows=JSON.parse(JSON.stringify(state.holdings)); editRows.forEach(h=>{ h.apyStartStr = h.apyTs ? new Date(h.apyTs).toISOString().slice(0,10) : ''; }); editCats=JSON.parse(JSON.stringify(state.categories)); editBand=state.band; editEmail=state.email||''; renderEditor(); document.getElementById('editor').classList.add('show'); }
 function closeEditor(){ document.getElementById('editor').classList.remove('show'); }
 function refLabel(s){ return s==='crypto'?'ID CoinGecko':s==='stock'?'Símbolo Stooq':'Sin feed'; }
 function refPH(s){ return s==='crypto'?'bitcoin':s==='stock'?'aapl.us':''; }
 function refVal(h){ return h.src==='crypto'?(h.cg||''):h.src==='stock'?(h.stooq||''):''; }
 function renderEditor(){
-  const t=`<div class="edtargets"><span class="muted">Objetivos de rebalanceo:</span>
-    <label>Broker % <input type="number" value="${editTargets.broker}" oninput="editTargets.broker=+this.value"></label>
-    <label>Fondos % <input type="number" value="${editTargets.fondos}" oninput="editTargets.fondos=+this.value"></label>
-    <label>Cripto % <input type="number" value="${editTargets.cripto}" oninput="editTargets.cripto=+this.value"></label>
-    <label>Banda ±% <input type="number" value="${editBand}" oninput="editBand=+this.value"></label></div>
-  <div class="edtargets" style="margin-top:10px"><span class="muted">Email del resumen semanal (privado · solo en tu navegador):</span>
-    <label><input type="email" value="${(editEmail||'').replace(/"/g,'&quot;')}" oninput="editEmail=this.value" placeholder="tucorreo@ejemplo.com" style="width:240px;color:var(--tx);font-weight:400;text-align:left"></label></div>`;
+  const catRows=editCats.map((c,i)=>`<div class="catrow">
+      <input class="catcolor" type="color" value="${c.color}" oninput="editCats[${i}].color=this.value" title="Color">
+      <input class="catname" value="${(c.label||'').replace(/"/g,'&quot;')}" placeholder="Nombre de la categoría" onchange="editCats[${i}].label=this.value; renderEditor()">
+      <span class="catobj">Objetivo <input type="number" min="0" value="${c.target}" oninput="editCats[${i}].target=+this.value">%</span>
+      <button class="del" onclick="delCat(${i})" title="Eliminar categoría">✕</button></div>`).join('');
+  const t=`<div class="catmgr">
+      <div class="catmgr-h"><span class="muted">Categorías de rebalanceo — define las tuyas (nombre, objetivo % y color):</span>
+        <button class="btn" style="padding:5px 11px;font-size:12px" onclick="addCat()">＋ Categoría</button></div>
+      ${catRows||'<div class="muted" style="padding:8px 0">Sin categorías. Añade al menos una.</div>'}
+      <div class="edtargets" style="margin-top:12px;border-top:1px solid var(--line);padding-top:12px">
+        <label>Banda ±% <input type="number" value="${editBand}" oninput="editBand=+this.value"></label>
+        <span class="muted" style="margin-left:auto">Email resumen (privado · solo en tu navegador):</span>
+        <label><input type="email" value="${(editEmail||'').replace(/"/g,'&quot;')}" oninput="editEmail=this.value" placeholder="tucorreo@ejemplo.com" style="width:220px;color:var(--tx);font-weight:400;text-align:left"></label></div>
+    </div>`;
   const cards=editRows.map((h,i)=>`<div class="edcard"><div class="edgrid">
     <label>Nombre<input value="${(h.name||'').replace(/"/g,'&quot;')}" oninput="editRows[${i}].name=this.value"></label>
     <label>Ticker<input value="${(h.ticker||'').replace(/"/g,'&quot;')}" oninput="editRows[${i}].ticker=this.value.toUpperCase()"></label>
-    <label>Clase<select onchange="editRows[${i}].cls=this.value">
-      <option value="broker"${h.cls==='broker'?' selected':''}>Broker (Acc/ETF)</option>
-      <option value="fondos"${h.cls==='fondos'?' selected':''}>Fondos</option>
-      <option value="cripto"${h.cls==='cripto'?' selected':''}>Cripto</option></select></label>
+    <label>Categoría<select onchange="editRows[${i}].cls=this.value">
+      ${editCats.map(c=>`<option value="${c.key}"${h.cls===c.key?' selected':''}>${(c.label||c.key)}</option>`).join('')}</select></label>
     <label>Fuente precio<select onchange="edSrc(${i},this.value)">
       <option value="crypto"${h.src==='crypto'?' selected':''}>Cripto (en vivo)</option>
       <option value="stock"${h.src==='stock'?' selected':''}>Acción/ETF (en vivo)</option>
@@ -601,15 +625,21 @@ function renderEditor(){
 }
 function edSrc(i,v){ editRows[i].src=v; if(v!=='stock')delete editRows[i].stooq; if(v!=='crypto')delete editRows[i].cg; renderEditor(); }
 function edRef(i,v){ const h=editRows[i]; if(h.src==='crypto')h.cg=v.trim().toLowerCase(); else if(h.src==='stock')h.stooq=v.trim().toLowerCase(); }
-function addRow(){ editRows.push({name:'',ticker:'',cls:'broker',qty:0,price:0,src:'manual'}); renderEditor(); }
+function addRow(){ editRows.push({name:'',ticker:'',cls:(editCats[0]?editCats[0].key:'cripto'),qty:0,price:0,src:'manual'}); renderEditor(); }
 function delRow(i){ editRows.splice(i,1); renderEditor(); }
 function clearAll(){ if(confirm('¿Vaciar todos los activos y empezar de cero con tu cartera real?')){ editRows=[]; renderEditor(); } }
+function nextColorEdit(){ const used=editCats.map(c=>c.color); return PALETTE.find(c=>!used.includes(c)) || PALETTE[editCats.length%PALETTE.length]; }
+function addCat(){ editCats.push({key:'cat'+Date.now()+Math.floor(Math.random()*9999),label:'',color:nextColorEdit(),target:0}); renderEditor(); }
+function delCat(i){ if(editCats.length<=1){ alert('Debe quedar al menos una categoría.'); return; } const k=editCats[i].key; editCats.splice(i,1); const fb=editCats[0].key; editRows.forEach(h=>{ if(h.cls===k)h.cls=fb; }); renderEditor(); }
 function saveEditor(){
   state.holdings=editRows.filter(h=>(h.name||h.ticker)).map((h,i)=>{
     if(!h.id)h.id=(h.ticker||'act').toLowerCase()+'-'+i+'-'+Date.now();
     if(h.apy>0){ h.apyTs = h.apyStartStr ? new Date(h.apyStartStr).getTime() : (h.apyTs||Date.now()); } else { delete h.apyTs; }
     delete h.apyStartStr; return h; });
-  state.targets={broker:+editTargets.broker||0,fondos:+editTargets.fondos||0,cripto:+editTargets.cripto||0};
+  let cats=editCats.filter(c=>(c.label||'').trim()!=='').map(c=>({key:c.key||('cat'+Date.now()+Math.floor(Math.random()*9999)),label:c.label.trim(),color:c.color,target:Math.max(0,+c.target||0)}));
+  if(!cats.length) cats=[{key:'general',label:'General',color:PALETTE[0],target:100}];
+  state.categories=cats; const _keys=cats.map(c=>c.key), _fb=_keys[0];
+  state.holdings.forEach(h=>{ if(!_keys.includes(h.cls)) h.cls=_fb; });
   state.band=+editBand||0; state.email=(editEmail||'').trim(); state.snapshots={}; lastTotal=0;
   recordSnapshot(); save(); closeEditor(); render(); refresh();
 }
