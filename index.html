@@ -394,20 +394,28 @@ async function fetchCrypto(){
   }catch(e){ state.holdings.forEach(h=>{ if(h.src==='crypto') h.live=false; }); }
 }
 function ysym(s){ return (s||'').replace(/\.us$/i,'').toUpperCase(); } /* vt.us→VT · vwce.de→VWCE.DE · AAPL→AAPL */
+const fxCache={};
+async function yMeta(sym){
+  const y=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=1d&interval=1d`;
+  // Yahoo no envía cabeceras CORS → vía proxies CORS
+  for(const u of [`https://corsproxy.io/?url=${encodeURIComponent(y)}`, `https://api.allorigins.win/raw?url=${encodeURIComponent(y)}`]){
+    try{ const r=await fetch(u,{cache:'no-store'}); if(!r.ok) continue;
+      const j=await r.json(); const m=j&&j.chart&&j.chart.result&&j.chart.result[0]&&j.chart.result[0].meta;
+      if(m&&m.regularMarketPrice>0) return m; }catch(e){}
+  }
+  return null;
+}
+async function fxToEur(cur){            /* convierte la moneda nativa de la acción a EUR */
+  if(!cur||cur==='EUR') return 1;
+  if(fxCache[cur]!==undefined) return fxCache[cur];
+  const m=await yMeta(cur+'EUR=X'); return (fxCache[cur]= m&&m.regularMarketPrice>0?m.regularMarketPrice:null);
+}
 async function fetchStock(h){
   const sym=ysym(h.stooq||h.ticker); if(!sym){ h.live=false; return; }
-  const y=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=1d&interval=1d`;
-  // Yahoo no envía cabeceras CORS → vía proxies CORS (precio en su moneda nativa)
-  const urls=[`https://corsproxy.io/?url=${encodeURIComponent(y)}`, `https://api.allorigins.win/raw?url=${encodeURIComponent(y)}`];
-  for(const u of urls){
-    try{
-      const r=await fetch(u,{cache:'no-store'}); if(!r.ok) continue;
-      const j=await r.json(); const m=j&&j.chart&&j.chart.result&&j.chart.result[0]&&j.chart.result[0].meta;
-      const p=m&&m.regularMarketPrice;
-      if(p>0){ h.price=p; h.live=true; return; }
-    }catch(e){}
-  }
-  h.live=false;
+  const m=await yMeta(sym); if(!m){ h.live=false; return; }
+  let p=m.regularMarketPrice; const cur=m.currency||'USD';
+  if(cur!=='EUR'){ const rate=await fxToEur(cur); if(!rate){ h.live=false; return; } p=p*rate; }
+  h.price=p; h.live=true;
 }
 async function refresh(){
   document.getElementById('updated').textContent='actualizando…';
