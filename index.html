@@ -329,7 +329,7 @@
       </div>
       <div class="muted" style="margin-top:14px;line-height:1.8">
         <b style="color:var(--cripto)">Cripto (en vivo):</b> ID de CoinGecko — bitcoin, ethereum, solana, cardano… &nbsp;·&nbsp;
-        <b style="color:var(--broker)">Acción/ETF (en vivo):</b> símbolo de Stooq — aapl.us, msft.us, vwce.de… &nbsp;·&nbsp;
+        <b style="color:var(--broker)">Acción/ETF (en vivo):</b> símbolo de bolsa — VT, AAPL, MSFT, VWCE.DE… &nbsp;·&nbsp;
         <b style="color:var(--fondos)">Manual:</b> escribe tú el precio/VNL.<br>
         Tras guardar, pulsa <b>⤓ portfolio.json</b> y reemplaza el archivo de la carpeta para que el email del lunes use tus cifras.
       </div>
@@ -393,16 +393,18 @@ async function fetchCrypto(){
     state.holdings.forEach(h=>{ if(h.src==='crypto'&&d[h.cg]&&d[h.cg].eur){ h.price=d[h.cg].eur; h.live=true; }});
   }catch(e){ state.holdings.forEach(h=>{ if(h.src==='crypto') h.live=false; }); }
 }
+function ysym(s){ return (s||'').replace(/\.us$/i,'').toUpperCase(); } /* vt.us→VT · vwce.de→VWCE.DE · AAPL→AAPL */
 async function fetchStock(h){
-  const su=`https://stooq.com/q/l/?s=${h.stooq}&f=sd2t2ohlcv&h&e=csv`;
-  // Stooq no envía cabeceras CORS → probamos directo y, si falla, vía proxies CORS
-  const urls=[su, `https://api.allorigins.win/raw?url=${encodeURIComponent(su)}`, `https://corsproxy.io/?url=${encodeURIComponent(su)}`];
+  const sym=ysym(h.stooq||h.ticker); if(!sym){ h.live=false; return; }
+  const y=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=1d&interval=1d`;
+  // Yahoo no envía cabeceras CORS → vía proxies CORS (precio en su moneda nativa)
+  const urls=[`https://corsproxy.io/?url=${encodeURIComponent(y)}`, `https://api.allorigins.win/raw?url=${encodeURIComponent(y)}`];
   for(const u of urls){
     try{
       const r=await fetch(u,{cache:'no-store'}); if(!r.ok) continue;
-      const t=await r.text(); const c=(t.trim().split('\n')[1]||'').split(',');
-      const close=parseFloat(c[6]);
-      if(close>0){ h.price=close; h.live=true; return; }
+      const j=await r.json(); const m=j&&j.chart&&j.chart.result&&j.chart.result[0]&&j.chart.result[0].meta;
+      const p=m&&m.regularMarketPrice;
+      if(p>0){ h.price=p; h.live=true; return; }
     }catch(e){}
   }
   h.live=false;
@@ -612,8 +614,8 @@ function exportJSON(){
 let editRows=[], editCats=[], editBand=5, editEmail='';
 function openEditor(){ editRows=JSON.parse(JSON.stringify(state.holdings)); editRows.forEach(h=>{ h.apyStartStr = h.apyTs ? new Date(h.apyTs).toISOString().slice(0,10) : ''; }); editCats=JSON.parse(JSON.stringify(state.categories)); editBand=state.band; editEmail=state.email||''; renderEditor(); document.getElementById('editor').classList.add('show'); }
 function closeEditor(){ document.getElementById('editor').classList.remove('show'); }
-function refLabel(s){ return s==='crypto'?'ID CoinGecko':s==='stock'?'Símbolo Stooq':'Sin feed'; }
-function refPH(s){ return s==='crypto'?'bitcoin':s==='stock'?'aapl.us':''; }
+function refLabel(s){ return s==='crypto'?'ID CoinGecko':s==='stock'?'Símbolo bolsa':'Sin feed'; }
+function refPH(s){ return s==='crypto'?'bitcoin':s==='stock'?'VT':''; }
 function refVal(h){ return h.src==='crypto'?(h.cg||''):h.src==='stock'?(h.stooq||''):''; }
 function renderEditor(){
   const catRows=editCats.map((c,i)=>`<div class="catrow">
