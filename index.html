@@ -405,10 +405,16 @@ async function yMeta(sym){
   }
   return null;
 }
-async function fxToEur(cur){            /* convierte la moneda nativa de la acción a EUR */
+async function fxToEur(cur){            /* convierte la moneda nativa de la acción a EUR (solo cachea éxitos) */
   if(!cur||cur==='EUR') return 1;
-  if(fxCache[cur]!==undefined) return fxCache[cur];
-  const m=await yMeta(cur+'EUR=X'); return (fxCache[cur]= m&&m.regularMarketPrice>0?m.regularMarketPrice:null);
+  if(fxCache[cur]) return fxCache[cur];
+  const c=cur.toLowerCase();
+  // 1) CoinGecko (CORS fiable): rate = precio_btc_eur / precio_btc_<cur>
+  try{ const r=await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=eur,${c}`,{cache:'no-store'});
+    if(r.ok){ const b=(await r.json()).bitcoin; if(b&&b.eur>0&&b[c]>0) return (fxCache[cur]=b.eur/b[c]); } }catch(e){}
+  // 2) Fallback: Yahoo <CUR>EUR=X vía proxy
+  const m=await yMeta(cur+'EUR=X'); if(m&&m.regularMarketPrice>0) return (fxCache[cur]=m.regularMarketPrice);
+  return null;
 }
 async function fetchStock(h){
   const sym=ysym(h.stooq||h.ticker); if(!sym){ h.live=false; return; }
