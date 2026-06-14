@@ -6,8 +6,11 @@
 Thumbs.db
 desktop.ini
 
-# Node (por si se añaden herramientas)
+# Node / herramienta local de iconos (no se publica)
 node_modules
+make-icons.mjs
+package.json
+package-lock.json
 
 # Config local privada — contiene tu email; la usa la tarea local del
 # resumen semanal. NO se versiona ni se publica.

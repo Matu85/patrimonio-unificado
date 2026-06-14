@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <radialGradient id="halo" cx="50%" cy="48%" r="34%">
+      <stop offset="0%" stop-color="#e7c98a" stop-opacity="0.55"/>
+      <stop offset="60%" stop-color="#caa15a" stop-opacity="0.16"/>
+      <stop offset="100%" stop-color="#caa15a" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="gA" x1="0" y1="0" x2="0.4" y2="1">
+      <stop offset="0" stop-color="#fbeecb"/><stop offset="1" stop-color="#e3c08d"/>
+    </linearGradient>
+    <linearGradient id="gB" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0" stop-color="#ecce98"/><stop offset="1" stop-color="#cd9f57"/>
+    </linearGradient>
+    <linearGradient id="gC" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0" stop-color="#cda25c"/><stop offset="1" stop-color="#9c7536"/>
+    </linearGradient>
+    <linearGradient id="gD" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0" stop-color="#b58843"/><stop offset="1" stop-color="#74531f"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1024" height="1024" fill="#0a1020"/>
+  <rect width="1024" height="1024" fill="url(#halo)"/>
+
+  <!-- biseles exteriores -->
+  <path d="M512 300 L300 512 L360 512 L512 360 Z" fill="url(#gB)"/>
+  <path d="M512 300 L724 512 L664 512 L512 360 Z" fill="url(#gC)"/>
+  <path d="M724 512 L512 724 L512 664 L664 512 Z" fill="url(#gD)"/>
+  <path d="M300 512 L512 724 L512 664 L360 512 Z" fill="url(#gC)"/>
+
+  <!-- facetas internas (mesa) -->
+  <path d="M360 512 L512 360 L512 512 Z" fill="url(#gA)"/>
+  <path d="M512 360 L664 512 L512 512 Z" fill="url(#gB)"/>
+  <path d="M664 512 L512 664 L512 512 Z" fill="url(#gD)"/>
+  <path d="M512 664 L360 512 L512 512 Z" fill="url(#gC)"/>
+
+  <!-- aristas sutiles -->
+  <path d="M512 360 L512 664" stroke="#ffffff" stroke-opacity="0.16" stroke-width="3"/>
+  <path d="M360 512 L664 512" stroke="#3a2a10" stroke-opacity="0.35" stroke-width="2.5"/>
+  <circle cx="430" cy="430" r="7" fill="#fff7e6" opacity="0.85"/>
+</svg>
