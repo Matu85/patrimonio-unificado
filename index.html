@@ -90,8 +90,7 @@
   @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
   .card-h{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
   .kicker{font-size:11px;letter-spacing:2.4px;text-transform:uppercase;color:var(--gold-dim);font-weight:700;
-    display:inline-flex;align-items:center;gap:10px}
-  .kicker::before{content:"";width:18px;height:1.5px;background:linear-gradient(90deg,var(--gold),transparent);border-radius:2px}
+    display:inline-flex;align-items:center;gap:9px}
 
   /* Donut + legend */
   .donutwrap{display:flex;align-items:center;gap:26px;flex-wrap:wrap}
@@ -198,6 +197,37 @@
   .catrow .catcolor{width:36px;height:36px;flex:none;border:1px solid var(--line2);border-radius:9px;background:transparent;padding:2px;cursor:pointer}
   .catrow .catname:focus,.catrow .catobj input:focus{outline:none;border-color:var(--gold)}
   .tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+  /* ---------- Iconografía unificada (SVG line icons) ---------- */
+  .ic{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-width:1.7;
+    stroke-linecap:round;stroke-linejoin:round;display:inline-block;vertical-align:middle}
+  .btn .ic{opacity:.9;transition:transform .4s cubic-bezier(.2,.7,.2,1)}
+  .btn.gold .ic{opacity:1}
+  .btn:not(.gold):hover .ic{transform:translateY(-1px)}
+  .btn.gold:hover .ic{animation:spin .9s cubic-bezier(.45,.05,.25,1)}
+  .btn.gold.loading .ic{animation:spin .8s linear infinite}
+  @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+  .mark .ic{width:23px;height:23px;stroke-width:1.5}
+  .kicker .kic{width:15px;height:15px;color:var(--gold);stroke-width:1.85;opacity:.95}
+  .mini .ic{width:14px;height:14px;color:var(--gold-dim);opacity:.85}
+  .pill .ic{width:13px;height:13px;stroke-width:2.3}
+  .ico .ic{width:15px;height:15px;stroke-width:2.2}
+  .x .ic{width:17px;height:17px;stroke-width:1.9}
+  .mh-ic{width:18px;height:18px;stroke-width:1.8;color:var(--gold);vertical-align:-4px;margin-right:7px}
+  .del .ic{width:14px;height:14px;stroke-width:1.8;vertical-align:-2px;margin-right:5px}
+
+  /* ---------- Micro-pulido ---------- */
+  .btn:active{transform:translateY(0) scale(.985)}
+  .btn:focus-visible,.tgt-input:focus-visible,input.q:focus-visible,.x:focus-visible{
+    outline:2px solid var(--gold);outline-offset:2px}
+  .mark{position:relative;transition:transform .4s cubic-bezier(.2,.7,.2,1)}
+  .brand:hover .mark{transform:rotate(-6deg) scale(1.04)}
+  .mini{position:relative;overflow:hidden;transition:.2s}
+  .mini:hover{border-color:var(--line2);background:rgba(255,255,255,.05)}
+  .mini-head{display:flex;align-items:center;gap:6px}
+  .card::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+    background:radial-gradient(360px 120px at 100% 0%,rgba(255,255,255,.04),transparent 70%)}
+  .card>*{position:relative}
   @media(max-width:600px){
     .shell{padding:16px 12px 48px}
     .topbar{margin-bottom:18px;gap:12px}
@@ -224,23 +254,46 @@
 </style>
 </head>
 <body>
+<!-- Sprite de iconos (line icons, estilo Lucide) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <symbol id="i-gem" viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9Z"/><path d="M11 3 8 9l4 12 4-12-3-6"/><path d="M2 9h20"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 11 5 4 5-4"/><path d="M5 21h14"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 21V9"/><path d="m7 13 5-4 5 4"/><path d="M5 3h14"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M19 6v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6"/><path d="M10 11v6"/><path d="M14 11v6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></symbol>
+  <symbol id="i-pie" viewBox="0 0 24 24"><path d="M21.2 15.9A10 10 0 1 1 8 2.8"/><path d="M22 12A10 10 0 0 0 12 2v10Z"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></symbol>
+  <symbol id="i-activity" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></symbol>
+  <symbol id="i-percent" viewBox="0 0 24 24"><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3.5" cy="6" r=".6"/><circle cx="3.5" cy="12" r=".6"/><circle cx="3.5" cy="18" r=".6"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 2 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 17 9 5 9-5"/></symbol>
+</defs></svg>
+
 <div class="shell">
 
   <!-- Top bar -->
   <header class="topbar">
     <div class="brand">
-      <div class="mark">◆</div>
+      <div class="mark"><svg class="ic"><use href="#i-gem"/></svg></div>
       <div>
         <div class="brand-name">Patrimonio Unificado</div>
         <div class="brand-sub">Broker · Fondos · Cripto — una sola vista, precios en vivo</div>
       </div>
     </div>
     <div class="actions">
-      <button class="btn gold" onclick="refresh()"><i>↻</i> Actualizar precios</button>
-      <button class="btn" onclick="openEditor()"><i>✎</i> Editar cartera</button>
-      <button class="btn" onclick="openMail()"><i>✉</i> Email semanal</button>
-      <button class="btn" onclick="exportJSON()"><i>⤓</i> portfolio.json</button>
-      <button class="btn" onclick="importJSON()"><i>⤒</i> Importar JSON</button>
+      <button class="btn gold" onclick="refresh()"><svg class="ic"><use href="#i-refresh"/></svg> Actualizar precios</button>
+      <button class="btn" onclick="openEditor()"><svg class="ic"><use href="#i-edit"/></svg> Editar cartera</button>
+      <button class="btn" onclick="openMail()"><svg class="ic"><use href="#i-mail"/></svg> Email semanal</button>
+      <button class="btn" onclick="exportJSON()"><svg class="ic"><use href="#i-download"/></svg> Exportar JSON</button>
+      <button class="btn" onclick="importJSON()"><svg class="ic"><use href="#i-upload"/></svg> Importar JSON</button>
     </div>
   </header>
 
@@ -256,15 +309,15 @@
       </div>
     </div>
     <div class="hero-right">
-      <div class="mini"><span class="mini-l">Posiciones</span><span class="mini-v" id="posCount">—</span></div>
-      <div class="mini"><span class="mini-l">En objetivo</span><span class="mini-v" id="okCount">—</span></div>
-      <div class="mini"><span class="mini-l">Alertas</span><span class="mini-v" id="alertCount">—</span></div>
+      <div class="mini"><span class="mini-head"><svg class="ic"><use href="#i-layers"/></svg><span class="mini-l">Posiciones</span></span><span class="mini-v" id="posCount">—</span></div>
+      <div class="mini"><span class="mini-head"><svg class="ic"><use href="#i-target"/></svg><span class="mini-l">En objetivo</span></span><span class="mini-v" id="okCount">—</span></div>
+      <div class="mini"><span class="mini-head"><svg class="ic"><use href="#i-bell"/></svg><span class="mini-l">Alertas</span></span><span class="mini-v" id="alertCount">—</span></div>
     </div>
   </section>
 
   <div class="grid">
     <div class="card">
-      <div class="card-h"><span class="kicker">Distribución del patrimonio</span></div>
+      <div class="card-h"><span class="kicker"><svg class="ic kic"><use href="#i-pie"/></svg>Distribución del patrimonio</span></div>
       <div class="donutwrap">
         <svg id="donut" viewBox="0 0 210 210" width="200" height="200" style="flex:none"></svg>
         <div class="legend" id="legend"></div>
@@ -273,31 +326,31 @@
 
     <div class="card">
       <div class="card-h">
-        <span class="kicker">Objetivo de rebalanceo</span>
+        <span class="kicker"><svg class="ic kic"><use href="#i-target"/></svg>Objetivo de rebalanceo</span>
         <span class="band-edit">Banda ± <input class="tgt-input" id="bandInput" type="number" min="0" onchange="setBand(this.value)"> %</span>
       </div>
       <div id="classes"></div>
     </div>
 
     <div class="card full">
-      <div class="card-h"><span class="kicker">Alertas de rebalanceo</span></div>
+      <div class="card-h"><span class="kicker"><svg class="ic kic"><use href="#i-bell"/></svg>Alertas de rebalanceo</span></div>
       <div id="alerts"></div>
     </div>
 
     <div class="card full">
-      <div class="card-h"><span class="kicker">Evolución semanal · delta</span></div>
+      <div class="card-h"><span class="kicker"><svg class="ic kic"><use href="#i-activity"/></svg>Evolución semanal · delta</span></div>
       <div class="delta-grid" id="deltas"></div>
       <svg id="trend" viewBox="0 0 720 130" width="100%" height="130" preserveAspectRatio="none" style="margin-top:16px"></svg>
       <div class="muted" id="trendLbl" style="margin-top:8px"></div>
     </div>
 
     <div class="card full" id="yieldCard" style="display:none">
-      <div class="card-h"><span class="kicker">Rendimientos estimados</span></div>
+      <div class="card-h"><span class="kicker"><svg class="ic kic"><use href="#i-percent"/></svg>Rendimientos estimados</span></div>
       <div id="yields"></div>
     </div>
 
     <div class="card full">
-      <div class="card-h"><span class="kicker">Posiciones</span></div>
+      <div class="card-h"><span class="kicker"><svg class="ic kic"><use href="#i-list"/></svg>Posiciones</span></div>
       <div class="tablewrap"><table id="positions">
         <thead><tr><th>Activo</th><th>Categoría</th><th>Cantidad</th><th>Precio</th><th>Valor</th><th>% cartera</th></tr></thead>
         <tbody></tbody>
@@ -315,7 +368,7 @@
 <!-- Modal email -->
 <div class="modal-bg" id="modal">
   <div class="modal">
-    <div class="mailhead"><b>✉️ Email semanal — vista previa</b><button class="x" onclick="closeMail()">✕</button></div>
+    <div class="mailhead"><b><svg class="mh-ic"><use href="#i-mail"/></svg>Email semanal — vista previa</b><button class="x" onclick="closeMail()"><svg class="ic"><use href="#i-x"/></svg></button></div>
     <div class="mailmeta">
       <div><b>Para:</b> <span id="mTo"></span></div>
       <div><b>Asunto:</b> <span id="mSubject"></span></div>
@@ -328,20 +381,20 @@
 <!-- Modal editor -->
 <div class="modal-bg" id="editor">
   <div class="modal" style="max-width:820px">
-    <div class="mailhead"><b>✏️ Editar cartera — ingresa tus activos reales</b><button class="x" onclick="closeEditor()">✕</button></div>
+    <div class="mailhead"><b><svg class="mh-ic"><use href="#i-edit"/></svg>Editar cartera — ingresa tus activos reales</b><button class="x" onclick="closeEditor()"><svg class="ic"><use href="#i-x"/></svg></button></div>
     <div class="mailbody">
       <div id="editorBody"></div>
       <div class="edactions">
-        <button class="btn" onclick="addRow()"><i>＋</i> Añadir activo</button>
-        <button class="del" onclick="clearAll()">🗑 Vaciar todo</button>
+        <button class="btn" onclick="addRow()"><svg class="ic"><use href="#i-plus"/></svg> Añadir activo</button>
+        <button class="del" onclick="clearAll()"><svg class="ic"><use href="#i-trash"/></svg> Vaciar todo</button>
         <span style="flex:1"></span>
-        <button class="btn gold" onclick="saveEditor()">✓ Guardar y actualizar</button>
+        <button class="btn gold" onclick="saveEditor()"><svg class="ic"><use href="#i-check"/></svg> Guardar y actualizar</button>
       </div>
       <div class="muted" style="margin-top:14px;line-height:1.8">
         <b style="color:var(--cripto)">Cripto (en vivo):</b> ID de CoinGecko — bitcoin, ethereum, solana, cardano… &nbsp;·&nbsp;
         <b style="color:var(--broker)">Acción/ETF (en vivo):</b> símbolo de bolsa — VT, AAPL, MSFT, VWCE.DE… &nbsp;·&nbsp;
         <b style="color:var(--fondos)">Manual:</b> escribe tú el precio/VNL.<br>
-        Tras guardar, pulsa <b>⤓ portfolio.json</b> y reemplaza el archivo de la carpeta para que el email del lunes use tus cifras.
+        Tras guardar, pulsa <b>Exportar JSON</b> y reemplaza el archivo de la carpeta para que el email del lunes use tus cifras.
       </div>
     </div>
   </div>
@@ -364,6 +417,7 @@ const KEY='patrimonio-unificado-v2';
 const fmt = n => new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n||0);
 const fmt2 = n => new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR',maximumFractionDigits:2}).format(n||0);
 const pct = n => (n>=0?'+':'') + n.toFixed(1) + '%';
+const ic = (n,c) => `<svg class="ic${c?' '+c:''}" aria-hidden="true"><use href="#i-${n}"/></svg>`;
 let state = load(), lastTotal = 0;
 
 function load(){
@@ -434,10 +488,13 @@ async function fetchStock(h){
   h.price=p; h.live=true;
 }
 async function refresh(){
+  const rb=document.querySelector('.btn.gold'); if(rb) rb.classList.add('loading');
   document.getElementById('updated').textContent='actualizando…';
-  await fetchCrypto();
-  await Promise.all(state.holdings.filter(h=>h.src==='stock'&&h.stooq).map(fetchStock));
-  recordSnapshot(); save(); render();
+  try{
+    await fetchCrypto();
+    await Promise.all(state.holdings.filter(h=>h.src==='stock'&&h.stooq).map(fetchStock));
+    recordSnapshot(); save(); render();
+  } finally { if(rb) rb.classList.remove('loading'); }
 }
 
 /* ----------------------------- Cálculos ----------------------------- */
@@ -479,7 +536,7 @@ function render(){
 
   const prev=prevWeekSnapshot(), pill=document.getElementById('wowPill');
   if(prev&&prev.total){ const d=tot-prev.total,p=d/prev.total*100;
-    pill.className='pill '+(d>=0?'up':'down'); pill.textContent=(d>=0?'▲ ':'▼ ')+fmt(Math.abs(d))+' ('+pct(p)+')'; }
+    pill.className='pill '+(d>=0?'up':'down'); pill.innerHTML=ic(d>=0?'up':'down')+fmt(Math.abs(d))+' ('+pct(p)+')'; }
   else{ pill.textContent='sin histórico'; pill.className='pill up'; }
   document.getElementById('updated').textContent='actualizado '+new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
 
@@ -526,16 +583,16 @@ function drawClasses(cls,tot){
   }).join('');
 }
 function drawAlerts(cls,tot){
-  if(!tot){ document.getElementById('alerts').innerHTML=`<div class="alert calm"><span class="ico calm">＋</span><div><b>Tu cartera está vacía.</b><br>Pulsa <b style="color:var(--gold)">✎ Editar cartera</b> para añadir tus activos. Verás aquí la distribución, las alertas de rebalanceo y el delta semanal.</div></div>`; return; }
+  if(!tot){ document.getElementById('alerts').innerHTML=`<div class="alert calm"><span class="ico calm">${ic('plus')}</span><div><b>Tu cartera está vacía.</b><br>Pulsa <b style="color:var(--gold)">Editar cartera</b> para añadir tus activos. Verás aquí la distribución, las alertas de rebalanceo y el delta semanal.</div></div>`; return; }
   const al=[];
   state.categories.forEach(c=>{ const actual=cls[c.key]/tot*100, tgt=c.target, dev=actual-tgt, diff=cls[c.key]-tot*tgt/100;
-    if(dev>state.band) al.push(`<div class="alert over"><span class="ico over">▲</span><div>
+    if(dev>state.band) al.push(`<div class="alert over"><span class="ico over">${ic('up')}</span><div>
       <b>${c.label} supera el objetivo de rebalanceo.</b><br>Pesa <b>${actual.toFixed(1)}%</b> frente al objetivo de ${tgt}% (banda ±${state.band}%). Considera <b>vender ${fmt(diff)}</b> para volver al equilibrio.</div></div>`);
-    else if(dev<-state.band) al.push(`<div class="alert under"><span class="ico under">▼</span><div>
+    else if(dev<-state.band) al.push(`<div class="alert under"><span class="ico under">${ic('down')}</span><div>
       <b>${c.label} por debajo del objetivo.</b><br>Pesa <b>${actual.toFixed(1)}%</b> frente a ${tgt}%. Considera <b>comprar ${fmt(Math.abs(diff))}</b>.</div></div>`);
   });
   document.getElementById('alerts').innerHTML = al.length? al.join('')
-    : `<div class="alert calm"><span class="ico calm">✓</span><div>Todas las categorías dentro de la banda de tolerancia. Cartera equilibrada — sin acción necesaria.</div></div>`;
+    : `<div class="alert calm"><span class="ico calm">${ic('check')}</span><div>Todas las categorías dentro de la banda de tolerancia. Cartera equilibrada — sin acción necesaria.</div></div>`;
 }
 function drawDeltas(cls,tot){
   const prev=prevWeekSnapshot(), cells=[];
@@ -581,7 +638,7 @@ function drawTrend(){
 }
 function drawPositions(tot){
   const tb=document.querySelector('#positions tbody');
-  if(!state.holdings.length){ tb.innerHTML=`<tr><td colspan="6" style="text-align:center;color:var(--mut);padding:28px">Sin posiciones todavía. Pulsa <b style="color:var(--gold)">✎ Editar cartera</b> para añadir tus activos.</td></tr>`; return; }
+  if(!state.holdings.length){ tb.innerHTML=`<tr><td colspan="6" style="text-align:center;color:var(--mut);padding:28px">Sin posiciones todavía. Pulsa <b style="color:var(--gold)">Editar cartera</b> para añadir tus activos.</td></tr>`; return; }
   tb.innerHTML=state.holdings.map((h,i)=>{
     const v=valueOf(h);
     const badge=h.src==='manual'?'<span class="badge man">VNL</span>':h.live?'<span class="badge live">LIVE</span>':'<span class="badge stale">último</span>';
@@ -621,7 +678,7 @@ function buildMail(){
       ${alerts.length?`<div style="font-size:14px;line-height:1.9">${alerts.join('<br>')}</div>`:`<div style="font-size:14px;color:#3fb950">🟢 Cartera equilibrada — todas las clases dentro de ±${state.band}%.</div>`}
       <div style="margin-top:22px;font-size:12px;color:#9aa3b4;border-top:1px solid #283142;padding-top:12px">Generado automáticamente cada lunes 08:00 · precios de CoinGecko / Stooq.</div></div>`;
 }
-function openMail(){ document.getElementById('mTo').textContent = state.email || '— configúralo en “✎ Editar cartera” —'; document.getElementById('mailbody').innerHTML=buildMail(); document.getElementById('modal').classList.add('show'); }
+function openMail(){ document.getElementById('mTo').textContent = state.email || '— configúralo en “Editar cartera” —'; document.getElementById('mailbody').innerHTML=buildMail(); document.getElementById('modal').classList.add('show'); }
 function closeMail(){ document.getElementById('modal').classList.remove('show'); }
 document.getElementById('modal').addEventListener('click',e=>{ if(e.target.id==='modal') closeMail(); });
 
