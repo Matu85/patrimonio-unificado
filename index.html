@@ -246,6 +246,19 @@
     .dcell .big{font-size:17px}
     table{font-size:13px} th,td{padding:9px 6px} th{font-size:10px;letter-spacing:.3px}
     input.q{width:68px}
+    .mini-head{justify-content:center}
+    /* Tablas → tarjetas apiladas en móvil (evita el desbordamiento horizontal) */
+    .tablewrap{overflow:visible}
+    .rtable thead{display:none}
+    .rtable,.rtable tbody,.rtable tr,.rtable td{display:block;width:100%}
+    .rtable tr{border:1px solid var(--line);border-radius:13px;padding:11px 14px;margin-bottom:10px;background:rgba(255,255,255,.025)}
+    .rtable tr:last-child{margin-bottom:0}
+    .rtable td{border:none;padding:7px 0;text-align:right;display:flex;align-items:center;justify-content:space-between;gap:14px;font-size:13.5px}
+    .rtable td::before{content:attr(data-l);color:var(--mut);font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;font-weight:600;text-align:left;flex:none}
+    .rtable td:first-child{justify-content:flex-start;padding:0 0 9px;margin-bottom:6px;border-bottom:1px solid var(--line);font-size:14.5px}
+    .rtable td:first-child::before{display:none}
+    .rtable .clschip{justify-content:flex-end}
+    .rtable input.q{width:104px}
     .edgrid{grid-template-columns:repeat(auto-fit,minmax(108px,1fr))}
     .catrow{flex-wrap:wrap} .catrow .catname{flex:1 1 100%;order:-1}
     .modal{border-radius:16px;max-height:90vh}
@@ -351,7 +364,7 @@
 
     <div class="card full">
       <div class="card-h"><span class="kicker"><svg class="ic kic"><use href="#i-list"/></svg>Posiciones</span></div>
-      <div class="tablewrap"><table id="positions">
+      <div class="tablewrap"><table id="positions" class="rtable">
         <thead><tr><th>Activo</th><th>Categoría</th><th>Cantidad</th><th>Precio</th><th>Valor</th><th>% cartera</th></tr></thead>
         <tbody></tbody>
       </table></div>
@@ -609,17 +622,17 @@ function drawYields(){
   if(!ys.length){ card.style.display='none'; return; } card.style.display='';
   let totA=0, totAcc=0; const cap=ys.reduce((s,h)=>s+valueOf(h),0);
   const rows=ys.map(h=>{ const c=valueOf(h), a=c*h.apy/100, accCoins=liveQty(h)-h.qty, accEur=accCoins*h.price; totA+=a; totAcc+=accEur;
-    return `<tr><td><b>${h.name}</b> <span class="muted">${h.ticker||''}</span></td>
-      <td>${fmt2(c)}</td><td>${(+h.apy).toFixed(2)}%</td>
-      <td><b style="color:var(--fondos)">+${fmt2(accEur)}</b> <span class="muted">(+${accCoins.toFixed(4)} ${h.ticker||''})</span></td>
-      <td>${fmt2(a)}</td></tr>`; }).join('');
+    return `<tr><td data-l="Activo"><b>${h.name}</b> <span class="muted">${h.ticker||''}</span></td>
+      <td data-l="Capital (live)">${fmt2(c)}</td><td data-l="APY">${(+h.apy).toFixed(2)}%</td>
+      <td data-l="Acumulado"><b style="color:var(--fondos)">+${fmt2(accEur)}</b> <span class="muted">(+${accCoins.toFixed(4)} ${h.ticker||''})</span></td>
+      <td data-l="Interés/año">${fmt2(a)}</td></tr>`; }).join('');
   document.getElementById('yields').innerHTML=`
     <div class="delta-grid" style="margin-bottom:15px">
       ${dcell('Interés anual estimado', fmt(totA), '≈ '+fmt2(totA/12)+' / mes', true)}
       ${dcell('Acumulado hasta hoy', '+'+fmt2(totAcc), 'desde que lo activaste', true)}
       ${dcell('APY medio ponderado', wAvgApy(ys)+'%', 'sobre '+fmt(cap), true)}
     </div>
-    <div class="tablewrap"><table><thead><tr><th>Activo</th><th>Capital (live)</th><th>APY</th><th>Acumulado</th><th>Interés/año</th></tr></thead>
+    <div class="tablewrap"><table class="rtable"><thead><tr><th>Activo</th><th>Capital (live)</th><th>APY</th><th>Acumulado</th><th>Interés/año</th></tr></thead>
       <tbody>${rows}</tbody></table></div>
     <div class="muted" style="margin-top:11px">Las monedas crecen con el APY (compuesto) desde que lo activas, y se valoran al precio en vivo de la stable. “Acumulado” = monedas ganadas hasta hoy valoradas al precio actual.</div>`;
 }
@@ -642,10 +655,10 @@ function drawPositions(tot){
   tb.innerHTML=state.holdings.map((h,i)=>{
     const v=valueOf(h);
     const badge=h.src==='manual'?'<span class="badge man">VNL</span>':h.live?'<span class="badge live">LIVE</span>':'<span class="badge stale">último</span>';
-    return `<tr><td><b>${h.name}</b> <span class="muted">${h.ticker||''}</span> ${badge}</td>
-      <td><span class="clschip"><span class="dot" style="width:9px;height:9px;background:${catOf(h.cls).color};--c:${catOf(h.cls).color}88"></span>${catOf(h.cls).label}</span></td>
-      <td><input class="q" type="number" step="any" value="${parseFloat(liveQty(h).toFixed(8))}" onchange="setQty(${i},this.value)"></td>
-      <td>${fmt2(h.price)}</td><td><b>${fmt(v)}</b></td><td>${tot?(v/tot*100).toFixed(1):0}%</td></tr>`;
+    return `<tr><td data-l="Activo"><b>${h.name}</b> <span class="muted">${h.ticker||''}</span> ${badge}</td>
+      <td data-l="Categoría"><span class="clschip"><span class="dot" style="width:9px;height:9px;background:${catOf(h.cls).color};--c:${catOf(h.cls).color}88"></span>${catOf(h.cls).label}</span></td>
+      <td data-l="Cantidad"><input class="q" type="number" step="any" value="${parseFloat(liveQty(h).toFixed(8))}" onchange="setQty(${i},this.value)"></td>
+      <td data-l="Precio">${fmt2(h.price)}</td><td data-l="Valor"><b>${fmt(v)}</b></td><td data-l="% cartera">${tot?(v/tot*100).toFixed(1):0}%</td></tr>`;
   }).join('');
 }
 function setQty(i,v){ const h=state.holdings[i]; h.qty=parseFloat(v)||0; if(h.apy>0) h.apyTs=Date.now(); recordSnapshot(); save(); render(); }
