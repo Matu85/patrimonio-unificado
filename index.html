@@ -158,6 +158,10 @@
   input.q:focus{outline:none;border-color:var(--broker)}
   .muted{color:var(--mut);font-size:12.5px}
   .clschip{display:inline-flex;align-items:center;gap:7px;text-transform:capitalize;color:var(--soft)}
+  /* Tablas anchas: reparto de columnas equilibrado (evita el hueco central) */
+  .rtable{table-layout:fixed}
+  #positions th:nth-child(2),#positions td:nth-child(2){text-align:left}
+  .rtable td:first-child{word-break:break-word}
 
   .foot{margin-top:30px;color:var(--mut);font-size:12px;text-align:center;line-height:1.9}
   .foot b{color:var(--gold-dim)}
@@ -247,7 +251,14 @@
     table{font-size:13px} th,td{padding:9px 6px} th{font-size:10px;letter-spacing:.3px}
     input.q{width:68px}
     .mini-head{justify-content:center}
-    /* Tablas → tarjetas apiladas en móvil (evita el desbordamiento horizontal) */
+    .edgrid{grid-template-columns:repeat(auto-fit,minmax(108px,1fr))}
+    .catrow{flex-wrap:wrap} .catrow .catname{flex:1 1 100%;order:-1}
+    .modal{border-radius:16px;max-height:90vh}
+    .mailhead,.mailmeta,.mailbody{padding-left:15px;padding-right:15px}
+  }
+
+  /* Tablas → tarjetas apiladas hasta 760px (móvil y landscape estrecho) */
+  @media(max-width:760px){
     .tablewrap{overflow:visible}
     .rtable thead{display:none}
     .rtable,.rtable tbody,.rtable tr,.rtable td{display:block;width:100%}
@@ -255,14 +266,11 @@
     .rtable tr:last-child{margin-bottom:0}
     .rtable td{border:none;padding:7px 0;text-align:right;display:flex;align-items:center;justify-content:space-between;gap:14px;font-size:13.5px}
     .rtable td::before{content:attr(data-l);color:var(--mut);font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;font-weight:600;text-align:left;flex:none}
+    #positions td:nth-child(2){text-align:right}
     .rtable td:first-child{justify-content:flex-start;padding:0 0 9px;margin-bottom:6px;border-bottom:1px solid var(--line);font-size:14.5px}
     .rtable td:first-child::before{display:none}
     .rtable .clschip{justify-content:flex-end}
     .rtable input.q{width:104px}
-    .edgrid{grid-template-columns:repeat(auto-fit,minmax(108px,1fr))}
-    .catrow{flex-wrap:wrap} .catrow .catname{flex:1 1 100%;order:-1}
-    .modal{border-radius:16px;max-height:90vh}
-    .mailhead,.mailmeta,.mailbody{padding-left:15px;padding-right:15px}
   }
 </style>
 </head>
@@ -365,6 +373,7 @@
     <div class="card full">
       <div class="card-h"><span class="kicker"><svg class="ic kic"><use href="#i-list"/></svg>Posiciones</span></div>
       <div class="tablewrap"><table id="positions" class="rtable">
+        <colgroup><col style="width:23%"><col style="width:19%"><col style="width:16%"><col style="width:14%"><col style="width:14%"><col style="width:14%"></colgroup>
         <thead><tr><th>Activo</th><th>Categoría</th><th>Cantidad</th><th>Precio</th><th>Valor</th><th>% cartera</th></tr></thead>
         <tbody></tbody>
       </table></div>
@@ -632,7 +641,7 @@ function drawYields(){
       ${dcell('Acumulado hasta hoy', '+'+fmt2(totAcc), 'desde que lo activaste', true)}
       ${dcell('APY medio ponderado', wAvgApy(ys)+'%', 'sobre '+fmt(cap), true)}
     </div>
-    <div class="tablewrap"><table class="rtable"><thead><tr><th>Activo</th><th>Capital (live)</th><th>APY</th><th>Acumulado</th><th>Interés/año</th></tr></thead>
+    <div class="tablewrap"><table class="rtable"><colgroup><col style="width:22%"><col style="width:18%"><col style="width:13%"><col style="width:29%"><col style="width:18%"></colgroup><thead><tr><th>Activo</th><th>Capital (live)</th><th>APY</th><th>Acumulado</th><th>Interés/año</th></tr></thead>
       <tbody>${rows}</tbody></table></div>
     <div class="muted" style="margin-top:11px">Las monedas crecen con el APY (compuesto) desde que lo activas, y se valoran al precio en vivo de la stable. “Acumulado” = monedas ganadas hasta hoy valoradas al precio actual.</div>`;
 }
