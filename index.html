@@ -240,6 +240,7 @@
       <button class="btn" onclick="openEditor()"><i>✎</i> Editar cartera</button>
       <button class="btn" onclick="openMail()"><i>✉</i> Email semanal</button>
       <button class="btn" onclick="exportJSON()"><i>⤓</i> portfolio.json</button>
+      <button class="btn" onclick="importJSON()"><i>⤒</i> Importar JSON</button>
     </div>
   </header>
 
@@ -631,6 +632,25 @@ function exportJSON(){
       if(h.cg)o.cg=h.cg; if(h.stooq)o.stooq=h.stooq; if(h.apy){o.apy=h.apy; if(h.apyTs)o.apyTs=h.apyTs;} return o; })};
   const blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'}), a=document.createElement('a');
   a.href=URL.createObjectURL(blob); a.download='portfolio.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(a.href);
+}
+function importJSON(){
+  const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json,.json';
+  inp.onchange=()=>{ const f=inp.files&&inp.files[0]; if(!f) return;
+    const rd=new FileReader();
+    rd.onload=()=>{ try{
+      const d=JSON.parse(rd.result);
+      if(!d||!Array.isArray(d.holdings)) throw new Error('formato');
+      state.holdings=d.holdings;
+      if(Array.isArray(d.categories)&&d.categories.length) state.categories=d.categories;
+      if(d.band!=null) state.band=+d.band||0;
+      if(d.owner_email!=null) state.email=d.owner_email; else if(d.email!=null) state.email=d.email;
+      state.snapshots={}; lastTotal=0;
+      normalizeApy(); recordSnapshot(); save(); render(); refresh();
+      alert('Cartera importada correctamente ('+state.holdings.length+' activos).');
+    }catch(e){ alert('No se pudo leer el archivo. Asegúrate de que sea un portfolio.json válido.'); } };
+    rd.readAsText(f);
+  };
+  inp.click();
 }
 
 /* ----------------------------- Editor ----------------------------- */
