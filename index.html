@@ -155,10 +155,28 @@
   .trend-ranges button:hover{color:var(--soft)}
   .trend-ranges button.on{background:rgba(227,192,141,.16);color:var(--gold-2)}
   .trend-x{justify-content:space-between}
-  .trend-plot{position:relative;margin-top:12px;padding-left:64px}
+  .trend-plot{position:relative;margin-top:12px;padding-left:64px;user-select:none;-webkit-user-select:none}
+  .trend-plot svg{display:block}
   .trend-y{position:absolute;left:0;top:0;width:56px;height:130px;font-size:10.5px;color:var(--mut);font-weight:600}
   .trend-y span{position:absolute;right:0;transform:translateY(-50%);white-space:nowrap}
   .trend-x{display:flex;justify-content:space-between;margin-top:8px;padding-left:64px;font-size:11px;color:var(--mut);font-weight:600;letter-spacing:.3px}
+  /* crosshair + tooltip */
+  .trend-cross{position:absolute;display:none;width:1px;background:rgba(227,192,141,.55);pointer-events:none;z-index:3}
+  .trend-dot{position:absolute;display:none;width:9px;height:9px;margin:-4.5px 0 0 -4.5px;border-radius:50%;background:#0b0f18;border:2px solid var(--gold);pointer-events:none;z-index:4;box-shadow:0 0 8px rgba(227,192,141,.6)}
+  .trend-tip{position:absolute;display:none;pointer-events:none;z-index:5;background:rgba(8,12,20,.94);border:1px solid var(--line2);border-radius:9px;padding:6px 9px;font-size:11.5px;line-height:1.45;color:var(--soft);box-shadow:var(--shadow);white-space:nowrap}
+  .trend-tip b{display:block;color:var(--tx);font-size:13px}
+  .trend-tip span{color:var(--mut);font-size:10.5px}
+  /* minimapa / scroll histórico */
+  .trend-brush{position:relative;margin:10px 0 0 64px;height:26px;border:1px solid var(--line);border-radius:9px;background:rgba(255,255,255,.03);overflow:hidden;cursor:pointer;touch-action:none}
+  .trend-brush .brush-fill{position:absolute;inset:0;background:linear-gradient(180deg,rgba(227,192,141,.06),rgba(227,192,141,.02))}
+  .trend-brush .brush-win{position:absolute;top:0;bottom:0;background:rgba(227,192,141,.20);border-left:2px solid var(--gold);border-right:2px solid var(--gold);cursor:grab;min-width:6px;touch-action:none}
+  .trend-brush .brush-win:active{cursor:grabbing}
+  /* herramientas de navegación */
+  .trend-tools{display:flex;align-items:center;gap:7px;margin:10px 0 0 64px;flex-wrap:wrap}
+  .trend-tools button{appearance:none;border:1px solid var(--line2);background:rgba(255,255,255,.04);color:var(--soft);font-family:inherit;font-size:12px;font-weight:600;padding:5px 11px;border-radius:9px;cursor:pointer;transition:.15s}
+  .trend-tools button:hover{color:var(--gold-2);border-color:rgba(227,192,141,.4)}
+  .trend-hint{color:var(--mut);font-size:10.5px;margin-left:4px}
+  @media(max-width:560px){ .trend-hint{display:none} .trend-brush,.trend-tools{margin-left:0} }
 
   /* Table */
   table{width:100%;border-collapse:collapse;font-size:14px}
@@ -385,11 +403,25 @@
         </div>
         <div class="trend-ranges" id="trendRanges"></div>
       </div>
-      <div class="trend-plot">
+      <div class="trend-plot" id="trendPlot">
         <div class="trend-y" id="trendY"></div>
         <svg id="trend" viewBox="0 0 720 130" width="100%" height="130" preserveAspectRatio="none"></svg>
+        <div class="trend-cross" id="trendCross"></div>
+        <div class="trend-dot" id="trendDot"></div>
+        <div class="trend-tip" id="trendTip"></div>
       </div>
       <div class="trend-x" id="trendX"></div>
+      <div class="trend-brush" id="trendBrush" title="Arrastra la ventana para desplazarte por el histórico">
+        <div class="brush-fill" id="brushFill"></div>
+        <div class="brush-win" id="brushWin"></div>
+      </div>
+      <div class="trend-tools">
+        <button onclick="trendGoStart()" title="Ir al primer dato histórico">⏮ Inicio</button>
+        <button onclick="trendZoomBtn(0.6)" title="Acercar">＋</button>
+        <button onclick="trendZoomBtn(1.7)" title="Alejar">－</button>
+        <button onclick="trendGoEnd()" title="Ir a hoy">Hoy ⏭</button>
+        <span class="trend-hint">Arrastra el gráfico para desplazarte · rueda/pellizco para zoom</span>
+      </div>
       <div class="muted" id="trendLbl" style="margin-top:8px"></div>
     </div>
 
@@ -679,16 +711,20 @@ function drawYields(){
       <tbody>${rows}</tbody></table></div>
     <div class="muted" style="margin-top:11px">Las monedas crecen con el APY (compuesto) desde que lo activas, y se valoran al precio en vivo de la stable. “Acumulado” = monedas ganadas hasta hoy valoradas al precio actual.</div>`;
 }
-/* ----------------------------- Gráfico de evolución (histórico real de mercado) ----------------------------- */
+/* ----------------------------- Gráfico de evolución (histórico real de mercado, con desplazamiento/zoom) ----------------------------- */
+/* Cada rango define la GRANULARIDAD de los datos y el ANCHO inicial de la ventana visible.
+   Se descarga todo el histórico disponible a esa granularidad y la ventana es un visor
+   que se puede arrastrar y hacer zoom hasta el primer dato histórico. */
 const RANGES={
-  hora:  {label:'Hora',  cgDays:1,     yRange:'1d', yInt:'5m',  windowMs:3600e3,        lblText:'Última hora',       xfmt:{hour:'2-digit',minute:'2-digit'}},
-  dia:   {label:'Día',   cgDays:1,     yRange:'1d', yInt:'5m',  windowMs:24*3600e3,     lblText:'Último día',        xfmt:{hour:'2-digit',minute:'2-digit'}},
-  semana:{label:'Semana',cgDays:7,     yRange:'5d', yInt:'60m', windowMs:7*24*3600e3,   lblText:'Última semana',     xfmt:{weekday:'short',hour:'2-digit'}},
-  mes:   {label:'Mes',   cgDays:30,    yRange:'1mo',yInt:'1d',  windowMs:30*24*3600e3,  lblText:'Último mes',        xfmt:{day:'2-digit',month:'short'}},
-  anio:  {label:'Año',   cgDays:365,   yRange:'1y', yInt:'1wk', windowMs:365*24*3600e3, lblText:'Último año',        xfmt:{month:'short',year:'2-digit'}},
-  todo:  {label:'Todo',  cgDays:'max', yRange:'max',yInt:'1mo', windowMs:Infinity,      lblText:'Histórico completo',xfmt:{month:'short',year:'2-digit'}},
+  hora:  {label:'Hora',  cgDays:1,     yRange:'1mo', yInt:'5m',  windowMs:3600e3,        lblText:'Hora',    xfmt:{hour:'2-digit',minute:'2-digit'}},
+  dia:   {label:'Día',   cgDays:1,     yRange:'1mo', yInt:'5m',  windowMs:24*3600e3,     lblText:'Día',     xfmt:{day:'2-digit',month:'short',hour:'2-digit'}},
+  semana:{label:'Semana',cgDays:90,    yRange:'2y',  yInt:'60m', windowMs:7*24*3600e3,   lblText:'Semana',  xfmt:{weekday:'short',hour:'2-digit'}},
+  mes:   {label:'Mes',   cgDays:'max', yRange:'max', yInt:'1d',  windowMs:30*24*3600e3,  lblText:'Mes',     xfmt:{day:'2-digit',month:'short'}},
+  anio:  {label:'Año',   cgDays:'max', yRange:'max', yInt:'1wk', windowMs:365*24*3600e3, lblText:'Año',     xfmt:{month:'short',year:'2-digit'}},
+  todo:  {label:'Todo',  cgDays:'max', yRange:'max', yInt:'1mo', windowMs:Infinity,      lblText:'Histórico completo', xfmt:{month:'short',year:'2-digit'}},
 };
-let trendCache={}, trendLoading=false;
+const MINSPAN=5*60*1000;        /* zoom máximo: 5 min de ventana */
+let trendCache={}, trendLoading=false, trendView={}, trendDraw=null;
 function trendRange(){ return RANGES[state.trendRange] ? state.trendRange : 'semana'; }
 function rangeTTL(k){ return (k==='hora'||k==='dia') ? 120000 : (k==='semana' ? 600000 : 1800000); }
 async function proxJson(url){
@@ -711,44 +747,59 @@ async function histStock(sym,range,interval){
   const out=[]; ts.forEach((t,i)=>{ const p=q[i]; if(p!=null&&p>0) out.push({t:t*1000,p:p*rate}); });
   return out.length?out:null;
 }
-function mergeSeries(assets,windowMs){
-  const now=Date.now(), tmin = windowMs===Infinity?0:now-windowMs;
-  const set=new Set(); assets.forEach(a=>a.pts&&a.pts.forEach(pt=>{ if(pt.t>=tmin&&pt.t<=now) set.add(pt.t); }));
+/* índice del último punto con t <= objetivo (búsqueda binaria, para que el arrastre sea fluido) */
+function lastLE(pts,t){ if(!pts.length||pts[0].t>=t) return 0; let lo=0,hi=pts.length-1,ans=0;
+  while(lo<=hi){ const m=(lo+hi)>>1; if(pts[m].t<=t){ans=m;lo=m+1;} else hi=m-1; } return ans; }
+function valueAt(assets,t){ let v=0; assets.forEach(a=>{ if(a.flat){ v+=a.qty*a.flatPrice; return; }
+  if(!a.pts||!a.pts.length) return; v+=a.qty*a.pts[lastLE(a.pts,t)].p; }); return v; }
+/* construye la serie del patrimonio total SOLO en la ventana visible [tmin,tmax], remuestreada */
+function mergeSeries(assets,tmin,tmax,maxPts){
+  maxPts=maxPts||220;
+  const set=new Set(); assets.forEach(a=>a.pts&&a.pts.forEach(pt=>{ if(pt.t>=tmin&&pt.t<=tmax) set.add(pt.t); }));
   let grid=[...set].sort((a,b)=>a-b);
-  if(!grid.length) return [];
-  if(grid.length>140){ const out=[]; const step=grid.length/140; for(let i=0;i<140;i++) out.push(grid[Math.floor(i*step)]); out[out.length-1]=grid[grid.length-1]; grid=out; }
-  return grid.map(t=>{ let v=0;
-    assets.forEach(a=>{ if(a.flat){ v+=a.qty*a.flatPrice; return; }
-      const pts=a.pts; if(!pts||!pts.length) return;
-      let p=pts[0].p; for(let i=0;i<pts.length;i++){ if(pts[i].t<=t) p=pts[i].p; else break; } v+=a.qty*p; });
-    return {t,v}; });
+  if(grid.length>maxPts){ const out=[]; const step=grid.length/maxPts; for(let i=0;i<maxPts;i++) out.push(grid[Math.floor(i*step)]); out[out.length-1]=grid[grid.length-1]; grid=out; }
+  if(!grid.length || grid[0]>tmin) grid.unshift(tmin);                 /* extiende la línea al borde izquierdo del visor */
+  if(grid[grid.length-1]<tmax) grid.push(tmax);                        /* y al borde derecho */
+  return grid.map(t=>({t, v:valueAt(assets,t)}));
 }
-async function buildTrendSeries(k){
+async function buildTrendData(k){
   const cfg=RANGES[k], {tot}=totals();
-  if(!state.holdings.length || tot<=0) return {series:[],partial:false};
+  if(!state.holdings.length || tot<=0) return null;
   const assets=(await Promise.all(state.holdings.map(async h=>{
     const qty=liveQty(h); if(qty<=0) return null;
     if(h.src==='crypto'&&h.cg){ const pts=await histCrypto(h.cg,cfg.cgDays); if(pts) return {qty,pts}; }
     else if(h.src==='stock'){ const sym=ysym(h.stooq||h.ticker); if(sym){ const pts=await histStock(sym,cfg.yRange,cfg.yInt); if(pts) return {qty,pts}; } }
     return {qty,flat:true,flatPrice:h.price||0};   /* manual o sin datos de mercado → constante al precio actual */
   }))).filter(Boolean);
+  if(!assets.length) return null;
   const partial = assets.some(a=>a.flat) && assets.some(a=>!a.flat);
-  const series=mergeSeries(assets,cfg.windowMs);
-  if(series.length>=2) return {series,partial};
-  /* sin datos temporales (todo manual o el histórico falló): línea plana al valor actual y se marca para reintentar */
-  const flatTotal=assets.reduce((s,a)=>s + a.qty*(a.flat?a.flatPrice:(a.pts&&a.pts.length?a.pts[a.pts.length-1].p:0)),0);
-  if(flatTotal>0){ const span=cfg.windowMs===Infinity?30*24*3600e3:cfg.windowMs, now=Date.now();
-    return {series:[{t:now-span,v:flatTotal},{t:now,v:flatTotal}], partial:true, synthetic:true}; }
-  return {series:[],partial:false};
+  let dataMin=Infinity, dataMax=-Infinity;
+  assets.forEach(a=>{ if(a.pts&&a.pts.length){ dataMin=Math.min(dataMin,a.pts[0].t); dataMax=Math.max(dataMax,a.pts[a.pts.length-1].t); } });
+  if(!isFinite(dataMin)){            /* todo manual o el histórico falló: tramo plano al valor actual */
+    const flatTotal=assets.reduce((s,a)=>s+a.qty*(a.flat?a.flatPrice:0),0);
+    if(flatTotal<=0) return null;
+    const span=cfg.windowMs===Infinity?30*24*3600e3:cfg.windowMs;
+    dataMax=Date.now(); dataMin=dataMax-span;
+    return {assets:[{flat:true,qty:1,flatPrice:flatTotal}], partial:true, synthetic:true, dataMin, dataMax};
+  }
+  return {assets, partial, synthetic:false, dataMin, dataMax};
 }
 async function loadTrend(force){
   const k=trendRange(), c=trendCache[k];
   if(!force && c && (Date.now()-c.ts)<rangeTTL(k)){ drawTrend(); return; }
   if(trendLoading){ return; }
   trendLoading=true;
-  const lbl=document.getElementById('trendLbl'); if(lbl && !(c&&c.series&&c.series.length)) lbl.textContent='Cargando histórico de mercado…';
-  try{ const {series,partial,synthetic}=await buildTrendSeries(k);
-    if(series&&series.length) trendCache[k]={ts: synthetic ? (Date.now()-rangeTTL(k)+15000) : Date.now(), series, partial, synthetic}; }
+  const lbl=document.getElementById('trendLbl'); if(lbl && !(c&&c.assets)) lbl.textContent='Cargando histórico de mercado…';
+  try{
+    const oldMax = c&&c.dataMax;
+    const data=await buildTrendData(k);
+    if(data){
+      trendCache[k]={ts: data.synthetic ? (Date.now()-rangeTTL(k)+15000) : Date.now(), ...data};
+      /* si el usuario estaba pegado al borde derecho (viendo "hoy"), seguir al nuevo dato más reciente */
+      const v=trendView[k];
+      if(v && oldMax && v.end>=oldMax-1000){ const span=v.end-v.start; v.end=data.dataMax; v.start=Math.max(data.dataMin,data.dataMax-span); }
+    }
+  }
   catch(e){}
   finally{ trendLoading=false; drawTrend(); }
 }
@@ -757,35 +808,146 @@ function renderTrendRanges(){
   const el=document.getElementById('trendRanges'); if(!el) return; const cur=trendRange();
   el.innerHTML=Object.keys(RANGES).map(k=>`<button data-k="${k}" class="${k===cur?'on':''}" onclick="setTrendRange('${k}')">${RANGES[k].label}</button>`).join('');
 }
+/* --- visor: ventana [start,end] sobre el histórico completo [dataMin,dataMax] --- */
+function viewOf(k){
+  const c=trendCache[k]; if(!c) return null;
+  let v=trendView[k];
+  if(!v){ const end=c.dataMax, w=RANGES[k].windowMs; const start=(w===Infinity)?c.dataMin:Math.max(c.dataMin,end-w); v={start,end}; trendView[k]=v; }
+  const full=c.dataMax-c.dataMin, maxSpan=Math.max(MINSPAN,full);
+  let span=Math.min(Math.max(v.end-v.start,MINSPAN),maxSpan);
+  if(v.start<c.dataMin) v.start=c.dataMin;
+  if(v.start+span>c.dataMax) v.start=c.dataMax-span;
+  if(v.start<c.dataMin) v.start=c.dataMin;
+  v.end=v.start+span;
+  return v;
+}
+function trendPan(dxFrac){
+  const k=trendRange(), c=trendCache[k]; if(!c) return; const v=viewOf(k); const span=v.end-v.start;
+  let s=v.start+dxFrac*span, e=s+span;
+  if(s<c.dataMin){ s=c.dataMin; e=s+span; } if(e>c.dataMax){ e=c.dataMax; s=e-span; } if(s<c.dataMin) s=c.dataMin;
+  trendView[k]={start:s,end:s+span}; drawTrend();
+}
+function trendZoom(factor,centerFrac){
+  const k=trendRange(), c=trendCache[k]; if(!c) return; const v=viewOf(k); const span=v.end-v.start, full=c.dataMax-c.dataMin;
+  const center=v.start+(centerFrac==null?0.5:centerFrac)*span;
+  let ns=Math.min(Math.max(span*factor,MINSPAN),Math.max(MINSPAN,full));
+  let s=center-(center-v.start)*(ns/span), e=s+ns;
+  if(s<c.dataMin){ s=c.dataMin; e=s+ns; } if(e>c.dataMax){ e=c.dataMax; s=e-ns; } if(s<c.dataMin) s=c.dataMin;
+  trendView[k]={start:s,end:s+ns}; drawTrend();
+}
+function trendZoomBtn(f){ trendZoom(f,0.5); }
+function trendGoStart(){ const k=trendRange(),c=trendCache[k]; if(!c)return; const v=viewOf(k), span=v.end-v.start;
+  trendView[k]={start:c.dataMin,end:Math.min(c.dataMax,c.dataMin+span)}; drawTrend(); }
+function trendGoEnd(){ const k=trendRange(),c=trendCache[k]; if(!c)return; const v=viewOf(k), span=v.end-v.start;
+  trendView[k]={start:Math.max(c.dataMin,c.dataMax-span),end:c.dataMax}; drawTrend(); }
 function drawTrend(){
   const svg=document.getElementById('trend'), lbl=document.getElementById('trendLbl');
   const yAx=document.getElementById('trendY'), xAx=document.getElementById('trendX'), nowEl=document.getElementById('trendNow');
   const k=trendRange(), cfg=RANGES[k], c=trendCache[k];
-  const rows=((c&&c.series)||[]).filter(r=>r.v>0);
-  if(rows.length<2){
-    svg.innerHTML=''; yAx.innerHTML=''; xAx.innerHTML=''; nowEl.textContent= rows.length?fmt(rows[0].v):'';
-    if(!(c&&c.series&&c.series.length)) lbl.textContent = trendLoading?'Cargando histórico de mercado…':'Sin histórico de mercado para este rango.';
+  hideCrosshair();
+  if(!c || !c.assets || c.dataMax<=c.dataMin){
+    svg.innerHTML=''; yAx.innerHTML=''; xAx.innerHTML=''; nowEl.textContent=''; trendDraw=null;
+    drawBrush(null);
+    if(!c) lbl.textContent = trendLoading?'Cargando histórico de mercado…':'Sin histórico de mercado para este rango.';
     return;
   }
+  const v=viewOf(k);
+  const rows=mergeSeries(c.assets,v.start,v.end).filter(r=>r.v>0);
+  if(rows.length<2){ svg.innerHTML=''; yAx.innerHTML=''; xAx.innerHTML=''; nowEl.textContent=''; trendDraw=null; drawBrush(v); return; }
   const pts=rows.map(r=>r.v), times=rows.map(r=>r.t), last=pts.length-1;
   const min=Math.min(...pts),max=Math.max(...pts),mid=(min+max)/2,W=720,H=130,pad=12;
-  const x=i=>pad+i*(W-2*pad)/(pts.length-1), y=v=>H-pad-((v-min)/((max-min)||1))*(H-2*pad);
-  let d=''; pts.forEach((v,i)=>{ d+=(i?'L':'M')+x(i).toFixed(1)+' '+y(v).toFixed(1)+' '; });
-  const area=`M${x(0)} ${H-pad} `+pts.map((v,i)=>`L${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ')+` L${x(last)} ${H-pad} Z`;
+  const xt=t=>pad+((t-times[0])/((times[last]-times[0])||1))*(W-2*pad);
+  const y=val=>H-pad-((val-min)/((max-min)||1))*(H-2*pad);
+  let d=''; rows.forEach((r,i)=>{ d+=(i?'L':'M')+xt(r.t).toFixed(1)+' '+y(r.v).toFixed(1)+' '; });
+  const area=`M${xt(times[0]).toFixed(1)} ${H-pad} `+rows.map(r=>`L${xt(r.t).toFixed(1)} ${y(r.v).toFixed(1)}`).join(' ')+` L${xt(times[last]).toFixed(1)} ${H-pad} Z`;
   const grid=[pad,H/2,H-pad].map(gy=>`<line x1="0" y1="${gy}" x2="${W}" y2="${gy}" stroke="rgba(255,255,255,.07)" stroke-dasharray="3 6"/>`).join('');
-  const dots=pts.length<=40;
   svg.innerHTML=`<defs><linearGradient id="ta" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#e3c08d" stop-opacity=".34"/><stop offset="1" stop-color="#e3c08d" stop-opacity="0"/></linearGradient></defs>
     ${grid}
     <path d="${area}" fill="url(#ta)"/><path d="${d}" fill="none" stroke="#e3c08d" stroke-width="2.4" stroke-linejoin="round"/>
-    ${pts.map((v,i)=>(dots||i===last)?`<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="${i===last?4:3.2}" fill="#0b0f18" stroke="#e3c08d" stroke-width="2"/>`:'').join('')}`;
+    <circle cx="${xt(times[last]).toFixed(1)}" cy="${y(pts[last]).toFixed(1)}" r="4" fill="#0b0f18" stroke="#e3c08d" stroke-width="2"/>`;
   yAx.innerHTML=`<span style="top:${pad}px">${fmt(max)}</span><span style="top:${H/2}px">${fmt(mid)}</span><span style="top:${H-pad}px">${fmt(min)}</span>`;
   const xf=new Intl.DateTimeFormat('es-ES',cfg.xfmt);
-  xAx.innerHTML=`<span>${xf.format(new Date(times[0]))}</span><span>${xf.format(new Date(times[last>>1]))}</span><span>${xf.format(new Date(times[last]))}</span>`;
-  const diff=pts[last]-pts[0], p=pts[0]?diff/pts[0]*100:0, cls=diff>=0?'up':'down';
-  nowEl.innerHTML=`${fmt(pts[last])} <span class="d ${cls}">${diff>=0?'+':'−'}${fmt(Math.abs(diff))} (${pct(p)}) · ${cfg.label}</span>`;
-  const note = c.synthetic ? ' · sin histórico de mercado ahora mismo (valor actual)' : (c.partial ? ' · histórico aprox. para activos sin datos de mercado' : '');
-  lbl.textContent=`${cfg.lblText} · de ${fmt(pts[0])} a ${fmt(pts[last])}${note}`;
+  xAx.innerHTML=[0,0.25,0.5,0.75,1].map(f=>`<span>${xf.format(new Date(times[0]+f*(times[last]-times[0])))}</span>`).join('');
+  const diff=pts[last]-pts[0], p=pts[0]?diff/pts[0]*100:0, clsd=diff>=0?'up':'down';
+  nowEl.innerHTML=`${fmt(pts[last])} <span class="d ${clsd}">${diff>=0?'+':'−'}${fmt(Math.abs(diff))} (${pct(p)})</span>`;
+  const note = c.synthetic ? ' · sin histórico de mercado (valor actual)' : (c.partial ? ' · aprox. para activos sin datos de mercado' : '');
+  const dfmt=new Intl.DateTimeFormat('es-ES',{day:'2-digit',month:'short',year:'2-digit'});
+  lbl.textContent=`${dfmt.format(new Date(times[0]))} → ${dfmt.format(new Date(times[last]))} · ${fmt(pts[0])} a ${fmt(pts[last])}${note}`;
+  trendDraw={rows,times,t0:times[0],t1:times[last],min,max,H,pad};
+  drawBrush(v);
+}
+/* --- minimapa/scroll inferior: muestra la ventana sobre todo el histórico y permite arrastrarla --- */
+function drawBrush(v){
+  const win=document.getElementById('brushWin'), fill=document.getElementById('brushFill');
+  const k=trendRange(), c=trendCache[k]; if(!win) return;
+  if(!c||!v||c.dataMax<=c.dataMin){ win.style.display='none'; if(fill) fill.style.display='none'; return; }
+  win.style.display='block'; if(fill) fill.style.display='block';
+  const full=c.dataMax-c.dataMin;
+  win.style.left =((v.start-c.dataMin)/full*100)+'%';
+  win.style.width=Math.max(((v.end-v.start)/full*100),2)+'%';
+}
+/* --- crosshair: leer fecha y valor exactos bajo el cursor --- */
+function valOnSeries(rows,t){
+  if(!rows||!rows.length) return null;
+  if(t<=rows[0].t) return rows[0].v; if(t>=rows[rows.length-1].t) return rows[rows.length-1].v;
+  let i=lastLE(rows,t); if(i>=rows.length-1) return rows[rows.length-1].v;
+  const a=rows[i],b=rows[i+1],f=(t-a.t)/((b.t-a.t)||1); return a.v+(b.v-a.v)*f;
+}
+function showCrosshair(frac){
+  const svg=document.getElementById('trend'); const cr=document.getElementById('trendCross'), dot=document.getElementById('trendDot'), tip=document.getElementById('trendTip');
+  if(!trendDraw||!svg||!cr) return;
+  frac=Math.max(0,Math.min(1,frac));
+  const t=trendDraw.t0+frac*(trendDraw.t1-trendDraw.t0);
+  const val=valOnSeries(trendDraw.rows,t); if(val==null) return;
+  const {min,max,H,pad}=trendDraw;
+  const yv=H-pad-((val-min)/((max-min)||1))*(H-2*pad);
+  const left=svg.offsetLeft+frac*svg.offsetWidth;
+  const topDot=svg.offsetTop+(yv/H)*svg.offsetHeight;
+  cr.style.display='block'; cr.style.left=left+'px'; cr.style.top=svg.offsetTop+'px'; cr.style.height=svg.offsetHeight+'px';
+  dot.style.display='block'; dot.style.left=left+'px'; dot.style.top=topDot+'px';
+  const cfg=RANGES[trendRange()]; const xf=new Intl.DateTimeFormat('es-ES',{day:'2-digit',month:'short',year:'2-digit',hour:'2-digit',minute:'2-digit'});
+  tip.style.display='block'; tip.innerHTML=`<b>${fmt2(val)}</b><span>${xf.format(new Date(t))}</span>`;
+  const tw=tip.offsetWidth||120; let tl=left+12; if(tl+tw>svg.offsetLeft+svg.offsetWidth) tl=left-tw-12;
+  tip.style.left=Math.max(svg.offsetLeft,tl)+'px'; tip.style.top=(svg.offsetTop+6)+'px';
+}
+function hideCrosshair(){ ['trendCross','trendDot','trendTip'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display='none'; }); }
+/* --- gestos: arrastrar para desplazar, rueda para zoom, pellizco en táctil --- */
+function initTrendGestures(){
+  const svg=document.getElementById('trend'); if(!svg||svg.dataset.gest) return; svg.dataset.gest='1';
+  const ptrs=new Map(); let dragX=null, moved=0, pinchD=0;
+  const fracX=e=>{ const r=svg.getBoundingClientRect(); return (e.clientX-r.left)/r.width; };
+  svg.addEventListener('pointerdown',e=>{ svg.setPointerCapture(e.pointerId); ptrs.set(e.pointerId,e); dragX=e.clientX; moved=0; hideCrosshair(); svg.style.cursor='grabbing'; });
+  svg.addEventListener('pointermove',e=>{
+    if(ptrs.has(e.pointerId)) ptrs.set(e.pointerId,e);
+    if(ptrs.size>=2){ const a=[...ptrs.values()]; const nd=Math.abs(a[0].clientX-a[1].clientX);
+      if(pinchD){ const cx=((a[0].clientX+a[1].clientX)/2); const cf=(cx-svg.getBoundingClientRect().left)/svg.getBoundingClientRect().width;
+        trendZoom(pinchD/(nd||1),cf); } pinchD=nd; return; }
+    if(dragX!=null){ const r=svg.getBoundingClientRect(); const dx=e.clientX-dragX; moved+=Math.abs(dx); dragX=e.clientX;
+      if(Math.abs(dx)>0) trendPan(-dx/r.width); return; }
+    showCrosshair(fracX(e));
+  });
+  const end=e=>{ ptrs.delete(e.pointerId); if(ptrs.size<2) pinchD=0; if(ptrs.size===0){ dragX=null; svg.style.cursor='grab'; } };
+  svg.addEventListener('pointerup',end); svg.addEventListener('pointercancel',end);
+  svg.addEventListener('pointerleave',()=>{ if(dragX==null) hideCrosshair(); });
+  svg.addEventListener('wheel',e=>{ e.preventDefault(); const f=e.deltaY>0?1.18:0.85; trendZoom(f,fracX(e)); },{passive:false});
+  svg.style.cursor='grab'; svg.style.touchAction='none';
+  /* arrastrar la ventana del minimapa */
+  const win=document.getElementById('brushWin'), brush=document.getElementById('trendBrush');
+  if(brush&&!brush.dataset.gest){ brush.dataset.gest='1';
+    let bx=null; const k=()=>trendRange();
+    const startDrag=e=>{ e.preventDefault(); win.setPointerCapture&&win.setPointerCapture(e.pointerId); bx=e.clientX; };
+    win.addEventListener('pointerdown',startDrag);
+    win.addEventListener('pointermove',e=>{ if(bx==null) return; const r=brush.getBoundingClientRect(); const c=trendCache[k()]; if(!c) return;
+      const full=c.dataMax-c.dataMin, dt=(e.clientX-bx)/r.width*full; bx=e.clientX; const v=viewOf(k());
+      let s=v.start+dt,sp=v.end-v.start; if(s<c.dataMin)s=c.dataMin; if(s+sp>c.dataMax)s=c.dataMax-sp; trendView[k()]={start:s,end:s+sp}; drawTrend(); });
+    const bend=e=>{ bx=null; }; win.addEventListener('pointerup',bend); win.addEventListener('pointercancel',bend);
+    /* clic en una zona vacía del minimapa: centrar la ventana ahí */
+    brush.addEventListener('pointerdown',e=>{ if(e.target!==brush&&e.target!==document.getElementById('brushFill')) return;
+      const r=brush.getBoundingClientRect(); const c=trendCache[k()]; if(!c) return; const f=(e.clientX-r.left)/r.width;
+      const v=viewOf(k()), sp=v.end-v.start, center=c.dataMin+f*(c.dataMax-c.dataMin);
+      let s=center-sp/2; if(s<c.dataMin)s=c.dataMin; if(s+sp>c.dataMax)s=c.dataMax-sp; trendView[k()]={start:s,end:s+sp}; drawTrend(); });
+  }
 }
 function drawPositions(tot){
   const tb=document.querySelector('#positions tbody');
@@ -922,7 +1084,8 @@ function saveEditor(){
 }
 
 /* ----------------------------- Init ----------------------------- */
-normalizeApy(); recordSnapshot(); render(); refresh(); loadTrend(true);
+normalizeApy(); recordSnapshot(); render(); refresh(); loadTrend(true); initTrendGestures();
+window.addEventListener('resize',()=>{ hideCrosshair(); drawTrend(); });
 setInterval(render, 60000);                 /* recalcula el devengo de las monedas cada minuto */
 setInterval(()=>refresh(), 300000);         /* refresca precios y tarjetas cada 5 min, sin intervención */
 setInterval(()=>loadTrend(true), 180000);   /* reconstruye el gráfico con datos de mercado cada 3 min */
