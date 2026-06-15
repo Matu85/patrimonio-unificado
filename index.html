@@ -143,6 +143,17 @@
   .dcell .sub{font-size:12.5px;margin-top:5px;font-weight:600}
   .up{color:var(--good)}.down{color:var(--bad)}
 
+  /* Trend chart */
+  .trend-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-top:18px}
+  .trend-legend{display:inline-flex;align-items:center;gap:9px;font-size:12.5px;font-weight:600;color:var(--soft);letter-spacing:.2px}
+  .trend-legend i{width:24px;height:0;border-top:2.6px solid var(--gold);border-radius:2px;flex:none}
+  .trend-now{font-size:13.5px;font-weight:700;color:var(--tx)}
+  .trend-now .d{font-weight:600;margin-left:8px;font-size:12px}
+  .trend-plot{position:relative;margin-top:12px;padding-left:64px}
+  .trend-y{position:absolute;left:0;top:0;width:56px;height:130px;font-size:10.5px;color:var(--mut);font-weight:600}
+  .trend-y span{position:absolute;right:0;transform:translateY(-50%);white-space:nowrap}
+  .trend-x{display:flex;justify-content:space-between;margin-top:8px;padding-left:64px;font-size:11px;color:var(--mut);font-weight:600;letter-spacing:.3px}
+
   /* Table */
   table{width:100%;border-collapse:collapse;font-size:14px}
   th,td{text-align:right;padding:12px 10px;border-bottom:1px solid var(--line)}
@@ -361,7 +372,15 @@
     <div class="card full">
       <div class="card-h"><span class="kicker"><svg class="ic kic"><use href="#i-activity"/></svg>Evolución semanal · delta</span></div>
       <div class="delta-grid" id="deltas"></div>
-      <svg id="trend" viewBox="0 0 720 130" width="100%" height="130" preserveAspectRatio="none" style="margin-top:16px"></svg>
+      <div class="trend-head">
+        <span class="trend-legend"><i></i>Patrimonio total semanal (€)</span>
+        <span class="trend-now" id="trendNow"></span>
+      </div>
+      <div class="trend-plot">
+        <div class="trend-y" id="trendY"></div>
+        <svg id="trend" viewBox="0 0 720 130" width="100%" height="130" preserveAspectRatio="none"></svg>
+      </div>
+      <div class="trend-x" id="trendX"></div>
       <div class="muted" id="trendLbl" style="margin-top:8px"></div>
     </div>
 
@@ -462,6 +481,12 @@ function isoWeekKey(dt){
   const w1=new Date(Date.UTC(d.getUTCFullYear(),0,4));
   const w=1+Math.round(((d-w1)/864e5-3+((w1.getUTCDay()+6)%7))/7);
   return d.getUTCFullYear()+'-W'+String(w).padStart(2,'0');
+}
+function weekKeyToDate(key){
+  const m=/(\d+)-W(\d+)/.exec(key||''); if(!m) return new Date();
+  const y=+m[1], w=+m[2], jan4=new Date(Date.UTC(y,0,4)), mon=new Date(jan4);
+  mon.setUTCDate(jan4.getUTCDate()-((jan4.getUTCDay()+6)%7)+(w-1)*7);
+  return mon;
 }
 function seedHistory(){
   const snaps={}, now=new Date(), base=[0.93,0.95,0.97,0.96,0.99,1.0];
@@ -646,17 +671,27 @@ function drawYields(){
     <div class="muted" style="margin-top:11px">Las monedas crecen con el APY (compuesto) desde que lo activas, y se valoran al precio en vivo de la stable. “Acumulado” = monedas ganadas hasta hoy valoradas al precio actual.</div>`;
 }
 function drawTrend(){
-  const keys=Object.keys(state.snapshots||{}).sort(), pts=keys.map(k=>state.snapshots[k].total).filter(v=>v>0), svg=document.getElementById('trend');
-  if(pts.length<2){ svg.innerHTML=''; document.getElementById('trendLbl').textContent=''; return; }
-  const min=Math.min(...pts),max=Math.max(...pts),W=720,H=130,pad=12;
+  const svg=document.getElementById('trend'), lbl=document.getElementById('trendLbl');
+  const yAx=document.getElementById('trendY'), xAx=document.getElementById('trendX'), nowEl=document.getElementById('trendNow');
+  const rows=Object.keys(state.snapshots||{}).sort().map(k=>({k,v:state.snapshots[k].total})).filter(r=>r.v>0);
+  if(rows.length<2){ svg.innerHTML=''; lbl.textContent=''; yAx.innerHTML=''; xAx.innerHTML=''; nowEl.textContent=''; return; }
+  const pts=rows.map(r=>r.v), last=pts.length-1;
+  const min=Math.min(...pts),max=Math.max(...pts),mid=(min+max)/2,W=720,H=130,pad=12;
   const x=i=>pad+i*(W-2*pad)/(pts.length-1), y=v=>H-pad-((v-min)/((max-min)||1))*(H-2*pad);
   let d=''; pts.forEach((v,i)=>{ d+=(i?'L':'M')+x(i).toFixed(1)+' '+y(v).toFixed(1)+' '; });
-  const area=`M${x(0)} ${H-pad} `+pts.map((v,i)=>`L${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ')+` L${x(pts.length-1)} ${H-pad} Z`;
+  const area=`M${x(0)} ${H-pad} `+pts.map((v,i)=>`L${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ')+` L${x(last)} ${H-pad} Z`;
+  const grid=[pad,H/2,H-pad].map(gy=>`<line x1="0" y1="${gy}" x2="${W}" y2="${gy}" stroke="rgba(255,255,255,.07)" stroke-dasharray="3 6"/>`).join('');
   svg.innerHTML=`<defs><linearGradient id="ta" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#e3c08d" stop-opacity=".34"/><stop offset="1" stop-color="#e3c08d" stop-opacity="0"/></linearGradient></defs>
+    ${grid}
     <path d="${area}" fill="url(#ta)"/><path d="${d}" fill="none" stroke="#e3c08d" stroke-width="2.4" stroke-linejoin="round"/>
-    ${pts.map((v,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="3.2" fill="#0b0f18" stroke="#e3c08d" stroke-width="2"/>`).join('')}`;
-  document.getElementById('trendLbl').textContent=`Últimas ${pts.length} semanas · de ${fmt(pts[0])} a ${fmt(pts[pts.length-1])}`;
+    ${pts.map((v,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="${i===last?4:3.2}" fill="#0b0f18" stroke="#e3c08d" stroke-width="2"/>`).join('')}`;
+  yAx.innerHTML=`<span style="top:${pad}px">${fmt(max)}</span><span style="top:${H/2}px">${fmt(mid)}</span><span style="top:${H-pad}px">${fmt(min)}</span>`;
+  const dstr=k=>new Intl.DateTimeFormat('es-ES',{day:'2-digit',month:'short'}).format(weekKeyToDate(k));
+  xAx.innerHTML=`<span>${dstr(rows[0].k)}</span><span>${dstr(rows[last].k)}</span>`;
+  const diff=pts[last]-pts[last-1], cls=diff>=0?'up':'down';
+  nowEl.innerHTML=`${fmt(pts[last])} <span class="d ${cls}">${diff>=0?'+':'−'}${fmt(Math.abs(diff))} vs. semana anterior</span>`;
+  lbl.textContent=`Patrimonio total · últimas ${pts.length} semanas · de ${fmt(pts[0])} a ${fmt(pts[last])}`;
 }
 function drawPositions(tot){
   const tb=document.querySelector('#positions tbody');
