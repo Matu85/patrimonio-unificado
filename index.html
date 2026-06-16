@@ -444,7 +444,7 @@
         <button onclick="trendZoomBtn(0.6)" title="Acercar">＋</button>
         <button onclick="trendZoomBtn(1.7)" title="Alejar">－</button>
         <button onclick="trendGoEnd()" title="Ir a hoy">Hoy ⏭</button>
-        <span class="trend-hint">Arrastra el gráfico para desplazarte · rueda/pellizco para zoom</span>
+        <span class="trend-hint">Toca un punto para ver su valor · arrastra para desplazarte · rueda/pellizco para zoom</span>
       </div>
       <div class="muted" id="trendLbl" style="margin-top:8px"></div>
     </div>
@@ -1034,7 +1034,7 @@ function initTrendGestures(){
   const svg=document.getElementById('trend'); if(!svg||svg.dataset.gest) return; svg.dataset.gest='1';
   const ptrs=new Map(); let dragX=null, moved=0, pinchD=0;
   const fracX=e=>{ const r=svg.getBoundingClientRect(); return (e.clientX-r.left)/r.width; };
-  svg.addEventListener('pointerdown',e=>{ svg.setPointerCapture(e.pointerId); ptrs.set(e.pointerId,e); dragX=e.clientX; moved=0; hideCrosshair(); svg.style.cursor='grabbing'; });
+  svg.addEventListener('pointerdown',e=>{ try{ svg.setPointerCapture(e.pointerId); }catch(_){ } ptrs.set(e.pointerId,e); dragX=e.clientX; moved=0; hideCrosshair(); svg.style.cursor='grabbing'; });
   svg.addEventListener('pointermove',e=>{
     if(ptrs.has(e.pointerId)) ptrs.set(e.pointerId,e);
     if(ptrs.size>=2){ const a=[...ptrs.values()]; const nd=Math.abs(a[0].clientX-a[1].clientX);
@@ -1044,7 +1044,7 @@ function initTrendGestures(){
       if(Math.abs(dx)>0) trendPan(-dx/r.width); return; }
     showCrosshair(fracX(e));
   });
-  const end=e=>{ ptrs.delete(e.pointerId); if(ptrs.size<2) pinchD=0; if(ptrs.size===0){ dragX=null; svg.style.cursor='grab'; } };
+  const end=e=>{ const wasTap=ptrs.has(e.pointerId)&&ptrs.size===1&&moved<8; ptrs.delete(e.pointerId); if(ptrs.size<2) pinchD=0; if(ptrs.size===0){ dragX=null; svg.style.cursor='grab'; if(wasTap) showCrosshair(fracX(e)); } };
   svg.addEventListener('pointerup',end); svg.addEventListener('pointercancel',end);
   svg.addEventListener('pointerleave',()=>{ if(dragX==null) hideCrosshair(); });
   svg.addEventListener('wheel',e=>{ e.preventDefault(); const f=e.deltaY>0?1.18:0.85; trendZoom(f,fracX(e)); },{passive:false});
