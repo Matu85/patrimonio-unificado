@@ -227,6 +227,17 @@
   .mailbody{padding:22px}
   .x{background:transparent;border:none;color:var(--mut);font-size:22px;padding:2px 8px;cursor:pointer;border-radius:8px}
   .x:hover{color:var(--tx);background:rgba(255,255,255,.06)}
+  /* Panel de configuración */
+  .set-sec{padding:16px 0;border-bottom:1px solid var(--line)}
+  .set-sec:first-child{padding-top:0}
+  .set-sec:last-child{border-bottom:none;padding-bottom:0}
+  .set-h{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--gold-dim);font-weight:700;margin-bottom:12px}
+  .set-row{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .set-t{font-size:14px;font-weight:600;color:var(--tx)}
+  .set-d{font-size:12px;color:var(--mut);margin-top:3px;max-width:330px;line-height:1.5}
+  .set-d b{color:var(--soft)}
+  .set-btns{display:flex;gap:8px;flex-wrap:wrap}
+  #settings .cur-select{background-color:rgba(0,0,0,.25)}
   ::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:8px}
 
   /* Editor */
@@ -336,6 +347,7 @@
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M19 6v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6"/><path d="M10 11v6"/><path d="M14 11v6"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></symbol>
   <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></symbol>
   <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></symbol>
   <symbol id="i-pie" viewBox="0 0 24 24"><path d="M21.2 15.9A10 10 0 1 1 8 2.8"/><path d="M22 12A10 10 0 0 0 12 2v10Z"/></symbol>
@@ -359,12 +371,9 @@
       </div>
     </div>
     <div class="actions">
-      <select class="cur-select" id="curSelect" onchange="setCurrency(this.value)" title="Moneda de visualización" aria-label="Moneda de visualización"></select>
       <button class="btn gold" onclick="refresh()"><svg class="ic"><use href="#i-refresh"/></svg> Actualizar precios</button>
       <button class="btn" onclick="openEditor()"><svg class="ic"><use href="#i-edit"/></svg> Editar cartera</button>
-      <button class="btn" onclick="openMail()"><svg class="ic"><use href="#i-mail"/></svg> Email semanal</button>
-      <button class="btn" onclick="exportJSON()"><svg class="ic"><use href="#i-download"/></svg> Exportar JSON</button>
-      <button class="btn" onclick="importJSON()"><svg class="ic"><use href="#i-upload"/></svg> Importar JSON</button>
+      <button class="btn" onclick="openSettings()"><svg class="ic"><use href="#i-settings"/></svg> Configuración</button>
     </div>
   </header>
 
@@ -492,6 +501,53 @@
         <b style="color:var(--broker)">Acción/ETF (en vivo):</b> símbolo de bolsa — VT, AAPL, MSFT, VWCE.DE… &nbsp;·&nbsp;
         <b style="color:var(--fondos)">Manual:</b> escribe tú el precio/VNL.<br>
         Tras guardar, pulsa <b>Exportar JSON</b> y reemplaza el archivo de la carpeta para que el email del lunes use tus cifras.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal configuración -->
+<div class="modal-bg" id="settings">
+  <div class="modal" style="max-width:560px">
+    <div class="mailhead"><b><svg class="mh-ic"><use href="#i-settings"/></svg>Configuración</b><button class="x" onclick="closeSettings()"><svg class="ic"><use href="#i-x"/></svg></button></div>
+    <div class="mailbody">
+      <div class="set-sec">
+        <div class="set-h">Visualización</div>
+        <div class="set-row">
+          <div><div class="set-t">Moneda</div><div class="set-d">Convierte todos los importes al vuelo. Los datos se siguen calculando en euros.</div></div>
+          <select class="cur-select" id="curSelect" onchange="setCurrency(this.value)" aria-label="Moneda de visualización"></select>
+        </div>
+      </div>
+      <div class="set-sec">
+        <div class="set-h">Informe</div>
+        <div class="set-row">
+          <div><div class="set-t">Email semanal</div><div class="set-d">Vista previa del correo del lunes a las 08:00 con el delta de la semana.</div></div>
+          <button class="btn" onclick="closeSettings();openMail()"><svg class="ic"><use href="#i-mail"/></svg> Ver email</button>
+        </div>
+      </div>
+      <div class="set-sec">
+        <div class="set-h">Datos</div>
+        <div class="set-row">
+          <div><div class="set-t">Copia de seguridad</div><div class="set-d">Exporta tu cartera a un archivo <b>portfolio.json</b> o impórtala. Importar <b>reemplaza</b> la cartera actual.</div></div>
+          <div class="set-btns">
+            <button class="btn" onclick="exportJSON()"><svg class="ic"><use href="#i-download"/></svg> Exportar</button>
+            <button class="btn" onclick="importJSON()"><svg class="ic"><use href="#i-upload"/></svg> Importar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmación reutilizable -->
+<div class="modal-bg" id="confirmModal" style="z-index:80">
+  <div class="modal" style="max-width:430px">
+    <div class="mailhead"><b><svg class="mh-ic"><use href="#i-bell"/></svg><span id="confirmTitle">Confirmar</span></b><button class="x" onclick="closeConfirm(false)"><svg class="ic"><use href="#i-x"/></svg></button></div>
+    <div class="mailbody">
+      <div id="confirmMsg" style="font-size:14px;line-height:1.65;color:var(--soft)"></div>
+      <div class="edactions" style="justify-content:flex-end;margin-top:20px">
+        <button class="btn" onclick="closeConfirm(false)">Cancelar</button>
+        <button class="del" id="confirmOk" style="font-size:13px;padding:9px 16px" onclick="closeConfirm(true)"><svg class="ic"><use href="#i-trash"/></svg> <span id="confirmOkLbl">Eliminar</span></button>
       </div>
     </div>
   </div>
@@ -1056,6 +1112,27 @@ function openMail(){ document.getElementById('mTo').textContent = state.email ||
 function closeMail(){ document.getElementById('modal').classList.remove('show'); }
 document.getElementById('modal').addEventListener('click',e=>{ if(e.target.id==='modal') closeMail(); });
 
+/* ----------------------------- Configuración ----------------------------- */
+function openSettings(){ document.getElementById('settings').classList.add('show'); }
+function closeSettings(){ document.getElementById('settings').classList.remove('show'); }
+document.getElementById('settings').addEventListener('click',e=>{ if(e.target.id==='settings') closeSettings(); });
+
+/* ----------------------------- Confirmación reutilizable ----------------------------- */
+let _confirmResolve=null;
+function confirmDialog(opts){
+  opts=opts||{};
+  return new Promise(res=>{
+    _confirmResolve=res;
+    document.getElementById('confirmTitle').textContent=opts.title||'Confirmar';
+    document.getElementById('confirmMsg').innerHTML=opts.message||'¿Seguro que quieres continuar?';
+    document.getElementById('confirmOkLbl').textContent=opts.okLabel||'Eliminar';
+    document.getElementById('confirmModal').classList.add('show');
+  });
+}
+function closeConfirm(val){ document.getElementById('confirmModal').classList.remove('show'); const r=_confirmResolve; _confirmResolve=null; if(r) r(!!val); }
+document.getElementById('confirmModal').addEventListener('click',e=>{ if(e.target.id==='confirmModal') closeConfirm(false); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape' && document.getElementById('confirmModal').classList.contains('show')) closeConfirm(false); });
+
 /* ----------------------------- Export ----------------------------- */
 function exportJSON(){
   const out={currency:'EUR',owner_email:state.email||'',band:state.band,categories:state.categories,
@@ -1068,14 +1145,16 @@ function importJSON(){
   const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json,.json';
   inp.onchange=()=>{ const f=inp.files&&inp.files[0]; if(!f) return;
     const rd=new FileReader();
-    rd.onload=()=>{ try{
+    rd.onload=async()=>{ try{
       const d=JSON.parse(rd.result);
       if(!d||!Array.isArray(d.holdings)) throw new Error('formato');
+      if(!await confirmDialog({title:'Importar cartera', okLabel:'Reemplazar',
+        message:`Esto <b>reemplazará</b> tu cartera actual (${state.holdings.length} activos) por la del archivo (${d.holdings.length} activos) y reiniciará el histórico. ¿Continuar?`})) return;
       state.holdings=d.holdings;
       if(Array.isArray(d.categories)&&d.categories.length) state.categories=d.categories;
       if(d.band!=null) state.band=+d.band||0;
       if(d.owner_email!=null) state.email=d.owner_email; else if(d.email!=null) state.email=d.email;
-      state.snapshots={}; lastTotal=0; trendCache={};
+      state.snapshots={}; lastTotal=0; trendCache={}; trendView={};
       normalizeApy(); recordSnapshot(); save(); render(); refresh(); loadTrend(true);
       alert('Cartera importada correctamente ('+state.holdings.length+' activos).');
     }catch(e){ alert('No se pudo leer el archivo. Asegúrate de que sea un portfolio.json válido.'); } };
@@ -1126,11 +1205,21 @@ function renderEditor(){
 function edSrc(i,v){ editRows[i].src=v; if(v!=='stock')delete editRows[i].stooq; if(v!=='crypto')delete editRows[i].cg; renderEditor(); }
 function edRef(i,v){ const h=editRows[i]; if(h.src==='crypto')h.cg=v.trim().toLowerCase(); else if(h.src==='stock')h.stooq=v.trim().toLowerCase(); }
 function addRow(){ editRows.push({name:'',ticker:'',cls:(editCats[0]?editCats[0].key:'cripto'),qty:0,price:0,src:'manual'}); renderEditor(); }
-function delRow(i){ editRows.splice(i,1); renderEditor(); }
-function clearAll(){ if(confirm('¿Vaciar todos los activos y empezar de cero con tu cartera real?')){ editRows=[]; renderEditor(); } }
+async function delRow(i){ const h=editRows[i]||{};
+  if(!await confirmDialog({title:'Eliminar activo', okLabel:'Eliminar',
+    message:`¿Quitar <b>${(h.name||'este activo').replace(/</g,'&lt;')}</b> de la lista? El cambio se aplica al pulsar <b>Guardar y actualizar</b>.`})) return;
+  editRows.splice(i,1); renderEditor(); }
+async function clearAll(){
+  if(!await confirmDialog({title:'Vaciar cartera', okLabel:'Vaciar todo',
+    message:'¿Vaciar <b>todos los activos</b> de la lista y empezar de cero? Se aplicará al guardar.'})) return;
+  editRows=[]; renderEditor(); }
 function nextColorEdit(){ const used=editCats.map(c=>c.color); return PALETTE.find(c=>!used.includes(c)) || PALETTE[editCats.length%PALETTE.length]; }
 function addCat(){ editCats.push({key:'cat'+Date.now()+Math.floor(Math.random()*9999),label:'',color:nextColorEdit(),target:0}); renderEditor(); }
-function delCat(i){ if(editCats.length<=1){ alert('Debe quedar al menos una categoría.'); return; } const k=editCats[i].key; editCats.splice(i,1); const fb=editCats[0].key; editRows.forEach(h=>{ if(h.cls===k)h.cls=fb; }); renderEditor(); }
+async function delCat(i){ if(editCats.length<=1){ alert('Debe quedar al menos una categoría.'); return; }
+  const c=editCats[i]||{};
+  if(!await confirmDialog({title:'Eliminar categoría', okLabel:'Eliminar',
+    message:`¿Eliminar la categoría <b>${(c.label||'sin nombre').replace(/</g,'&lt;')}</b>? Sus activos se reasignarán a otra categoría.`})) return;
+  const k=editCats[i].key; editCats.splice(i,1); const fb=editCats[0].key; editRows.forEach(h=>{ if(h.cls===k)h.cls=fb; }); renderEditor(); }
 function saveEditor(){
   state.holdings=editRows.filter(h=>(h.name||h.ticker)).map((h,i)=>{
     if(!h.id)h.id=(h.ticker||'act').toLowerCase()+'-'+i+'-'+Date.now();
