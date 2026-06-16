@@ -58,6 +58,15 @@
     box-shadow:0 12px 26px -10px rgba(227,192,141,.65),inset 0 1px 0 rgba(255,255,255,.45)}
   .btn.gold:hover{filter:brightness(1.06)}
   .btn i{font-style:normal;opacity:.85}
+  .cur-select{cursor:pointer;border:1px solid var(--line2);background:var(--glass);color:var(--tx);
+    padding:9px 30px 9px 14px;border-radius:11px;font-size:13px;font-weight:600;font-family:inherit;
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:.18s;
+    -webkit-appearance:none;-moz-appearance:none;appearance:none;
+    background-image:linear-gradient(45deg,transparent 50%,var(--gold-dim) 50%),linear-gradient(135deg,var(--gold-dim) 50%,transparent 50%);
+    background-position:calc(100% - 16px) 52%,calc(100% - 11px) 52%;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+  .cur-select:hover{border-color:rgba(255,255,255,.3);background-color:rgba(255,255,255,.06)}
+  .cur-select:disabled{opacity:.55;cursor:wait}
+  .cur-select option{background:#0e1320;color:var(--tx)}
 
   /* ---------- Hero ---------- */
   .hero{display:flex;align-items:flex-end;justify-content:space-between;gap:26px;flex-wrap:wrap;
@@ -350,6 +359,7 @@
       </div>
     </div>
     <div class="actions">
+      <select class="cur-select" id="curSelect" onchange="setCurrency(this.value)" title="Moneda de visualización" aria-label="Moneda de visualización"></select>
       <button class="btn gold" onclick="refresh()"><svg class="ic"><use href="#i-refresh"/></svg> Actualizar precios</button>
       <button class="btn" onclick="openEditor()"><svg class="ic"><use href="#i-edit"/></svg> Editar cartera</button>
       <button class="btn" onclick="openMail()"><svg class="ic"><use href="#i-mail"/></svg> Email semanal</button>
@@ -403,7 +413,7 @@
       <div class="delta-grid" id="deltas"></div>
       <div class="trend-head">
         <div class="trend-meta">
-          <span class="trend-legend"><i></i>Patrimonio total (€)</span>
+          <span class="trend-legend"><i></i>Patrimonio total (<span id="curBadge">€</span>)</span>
           <span class="trend-now" id="trendNow"></span>
         </div>
         <div class="trend-ranges" id="trendRanges"></div>
@@ -501,8 +511,27 @@ const DEFAULT = {
   holdings:[]   /* cartera vacía — usa “✎ Editar cartera” para añadir tus activos reales */
 };
 const KEY='patrimonio-unificado-v2';
-const fmt = n => new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n||0);
-const fmt2 = n => new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR',maximumFractionDigits:2}).format(n||0);
+/* ----------------------------- Divisas de visualización -----------------------------
+   Todo se calcula y guarda en EUR (unidad canónica). Solo la PRESENTACIÓN se convierte
+   al vuelo con dispRate (unidades de la divisa por 1 €). Tipos de cambio vía fxToEur. */
+const CURRENCIES=[
+  {code:'EUR',name:'Euro'},
+  {code:'USD',name:'Dólar estadounidense'},
+  {code:'JPY',name:'Yen japonés'},
+  {code:'CNY',name:'Yuan chino'},
+  {code:'ARS',name:'Peso argentino'},
+  {code:'GBP',name:'Libra esterlina'},
+  {code:'CHF',name:'Franco suizo'},
+  {code:'CAD',name:'Dólar canadiense'},
+  {code:'AUD',name:'Dólar australiano'},
+  {code:'BRL',name:'Real brasileño'},
+];
+let dispCur='EUR', dispRate=1;
+function curSym(){ try{ return (0).toLocaleString('es-ES',{style:'currency',currency:dispCur}).replace(/[\d\s.,]/g,'')||dispCur; }catch(e){ return dispCur; } }
+function fmt(n){ try{ return new Intl.NumberFormat('es-ES',{style:'currency',currency:dispCur,maximumFractionDigits:0}).format((n||0)*dispRate); }
+  catch(e){ return Math.round((n||0)*dispRate).toLocaleString('es-ES')+' '+dispCur; } }
+function fmt2(n){ try{ return new Intl.NumberFormat('es-ES',{style:'currency',currency:dispCur}).format((n||0)*dispRate); }
+  catch(e){ return ((n||0)*dispRate).toFixed(2)+' '+dispCur; } }
 const pct = n => (n>=0?'+':'') + n.toFixed(1) + '%';
 const ic = (n,c) => `<svg class="ic${c?' '+c:''}" aria-hidden="true"><use href="#i-${n}"/></svg>`;
 let state = load(), lastTotal = 0;
@@ -573,6 +602,30 @@ async function fxToEur(cur){            /* convierte la moneda nativa de la acci
   const m=await yMeta(cur+'EUR=X'); if(m&&m.regularMarketPrice>0) return (fxCache[cur]=m.regularMarketPrice);
   return null;
 }
+async function loadDispRate(force){
+  if(dispCur==='EUR'){ dispRate=1; return true; }
+  if(force) delete fxCache[dispCur];
+  const r=await fxToEur(dispCur);            /* € por 1 unidad de la divisa */
+  if(r&&r>0){ dispRate=1/r; return true; }   /* → unidades de la divisa por 1 € */
+  return false;
+}
+function renderCurrencyOptions(){
+  const sel=document.getElementById('curSelect'); if(!sel) return;
+  sel.innerHTML=CURRENCIES.map(c=>`<option value="${c.code}">${c.code} · ${c.name}</option>`).join('');
+  sel.value=dispCur;
+}
+async function setCurrency(code){
+  if(!CURRENCIES.some(c=>c.code===code)) return;
+  const prev=dispCur; dispCur=code; state.currency=code; save();
+  const sel=document.getElementById('curSelect');
+  if(code==='EUR'){ dispRate=1; render(); return; }
+  if(sel) sel.disabled=true;
+  const ok=await loadDispRate(true);
+  if(sel) sel.disabled=false;
+  if(!ok){ dispCur=prev; state.currency=prev; save(); if(sel) sel.value=prev;
+    alert('No se pudo obtener ahora el tipo de cambio de '+code+'. Inténtalo de nuevo en unos segundos.'); return; }
+  render();
+}
 async function fetchStock(h){
   const sym=ysym(h.stooq||h.ticker); if(!sym){ h.live=false; return; }
   const m=await yMeta(sym); if(!m){ h.live=false; return; }
@@ -586,6 +639,7 @@ async function refresh(){
   try{
     await fetchCrypto();
     await Promise.all(state.holdings.filter(h=>h.src==='stock'&&h.stooq).map(fetchStock));
+    await loadDispRate(true);
     recordSnapshot(); save(); render(); loadTrend(false);
   } finally { if(rb) rb.classList.remove('loading'); }
 }
@@ -618,6 +672,7 @@ function animTotal(to){
 }
 function render(){
   const {cls,tot}=totals();
+  const cb=document.getElementById('curBadge'); if(cb) cb.textContent=curSym();
   animTotal(tot);
   document.getElementById('bandInput').value=state.band;
   document.getElementById('posCount').textContent=state.holdings.length;
@@ -1090,7 +1145,10 @@ function saveEditor(){
 }
 
 /* ----------------------------- Init ----------------------------- */
+dispCur = (state.currency && CURRENCIES.some(c=>c.code===state.currency)) ? state.currency : 'EUR';
+renderCurrencyOptions();
 normalizeApy(); recordSnapshot(); render(); refresh(); loadTrend(true); initTrendGestures();
+if(dispCur!=='EUR'){ loadDispRate(false).then(ok=>{ if(ok){ render(); } else { dispCur='EUR'; state.currency='EUR'; save(); renderCurrencyOptions(); render(); } }); }
 window.addEventListener('resize',()=>{ hideCrosshair(); drawTrend(); });
 setInterval(render, 60000);                 /* recalcula el devengo de las monedas cada minuto */
 setInterval(()=>refresh(), 300000);         /* refresca precios y tarjetas cada 5 min, sin intervención */
