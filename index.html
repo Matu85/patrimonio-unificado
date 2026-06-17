@@ -729,16 +729,21 @@ async function refresh(){
 /* Cantidad efectiva: las monedas crecen con el APY (compuesto) desde apyTs */
 function liveQty(h){ if(h.apy>0 && h.apyTs){ const yrs=(Date.now()-h.apyTs)/31557600000; return h.qty*Math.pow(1+h.apy/100, yrs); } return h.qty; }
 /* Historial de cantidad: cada activo guarda los cambios fechados de saldo para que el gráfico use la cantidad que tenías en cada momento */
-function normalizeQtyHist(){ let ch=false; state.holdings.forEach(h=>{
-  if(!Array.isArray(h.qtyHist)||!h.qtyHist.length){ h.qtyHist=[{t:0,q:+h.qty||0}]; ch=true; }
-  else { const lastQ=h.qtyHist[h.qtyHist.length-1].q; if(+h.qty!==+lastQ){ h.qty=+lastQ; ch=true; } } });
+function normalizeQtyHist(){ let ch=false;
+  if(!state.qtyHistV2){ /* sanea una sola vez los escalones falsos que generaban las ediciones previas: histórico plano al saldo actual */
+    state.holdings.forEach(h=>{ h.qtyHist=[{t:0,q:+h.qty||0}]; }); state.qtyHistV2=true; ch=true; }
+  else state.holdings.forEach(h=>{
+    if(!Array.isArray(h.qtyHist)||!h.qtyHist.length){ h.qtyHist=[{t:0,q:+h.qty||0}]; ch=true; }
+    else { const lastQ=h.qtyHist[h.qtyHist.length-1].q; if(+h.qty!==+lastQ){ h.qty=+lastQ; ch=true; } } });
   if(ch) save(); }
-/* Registra un cambio de saldo FECHADO (venta/transferencia/compra): el histórico previo se conserva, solo cambia de hoy en adelante */
+/* Registra un cambio de saldo FECHADO (SOLO botón Vender/Transferir): el histórico previo se conserva, solo cambia de hoy en adelante */
 function applyQtyChange(h,newQ,keepApyTs){ newQ=+newQ||0; if(newQ<0)newQ=0;
   if(!Array.isArray(h.qtyHist)||!h.qtyHist.length) h.qtyHist=[{t:0,q:+h.qty||0}];
   const lastQ=h.qtyHist[h.qtyHist.length-1].q;
   if(Math.abs(newQ-lastQ)>1e-9) h.qtyHist.push({t:Date.now(),q:newQ});
   h.qty=newQ; if(!keepApyTs && h.apy>0) h.apyTs=Date.now(); }
+/* CORRECCIÓN del saldo (editar la cantidad a mano / editor): no es una transacción → deja el histórico plano y limpio en el valor corregido */
+function correctQty(h,newQ,keepApyTs){ newQ=+newQ||0; if(newQ<0)newQ=0; h.qty=newQ; h.qtyHist=[{t:0,q:newQ}]; if(!keepApyTs && h.apy>0) h.apyTs=Date.now(); }
 function valueOf(h){ return liveQty(h)*h.price; }
 function normalizeApy(){ let ch=false; state.holdings.forEach(h=>{ if(h.apy>0 && !h.apyTs){ h.apyTs=Date.now(); ch=true; } }); if(ch) save(); }
 function totals(){ const cls={}; state.categories.forEach(c=>cls[c.key]=0); let tot=0;
@@ -1140,7 +1145,7 @@ function drawPositions(tot){
       <td data-l="Precio">${fmt2(h.price)}</td><td data-l="Valor"><b>${fmt(v)}</b></td><td data-l="% cartera">${tot?(v/tot*100).toFixed(1):0}%</td></tr>`;
   }).join('');
 }
-function setQty(i,v){ const h=state.holdings[i]; applyQtyChange(h,parseFloat(v)||0); recordSnapshot(); save(); render(); refreshTrendAfterChange(); }
+function setQty(i,v){ const h=state.holdings[i]; correctQty(h,parseFloat(v)||0); recordSnapshot(); save(); render(); refreshTrendAfterChange(); }
 /* ---- Vender / Transferir: registra un cambio de saldo fechado conservando el histórico ---- */
 let _sellIdx=-1;
 function openSell(i){ const h=state.holdings[i]; if(!h) return; _sellIdx=i; const q=liveQty(h);
@@ -1303,7 +1308,7 @@ function saveEditor(){
   state.holdings=editRows.filter(h=>(h.name||h.ticker)).map((h,i)=>{
     if(!h.id)h.id=(h.ticker||'act').toLowerCase()+'-'+i+'-'+Date.now();
     if(h.apy>0){ h.apyTs = h.apyStartStr ? new Date(h.apyStartStr).getTime() : (h.apyTs||Date.now()); } else { delete h.apyTs; }
-    delete h.apyStartStr; applyQtyChange(h, h.qty, true); return h; });
+    delete h.apyStartStr; correctQty(h, h.qty, true); return h; });
   let cats=editCats.filter(c=>(c.label||'').trim()!=='').map(c=>({key:c.key||('cat'+Date.now()+Math.floor(Math.random()*9999)),label:c.label.trim(),color:c.color,target:Math.max(0,+c.target||0)}));
   if(!cats.length) cats=[{key:'general',label:'General',color:PALETTE[0],target:100}];
   state.categories=cats; const _keys=cats.map(c=>c.key), _fb=_keys[0];
