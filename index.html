@@ -545,20 +545,20 @@
   </div>
 </div>
 
-<!-- Modal Vender / Transferir -->
-<div class="modal-bg" id="sellModal" style="z-index:80">
+<!-- Modal Comprar / Vender / Transferir -->
+<div class="modal-bg" id="txModal" style="z-index:80">
   <div class="modal" style="max-width:430px">
-    <div class="mailhead"><b><svg class="mh-ic"><use href="#i-activity"/></svg>Vender / Transferir</b><button class="x" onclick="closeSell()"><svg class="ic"><use href="#i-x"/></svg></button></div>
+    <div class="mailhead"><b><svg class="mh-ic"><use href="#i-activity"/></svg><span id="txTitle">Movimiento</span></b><button class="x" onclick="closeTx()"><svg class="ic"><use href="#i-x"/></svg></button></div>
     <div class="mailbody">
-      <div id="sellInfo" style="font-size:14px;line-height:1.6;color:var(--soft);margin-bottom:14px"></div>
+      <div id="txInfo" style="font-size:14px;line-height:1.6;color:var(--soft);margin-bottom:14px"></div>
       <div class="sell-grid">
-        <label class="sell-l">Cantidad a vender / transferir<input id="sellQty" type="number" step="any" min="0" placeholder="0" oninput="sellPreview()"></label>
-        <button class="btn" type="button" onclick="sellAll()">Todo</button>
+        <label class="sell-l"><span id="txLbl">Cantidad</span><input id="txQty" type="number" step="any" min="0" placeholder="0" oninput="txPreview()"></label>
+        <button class="btn" type="button" id="txAllBtn" onclick="txAll()">Todo</button>
       </div>
-      <div id="sellPreview" class="muted" style="margin-top:11px;font-size:12.5px;line-height:1.5"></div>
+      <div id="txPreview" class="muted" style="margin-top:11px;font-size:12.5px;line-height:1.5"></div>
       <div class="edactions" style="justify-content:flex-end;margin-top:20px">
-        <button class="btn" onclick="closeSell()">Cancelar</button>
-        <button class="btn gold" onclick="confirmSell()"><svg class="ic"><use href="#i-check"/></svg> Registrar</button>
+        <button class="btn" onclick="closeTx()">Cancelar</button>
+        <button class="btn gold" onclick="confirmTx()"><svg class="ic"><use href="#i-check"/></svg> Registrar</button>
       </div>
     </div>
   </div>
@@ -1139,29 +1139,34 @@ function drawPositions(tot){
   tb.innerHTML=state.holdings.map((h,i)=>{
     const v=valueOf(h);
     const badge=h.src==='manual'?'<span class="badge man">VNL</span>':h.live?'<span class="badge live">LIVE</span>':'<span class="badge stale">último</span>';
-    return `<tr><td data-l="Activo"><b>${h.name}</b> <span class="muted">${h.ticker||''}</span> ${badge} <button class="sellbtn" title="Registrar venta o transferencia — mantiene el histórico" onclick="openSell(${i})">Vender/Transferir</button></td>
+    return `<tr><td data-l="Activo"><b>${h.name}</b> <span class="muted">${h.ticker||''}</span> ${badge} <button class="sellbtn" title="Registrar una compra — se suma desde hoy, mantiene el histórico" onclick="openBuy(${i})">Comprar</button> <button class="sellbtn" title="Registrar venta o transferencia — mantiene el histórico" onclick="openSell(${i})">Vender/Transferir</button></td>
       <td data-l="Categoría"><span class="clschip"><span class="dot" style="width:9px;height:9px;background:${catOf(h.cls).color};--c:${catOf(h.cls).color}88"></span>${catOf(h.cls).label}</span></td>
       <td data-l="Cantidad"><input class="q" type="number" step="any" value="${parseFloat(liveQty(h).toFixed(8))}" onchange="setQty(${i},this.value)"></td>
       <td data-l="Precio">${fmt2(h.price)}</td><td data-l="Valor"><b>${fmt(v)}</b></td><td data-l="% cartera">${tot?(v/tot*100).toFixed(1):0}%</td></tr>`;
   }).join('');
 }
 function setQty(i,v){ const h=state.holdings[i]; correctQty(h,parseFloat(v)||0); recordSnapshot(); save(); render(); refreshTrendAfterChange(); }
-/* ---- Vender / Transferir: registra un cambio de saldo fechado conservando el histórico ---- */
-let _sellIdx=-1;
-function openSell(i){ const h=state.holdings[i]; if(!h) return; _sellIdx=i; const q=liveQty(h);
-  document.getElementById('sellInfo').innerHTML=`<b>${(h.name||'').replace(/</g,'&lt;')}</b> <span class="muted">${h.ticker||''}</span><br>Tienes <b style="color:var(--tx)">${parseFloat(q.toFixed(8))}</b> ${h.ticker||'uds.'} · ${fmt(valueOf(h))}`;
-  const inp=document.getElementById('sellQty'); inp.value=''; inp.max=q;
-  document.getElementById('sellPreview').textContent='Tu histórico anterior se mantiene; el cambio aplica solo de hoy en adelante.';
-  document.getElementById('sellModal').classList.add('show'); setTimeout(()=>inp.focus(),60); }
-function closeSell(){ document.getElementById('sellModal').classList.remove('show'); _sellIdx=-1; }
-function sellAll(){ const h=state.holdings[_sellIdx]; if(!h)return; document.getElementById('sellQty').value=parseFloat(liveQty(h).toFixed(8)); sellPreview(); }
-function sellPreview(){ const h=state.holdings[_sellIdx]; if(!h)return; const q=liveQty(h); let amt=+document.getElementById('sellQty').value||0;
-  if(amt<0)amt=0; if(amt>q)amt=q; const rem=q-amt;
-  document.getElementById('sellPreview').innerHTML=`Quedan <b style="color:var(--tx)">${parseFloat(rem.toFixed(8))}</b> ${h.ticker||'uds.'} (${fmt(rem*(h.price||0))}). El histórico anterior se mantiene.`; }
-function confirmSell(){ const h=state.holdings[_sellIdx]; if(!h){ closeSell(); return; } const q=liveQty(h);
-  let amt=+document.getElementById('sellQty').value||0; if(amt<=0){ closeSell(); return; } if(amt>q)amt=q;
-  applyQtyChange(h, q-amt); recordSnapshot(); save(); closeSell(); render(); refreshTrendAfterChange(); }
-document.getElementById('sellModal').addEventListener('click',e=>{ if(e.target.id==='sellModal') closeSell(); });
+/* ---- Comprar / Vender / Transferir: registra un cambio de saldo fechado conservando el histórico ---- */
+let _txIdx=-1, _txMode='sell';
+function openBuy(i){ openTx(i,'buy'); }
+function openSell(i){ openTx(i,'sell'); }
+function openTx(i,mode){ const h=state.holdings[i]; if(!h) return; _txIdx=i; _txMode=mode; const q=liveQty(h); const buy=mode==='buy';
+  document.getElementById('txTitle').textContent=buy?'Comprar':'Vender / Transferir';
+  document.getElementById('txLbl').textContent=buy?'Cantidad comprada':'Cantidad a vender / transferir';
+  document.getElementById('txAllBtn').style.display=buy?'none':'';
+  document.getElementById('txInfo').innerHTML=`<b>${(h.name||'').replace(/</g,'&lt;')}</b> <span class="muted">${h.ticker||''}</span><br>Tienes <b style="color:var(--tx)">${parseFloat(q.toFixed(8))}</b> ${h.ticker||'uds.'} · ${fmt(valueOf(h))}`;
+  const inp=document.getElementById('txQty'); inp.value=''; if(buy) inp.removeAttribute('max'); else inp.max=q;
+  document.getElementById('txPreview').textContent=buy?'Se suma a tu saldo desde hoy; el histórico anterior se mantiene.':'Tu histórico anterior se mantiene; el cambio aplica solo de hoy en adelante.';
+  document.getElementById('txModal').classList.add('show'); setTimeout(()=>inp.focus(),60); }
+function closeTx(){ document.getElementById('txModal').classList.remove('show'); _txIdx=-1; }
+function txAll(){ const h=state.holdings[_txIdx]; if(!h)return; document.getElementById('txQty').value=parseFloat(liveQty(h).toFixed(8)); txPreview(); }
+function txPreview(){ const h=state.holdings[_txIdx]; if(!h)return; const q=liveQty(h); const buy=_txMode==='buy';
+  let amt=+document.getElementById('txQty').value||0; if(amt<0)amt=0; if(!buy&&amt>q)amt=q; const nv=buy?q+amt:q-amt;
+  document.getElementById('txPreview').innerHTML=`Quedarán <b style="color:var(--tx)">${parseFloat(nv.toFixed(8))}</b> ${h.ticker||'uds.'} (${fmt(nv*(h.price||0))}). El histórico anterior se mantiene.`; }
+function confirmTx(){ const h=state.holdings[_txIdx]; if(!h){ closeTx(); return; } const q=liveQty(h); const buy=_txMode==='buy';
+  let amt=+document.getElementById('txQty').value||0; if(amt<=0){ closeTx(); return; } if(!buy&&amt>q)amt=q;
+  applyQtyChange(h, buy?q+amt:q-amt); recordSnapshot(); save(); closeTx(); render(); refreshTrendAfterChange(); }
+document.getElementById('txModal').addEventListener('click',e=>{ if(e.target.id==='txModal') closeTx(); });
 function setTarget(k,v){ const c=catOf(k); if(c)c.target=Math.max(0,+v||0); save(); render(); }
 function setBand(v){ state.band=Math.max(0,+v||0); save(); render(); }
 
