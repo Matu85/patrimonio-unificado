@@ -176,7 +176,13 @@
   .trend-x i{font-style:normal;font-size:9.5px;font-weight:600;color:var(--gold-dim);opacity:.85}
   /* crosshair + tooltip */
   .trend-cross{position:absolute;display:none;width:1px;background:rgba(227,192,141,.55);pointer-events:none;z-index:3}
-  .trend-dot{position:absolute;display:none;width:9px;height:9px;margin:-4.5px 0 0 -4.5px;border-radius:50%;background:#0b0f18;border:2px solid var(--gold);pointer-events:none;z-index:4;box-shadow:0 0 8px rgba(227,192,141,.6)}
+  .trend-dot{position:absolute;display:none;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--gold);border:2.5px solid #0b0f18;pointer-events:none;z-index:4;box-shadow:0 0 0 3px rgba(227,192,141,.32),0 0 12px rgba(227,192,141,.85)}
+  .sellbtn{margin-left:8px;font-family:inherit;font-size:11px;padding:3px 9px;border-radius:7px;border:1px solid var(--line2);background:transparent;color:var(--mut);cursor:pointer;white-space:nowrap;vertical-align:middle;transition:color .15s,border-color .15s}
+  .sellbtn:hover{color:var(--gold);border-color:var(--gold)}
+  .sell-grid{display:flex;gap:10px;align-items:flex-end}
+  .sell-grid .sell-l{flex:1;display:flex;flex-direction:column;gap:6px;font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px}
+  .sell-grid input{background:rgba(0,0,0,.4);border:1px solid var(--line2);color:var(--tx);border-radius:9px;padding:9px;font-size:14px;width:100%;font-family:inherit}
+  .sell-grid input:focus{outline:none;border-color:var(--gold)}
   .trend-tip{position:absolute;display:none;pointer-events:none;z-index:5;background:rgba(8,12,20,.94);border:1px solid var(--line2);border-radius:9px;padding:6px 9px;font-size:11.5px;line-height:1.45;color:var(--soft);box-shadow:var(--shadow);white-space:nowrap}
   .trend-tip b{display:block;color:var(--tx);font-size:13px}
   .trend-tip span{color:var(--mut);font-size:10.5px}
@@ -539,6 +545,25 @@
   </div>
 </div>
 
+<!-- Modal Vender / Transferir -->
+<div class="modal-bg" id="sellModal" style="z-index:80">
+  <div class="modal" style="max-width:430px">
+    <div class="mailhead"><b><svg class="mh-ic"><use href="#i-activity"/></svg>Vender / Transferir</b><button class="x" onclick="closeSell()"><svg class="ic"><use href="#i-x"/></svg></button></div>
+    <div class="mailbody">
+      <div id="sellInfo" style="font-size:14px;line-height:1.6;color:var(--soft);margin-bottom:14px"></div>
+      <div class="sell-grid">
+        <label class="sell-l">Cantidad a vender / transferir<input id="sellQty" type="number" step="any" min="0" placeholder="0" oninput="sellPreview()"></label>
+        <button class="btn" type="button" onclick="sellAll()">Todo</button>
+      </div>
+      <div id="sellPreview" class="muted" style="margin-top:11px;font-size:12.5px;line-height:1.5"></div>
+      <div class="edactions" style="justify-content:flex-end;margin-top:20px">
+        <button class="btn" onclick="closeSell()">Cancelar</button>
+        <button class="btn gold" onclick="confirmSell()"><svg class="ic"><use href="#i-check"/></svg> Registrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Modal de confirmación reutilizable -->
 <div class="modal-bg" id="confirmModal" style="z-index:80">
   <div class="modal" style="max-width:430px">
@@ -703,6 +728,17 @@ async function refresh(){
 /* ----------------------------- Cálculos ----------------------------- */
 /* Cantidad efectiva: las monedas crecen con el APY (compuesto) desde apyTs */
 function liveQty(h){ if(h.apy>0 && h.apyTs){ const yrs=(Date.now()-h.apyTs)/31557600000; return h.qty*Math.pow(1+h.apy/100, yrs); } return h.qty; }
+/* Historial de cantidad: cada activo guarda los cambios fechados de saldo para que el gráfico use la cantidad que tenías en cada momento */
+function normalizeQtyHist(){ let ch=false; state.holdings.forEach(h=>{
+  if(!Array.isArray(h.qtyHist)||!h.qtyHist.length){ h.qtyHist=[{t:0,q:+h.qty||0}]; ch=true; }
+  else { const lastQ=h.qtyHist[h.qtyHist.length-1].q; if(+h.qty!==+lastQ){ h.qty=+lastQ; ch=true; } } });
+  if(ch) save(); }
+/* Registra un cambio de saldo FECHADO (venta/transferencia/compra): el histórico previo se conserva, solo cambia de hoy en adelante */
+function applyQtyChange(h,newQ,keepApyTs){ newQ=+newQ||0; if(newQ<0)newQ=0;
+  if(!Array.isArray(h.qtyHist)||!h.qtyHist.length) h.qtyHist=[{t:0,q:+h.qty||0}];
+  const lastQ=h.qtyHist[h.qtyHist.length-1].q;
+  if(Math.abs(newQ-lastQ)>1e-9) h.qtyHist.push({t:Date.now(),q:newQ});
+  h.qty=newQ; if(!keepApyTs && h.apy>0) h.apyTs=Date.now(); }
 function valueOf(h){ return liveQty(h)*h.price; }
 function normalizeApy(){ let ch=false; state.holdings.forEach(h=>{ if(h.apy>0 && !h.apyTs){ h.apyTs=Date.now(); ch=true; } }); if(ch) save(); }
 function totals(){ const cls={}; state.categories.forEach(c=>cls[c.key]=0); let tot=0;
@@ -866,14 +902,26 @@ async function histStock(sym,range,interval){
 /* índice del último punto con t <= objetivo (búsqueda binaria, para que el arrastre sea fluido) */
 function lastLE(pts,t){ if(!pts.length||pts[0].t>=t) return 0; let lo=0,hi=pts.length-1,ans=0;
   while(lo<=hi){ const m=(lo+hi)>>1; if(pts[m].t<=t){ans=m;lo=m+1;} else hi=m-1; } return ans; }
-function valueAt(assets,t){ let v=0; assets.forEach(a=>{ if(a.flat){ v+=a.qty*a.flatPrice; return; }
-  if(!a.pts||!a.pts.length) return; v+=a.qty*a.pts[lastLE(a.pts,t)].p; }); return v; }
+/* cantidad efectiva de un activo EN el instante t, según su historial de cambios (ventas/transferencias) */
+function qtyAtH(qh,apy,apyTs,t){
+  let q=0, last=true;
+  if(qh&&qh.length){ q=qh[0].q; let idx=0; for(let i=0;i<qh.length;i++){ if(qh[i].t<=t){ q=qh[i].q; idx=i; } else break; } last=(idx===qh.length-1); }
+  if(last && apy>0 && apyTs){ const yrs=(Date.now()-apyTs)/31557600000; q*=Math.pow(1+apy/100,yrs); }
+  return q;
+}
+function valueAt(assets,t){ let v=0; assets.forEach(a=>{ const q=qtyAtH(a.qh,a.apy,a.apyTs,t); if(q<=0) return;
+  if(a.flat){ v+=q*a.flatPrice; return; }
+  if(!a.pts||!a.pts.length) return; v+=q*a.pts[lastLE(a.pts,t)].p; }); return v; }
 /* construye la serie del patrimonio total SOLO en la ventana visible [tmin,tmax], remuestreada */
 function mergeSeries(assets,tmin,tmax,maxPts){
   maxPts=maxPts||220;
   const set=new Set(); assets.forEach(a=>a.pts&&a.pts.forEach(pt=>{ if(pt.t>=tmin&&pt.t<=tmax) set.add(pt.t); }));
   let grid=[...set].sort((a,b)=>a-b);
   if(grid.length>maxPts){ const out=[]; const step=grid.length/maxPts; for(let i=0;i<maxPts;i++) out.push(grid[Math.floor(i*step)]); out[out.length-1]=grid[grid.length-1]; grid=out; }
+  /* inserta los cambios de saldo (ventas/transferencias) como escalón nítido: un punto justo antes y otro en el instante del cambio */
+  const gset=new Set(grid);
+  assets.forEach(a=>{ if(a.qh) a.qh.forEach(e=>{ if(e.t>tmin && e.t<tmax){ gset.add(e.t-1); gset.add(e.t); } }); });
+  grid=[...gset].sort((a,b)=>a-b);
   if(!grid.length || grid[0]>tmin) grid.unshift(tmin);                 /* extiende la línea al borde izquierdo del visor */
   if(grid[grid.length-1]<tmax) grid.push(tmax);                        /* y al borde derecho */
   return grid.map(t=>({t, v:valueAt(assets,t)}));
@@ -882,23 +930,25 @@ async function buildTrendData(k){
   const cfg=RANGES[k], {tot}=totals();
   if(!state.holdings.length || tot<=0) return null;
   const assets=(await Promise.all(state.holdings.map(async h=>{
-    const qty=liveQty(h); if(qty<=0) return null;
-    if(h.src==='crypto'&&h.cg){ const pts=await histCrypto(h.cg,cfg.cgDays); if(pts) return {qty,pts}; }
-    else if(h.src==='stock'){ const sym=ysym(h.stooq||h.ticker); if(sym){ const pts=await histStock(sym,cfg.yRange,cfg.yInt); if(pts) return {qty,pts}; } }
-    return {qty,flat:true,flatPrice:h.price||0};   /* manual o sin datos de mercado → constante al precio actual */
+    const qh=(Array.isArray(h.qtyHist)&&h.qtyHist.length)?h.qtyHist:[{t:0,q:+h.qty||0}];
+    const maxQ=qh.reduce((m,e)=>Math.max(m,+e.q||0),0); if(maxQ<=0) return null;   /* incluye activos ya vendidos: su histórico previo sigue contando */
+    const base={qh,apy:h.apy||0,apyTs:h.apyTs||0};
+    if(h.src==='crypto'&&h.cg){ const pts=await histCrypto(h.cg,cfg.cgDays); if(pts) return {...base,pts}; }
+    else if(h.src==='stock'){ const sym=ysym(h.stooq||h.ticker); if(sym){ const pts=await histStock(sym,cfg.yRange,cfg.yInt); if(pts) return {...base,pts}; } }
+    return {...base,flat:true,flatPrice:h.price||0};   /* manual o sin datos de mercado → constante al precio actual */
   }))).filter(Boolean);
   if(!assets.length) return null;
   const partial = assets.some(a=>a.flat) && assets.some(a=>!a.flat);
   let dataMin=Infinity, dataMax=-Infinity;
   assets.forEach(a=>{ if(a.pts&&a.pts.length){ dataMin=Math.min(dataMin,a.pts[0].t); dataMax=Math.max(dataMax,a.pts[a.pts.length-1].t); } });
   if(!isFinite(dataMin)){            /* todo manual o el histórico falló: tramo plano al valor actual */
-    const flatTotal=assets.reduce((s,a)=>s+a.qty*(a.flat?a.flatPrice:0),0);
+    const flatTotal=assets.reduce((s,a)=>s+(a.flat?qtyAtH(a.qh,a.apy,a.apyTs,Date.now())*a.flatPrice:0),0);
     if(flatTotal<=0) return null;
     const span=cfg.windowMs===Infinity?30*24*3600e3:cfg.windowMs;
     dataMax=Date.now(); dataMin=dataMax-span;
-    return {assets:[{flat:true,qty:1,flatPrice:flatTotal}], partial:true, synthetic:true, dataMin, dataMax};
+    return {assets:[{flat:true,qh:[{t:0,q:1}],apy:0,apyTs:0,flatPrice:flatTotal}], partial:true, synthetic:true, dataMin, dataMax};
   }
-  return {assets, partial, synthetic:false, dataMin, dataMax};
+  return {assets, partial, synthetic:false, dataMin, dataMax:Math.max(dataMax,Date.now())};   /* el borde derecho es AHORA, para reflejar ventas/transferencias recién registradas */
 }
 async function loadTrend(force){
   const k=trendRange(), c=trendCache[k];
@@ -920,6 +970,12 @@ async function loadTrend(force){
   finally{ trendLoading=false; drawTrend(); }
 }
 function setTrendRange(k){ if(!RANGES[k]) return; state.trendRange=k; save(); renderTrendRanges(); loadTrend(false); }
+/* tras un cambio de saldo: redibuja al instante con la serie cacheada (el borde derecho pasa a ser AHORA) y luego refresca precios */
+function refreshTrendAfterChange(){ const k=trendRange(), c=trendCache[k];
+  if(c&&c.assets){ const oldMax=c.dataMax||0, v=trendView[k]; c.dataMax=Math.max(oldMax,Date.now());
+    if(v && v.end>=oldMax-1000){ const span=v.end-v.start; v.end=c.dataMax; v.start=Math.max(c.dataMin,c.dataMax-span); }
+    drawTrend(); }
+  loadTrend(true); }
 function renderTrendRanges(){
   const el=document.getElementById('trendRanges'); if(!el) return; const cur=trendRange();
   el.innerHTML=Object.keys(RANGES).map(k=>`<button data-k="${k}" class="${k===cur?'on':''}" onclick="setTrendRange('${k}')">${RANGES[k].label}</button>`).join('');
@@ -1078,13 +1134,29 @@ function drawPositions(tot){
   tb.innerHTML=state.holdings.map((h,i)=>{
     const v=valueOf(h);
     const badge=h.src==='manual'?'<span class="badge man">VNL</span>':h.live?'<span class="badge live">LIVE</span>':'<span class="badge stale">último</span>';
-    return `<tr><td data-l="Activo"><b>${h.name}</b> <span class="muted">${h.ticker||''}</span> ${badge}</td>
+    return `<tr><td data-l="Activo"><b>${h.name}</b> <span class="muted">${h.ticker||''}</span> ${badge} <button class="sellbtn" title="Registrar venta o transferencia — mantiene el histórico" onclick="openSell(${i})">Vender/Transferir</button></td>
       <td data-l="Categoría"><span class="clschip"><span class="dot" style="width:9px;height:9px;background:${catOf(h.cls).color};--c:${catOf(h.cls).color}88"></span>${catOf(h.cls).label}</span></td>
       <td data-l="Cantidad"><input class="q" type="number" step="any" value="${parseFloat(liveQty(h).toFixed(8))}" onchange="setQty(${i},this.value)"></td>
       <td data-l="Precio">${fmt2(h.price)}</td><td data-l="Valor"><b>${fmt(v)}</b></td><td data-l="% cartera">${tot?(v/tot*100).toFixed(1):0}%</td></tr>`;
   }).join('');
 }
-function setQty(i,v){ const h=state.holdings[i]; h.qty=parseFloat(v)||0; if(h.apy>0) h.apyTs=Date.now(); recordSnapshot(); save(); render(); }
+function setQty(i,v){ const h=state.holdings[i]; applyQtyChange(h,parseFloat(v)||0); recordSnapshot(); save(); render(); refreshTrendAfterChange(); }
+/* ---- Vender / Transferir: registra un cambio de saldo fechado conservando el histórico ---- */
+let _sellIdx=-1;
+function openSell(i){ const h=state.holdings[i]; if(!h) return; _sellIdx=i; const q=liveQty(h);
+  document.getElementById('sellInfo').innerHTML=`<b>${(h.name||'').replace(/</g,'&lt;')}</b> <span class="muted">${h.ticker||''}</span><br>Tienes <b style="color:var(--tx)">${parseFloat(q.toFixed(8))}</b> ${h.ticker||'uds.'} · ${fmt(valueOf(h))}`;
+  const inp=document.getElementById('sellQty'); inp.value=''; inp.max=q;
+  document.getElementById('sellPreview').textContent='Tu histórico anterior se mantiene; el cambio aplica solo de hoy en adelante.';
+  document.getElementById('sellModal').classList.add('show'); setTimeout(()=>inp.focus(),60); }
+function closeSell(){ document.getElementById('sellModal').classList.remove('show'); _sellIdx=-1; }
+function sellAll(){ const h=state.holdings[_sellIdx]; if(!h)return; document.getElementById('sellQty').value=parseFloat(liveQty(h).toFixed(8)); sellPreview(); }
+function sellPreview(){ const h=state.holdings[_sellIdx]; if(!h)return; const q=liveQty(h); let amt=+document.getElementById('sellQty').value||0;
+  if(amt<0)amt=0; if(amt>q)amt=q; const rem=q-amt;
+  document.getElementById('sellPreview').innerHTML=`Quedan <b style="color:var(--tx)">${parseFloat(rem.toFixed(8))}</b> ${h.ticker||'uds.'} (${fmt(rem*(h.price||0))}). El histórico anterior se mantiene.`; }
+function confirmSell(){ const h=state.holdings[_sellIdx]; if(!h){ closeSell(); return; } const q=liveQty(h);
+  let amt=+document.getElementById('sellQty').value||0; if(amt<=0){ closeSell(); return; } if(amt>q)amt=q;
+  applyQtyChange(h, q-amt); recordSnapshot(); save(); closeSell(); render(); refreshTrendAfterChange(); }
+document.getElementById('sellModal').addEventListener('click',e=>{ if(e.target.id==='sellModal') closeSell(); });
 function setTarget(k,v){ const c=catOf(k); if(c)c.target=Math.max(0,+v||0); save(); render(); }
 function setBand(v){ state.band=Math.max(0,+v||0); save(); render(); }
 
@@ -1143,7 +1215,8 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape' && document.getElem
 function exportJSON(){
   const out={currency:'EUR',owner_email:state.email||'',band:state.band,categories:state.categories,
     holdings:state.holdings.map(h=>{ const o={id:h.id,name:h.name,ticker:h.ticker,cls:h.cls,qty:h.qty,price:h.price,src:h.src};
-      if(h.cg)o.cg=h.cg; if(h.stooq)o.stooq=h.stooq; if(h.apy){o.apy=h.apy; if(h.apyTs)o.apyTs=h.apyTs;} return o; })};
+      if(h.cg)o.cg=h.cg; if(h.stooq)o.stooq=h.stooq; if(h.apy){o.apy=h.apy; if(h.apyTs)o.apyTs=h.apyTs;}
+      if(Array.isArray(h.qtyHist)&&h.qtyHist.length)o.qtyHist=h.qtyHist; return o; })};
   const blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'}), a=document.createElement('a');
   a.href=URL.createObjectURL(blob); a.download='portfolio.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(a.href);
 }
@@ -1161,7 +1234,7 @@ function importJSON(){
       if(d.band!=null) state.band=+d.band||0;
       if(d.owner_email!=null) state.email=d.owner_email; else if(d.email!=null) state.email=d.email;
       state.snapshots={}; lastTotal=0; trendCache={}; trendView={};
-      normalizeApy(); recordSnapshot(); save(); render(); refresh(); loadTrend(true);
+      normalizeApy(); normalizeQtyHist(); recordSnapshot(); save(); render(); refresh(); loadTrend(true);
       alert('Cartera importada correctamente ('+state.holdings.length+' activos).');
     }catch(e){ alert('No se pudo leer el archivo. Asegúrate de que sea un portfolio.json válido.'); } };
     rd.readAsText(f);
@@ -1230,7 +1303,7 @@ function saveEditor(){
   state.holdings=editRows.filter(h=>(h.name||h.ticker)).map((h,i)=>{
     if(!h.id)h.id=(h.ticker||'act').toLowerCase()+'-'+i+'-'+Date.now();
     if(h.apy>0){ h.apyTs = h.apyStartStr ? new Date(h.apyStartStr).getTime() : (h.apyTs||Date.now()); } else { delete h.apyTs; }
-    delete h.apyStartStr; return h; });
+    delete h.apyStartStr; applyQtyChange(h, h.qty, true); return h; });
   let cats=editCats.filter(c=>(c.label||'').trim()!=='').map(c=>({key:c.key||('cat'+Date.now()+Math.floor(Math.random()*9999)),label:c.label.trim(),color:c.color,target:Math.max(0,+c.target||0)}));
   if(!cats.length) cats=[{key:'general',label:'General',color:PALETTE[0],target:100}];
   state.categories=cats; const _keys=cats.map(c=>c.key), _fb=_keys[0];
@@ -1242,7 +1315,7 @@ function saveEditor(){
 /* ----------------------------- Init ----------------------------- */
 dispCur = (state.currency && CURRENCIES.some(c=>c.code===state.currency)) ? state.currency : 'EUR';
 renderCurrencyOptions();
-normalizeApy(); recordSnapshot(); render(); refresh(); loadTrend(true); initTrendGestures();
+normalizeApy(); normalizeQtyHist(); recordSnapshot(); render(); refresh(); loadTrend(true); initTrendGestures();
 if(dispCur!=='EUR'){ loadDispRate(false).then(ok=>{ if(ok){ render(); } else { dispCur='EUR'; state.currency='EUR'; save(); renderCurrencyOptions(); render(); } }); }
 window.addEventListener('resize',()=>{ hideCrosshair(); drawTrend(); });
 setInterval(render, 60000);                 /* recalcula el devengo de las monedas cada minuto */
