@@ -31,7 +31,10 @@ module.exports = async (req, res) => {
     if (!r.ok) { res.status(r.status).json({ error: 'upstream ' + r.status }); return; }
     const data = await r.json();
     // Caché compartida en el edge: 60 s fresca + 5 min sirviendo la anterior mientras revalida.
-    res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=300');
+    // CDN-Cache-Control controla específicamente el edge de Vercel (no lo sobrescribe la
+    // plataforma); Cache-Control "public" se añade como respaldo para cachés intermedias.
+    res.setHeader('CDN-Cache-Control', 'max-age=60, stale-while-revalidate=300');
+    res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
     res.status(200).json(data);
   } catch (e) {
     res.status(502).json({ error: 'fetch_failed' });
