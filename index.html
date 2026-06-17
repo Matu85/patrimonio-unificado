@@ -181,6 +181,12 @@
   /* crosshair + tooltip */
   .trend-cross{position:absolute;display:none;width:1px;background:rgba(227,192,141,.55);pointer-events:none;z-index:3}
   .trend-dot{position:absolute;display:none;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--gold);border:2.5px solid #0b0f18;pointer-events:none;z-index:4;box-shadow:0 0 0 3px rgba(227,192,141,.32),0 0 12px rgba(227,192,141,.85)}
+  /* punto "en vivo" al final de la línea: latido suave que indica que el dato está actualizado */
+  .trend-live{position:absolute;display:none;width:9px;height:9px;margin:-4.5px 0 0 -4.5px;border-radius:50%;
+    background:var(--gold-2);box-shadow:0 0 9px rgba(246,227,180,.95);z-index:2;pointer-events:none}
+  .trend-live::after{content:"";position:absolute;inset:0;border-radius:50%;animation:livePulse 2.4s cubic-bezier(.4,0,.2,1) infinite}
+  @keyframes livePulse{0%{box-shadow:0 0 0 0 rgba(227,192,141,.55)}70%{box-shadow:0 0 0 13px rgba(227,192,141,0)}100%{box-shadow:0 0 0 0 rgba(227,192,141,0)}}
+  @media(prefers-reduced-motion:reduce){.trend-live::after{animation:none}}
   .sellbtn{margin-left:8px;font-family:inherit;font-size:11px;padding:3px 9px;border-radius:7px;border:1px solid var(--line2);background:transparent;color:var(--mut);cursor:pointer;white-space:nowrap;vertical-align:middle;transition:color .15s,border-color .15s}
   .sellbtn:hover{color:var(--gold);border-color:var(--gold)}
   .sell-grid{display:flex;gap:10px;align-items:flex-end}
@@ -443,6 +449,7 @@
       <div class="trend-plot" id="trendPlot">
         <div class="trend-y" id="trendY"></div>
         <svg id="trend" viewBox="0 0 720 130" width="100%" height="130" preserveAspectRatio="none"></svg>
+        <div class="trend-live" id="trendLive"></div>
         <div class="trend-cross" id="trendCross"></div>
         <div class="trend-dot" id="trendDot"></div>
         <div class="trend-tip" id="trendTip"></div>
@@ -964,16 +971,22 @@ async function buildTrendData(k){
   }))).filter(Boolean);
   if(!assets.length) return null;
   const partial = assets.some(a=>a.flat) && assets.some(a=>!a.flat);
-  let dataMin=Infinity, dataMax=-Infinity;
-  assets.forEach(a=>{ if(a.pts&&a.pts.length){ dataMin=Math.min(dataMin,a.pts[0].t); dataMax=Math.max(dataMax,a.pts[a.pts.length-1].t); } });
-  if(!isFinite(dataMin)){            /* todo manual o el histórico falló: tramo plano al valor actual */
+  const firsts=[], lasts=[];
+  assets.forEach(a=>{ if(a.pts&&a.pts.length){ firsts.push(a.pts[0].t); lasts.push(a.pts[a.pts.length-1].t); } });
+  if(!firsts.length){            /* todo manual o el histórico falló: tramo plano al valor actual */
     const flatTotal=assets.reduce((s,a)=>s+(a.flat?qtyAtH(a.qh,a.apy,a.apyTs,Date.now())*a.flatPrice:0),0);
     if(flatTotal<=0) return null;
     const span=cfg.windowMs===Infinity?30*24*3600e3:cfg.windowMs;
-    dataMax=Date.now(); dataMin=dataMax-span;
-    return {assets:[{flat:true,qh:[{t:0,q:1}],apy:0,apyTs:0,flatPrice:flatTotal}], partial:true, synthetic:true, dataMin, dataMax};
+    const dMax=Date.now(), dMin=dMax-span;
+    return {assets:[{flat:true,qh:[{t:0,q:1}],apy:0,apyTs:0,flatPrice:flatTotal}], partial:true, synthetic:true, dataMin:dMin, dataMax:dMax};
   }
-  return {assets, partial, synthetic:false, dataMin, dataMax:Math.max(dataMax,Date.now())};   /* el borde derecho es AHORA, para reflejar ventas/transferencias recién registradas */
+  /* Inicio coherente del histórico: el MÁS TARDÍO de los primeros datos de cada activo.
+     Así nunca dibujamos un tramo plano "inventado" de un activo en fechas en las que todavía
+     no tenemos su precio de mercado (esa era la causa de las líneas rectas y los datos falsos).
+     El borde derecho es AHORA: una acción se mantiene en su último cierre (correcto), y la
+     cripto sigue moviéndose con cada actualización, así que el gráfico avanza solo. */
+  const dataMin=Math.max(...firsts), dataMax=Math.max(Math.max(...lasts), Date.now());
+  return {assets, partial, synthetic:false, dataMin, dataMax};
 }
 async function loadTrend(force){
   const k=trendRange(), c=trendCache[k];
@@ -1037,11 +1050,29 @@ function trendGoStart(){ const k=trendRange(),c=trendCache[k]; if(!c)return; con
   trendView[k]={start:c.dataMin,end:Math.min(c.dataMax,c.dataMin+span)}; drawTrend(); }
 function trendGoEnd(){ const k=trendRange(),c=trendCache[k]; if(!c)return; const v=viewOf(k), span=v.end-v.start;
   trendView[k]={start:Math.max(c.dataMin,c.dataMax-span),end:c.dataMax}; drawTrend(); }
+/* Catmull-Rom uniforme → curva Bézier suave. Los puntos de control se ACOTAN al rango del
+   tramo, de modo que la línea nunca sobreoscila por encima/debajo de los datos reales: queda
+   sedosa pero sin inventar máximos ni mínimos que no ocurrieron. */
+function smoothCurve(P){
+  if(P.length<2) return '';
+  if(P.length===2) return ` L${P[1].x} ${P[1].y}`;
+  let d='';
+  for(let i=0;i<P.length-1;i++){
+    const p0=P[i-1]||P[i], p1=P[i], p2=P[i+1], p3=P[i+2]||P[i+1];
+    let c1y=p1.y+(p2.y-p0.y)/6, c2y=p2.y-(p3.y-p1.y)/6;
+    const lo=Math.min(p1.y,p2.y), hi=Math.max(p1.y,p2.y);
+    c1y=Math.max(lo,Math.min(hi,c1y)); c2y=Math.max(lo,Math.min(hi,c2y));
+    const c1x=(p1.x+(p2.x-p0.x)/6).toFixed(2), c2x=(p2.x-(p3.x-p1.x)/6).toFixed(2);
+    d+=` C${c1x} ${c1y.toFixed(2)} ${c2x} ${c2y.toFixed(2)} ${p2.x} ${p2.y}`;
+  }
+  return d;
+}
 function drawTrend(){
   const svg=document.getElementById('trend'), lbl=document.getElementById('trendLbl');
   const yAx=document.getElementById('trendY'), xAx=document.getElementById('trendX'), nowEl=document.getElementById('trendNow');
   const k=trendRange(), cfg=RANGES[k], c=trendCache[k];
   hideCrosshair();
+  const _live=document.getElementById('trendLive'); if(_live) _live.style.display='none';
   if(!c || !c.assets || c.dataMax<=c.dataMin){
     svg.innerHTML=''; yAx.innerHTML=''; xAx.innerHTML=''; nowEl.textContent=''; trendDraw=null;
     drawBrush(null);
@@ -1055,14 +1086,22 @@ function drawTrend(){
   const min=Math.min(...pts),max=Math.max(...pts),mid=(min+max)/2,W=720,H=130,pad=12;
   const xt=t=>pad+((t-times[0])/((times[last]-times[0])||1))*(W-2*pad);
   const y=val=>H-pad-((val-min)/((max-min)||1))*(H-2*pad);
-  let d=''; rows.forEach((r,i)=>{ d+=(i?'L':'M')+xt(r.t).toFixed(1)+' '+y(r.v).toFixed(1)+' '; });
-  const area=`M${xt(times[0]).toFixed(1)} ${H-pad} `+rows.map(r=>`L${xt(r.t).toFixed(1)} ${y(r.v).toFixed(1)}`).join(' ')+` L${xt(times[last]).toFixed(1)} ${H-pad} Z`;
+  const P=rows.map(r=>({x:+xt(r.t).toFixed(2), y:+y(r.v).toFixed(2)}));
+  const curve=smoothCurve(P);
+  const d=`M${P[0].x} ${P[0].y}${curve}`;
+  const area=`M${P[0].x} ${H-pad} L${P[0].x} ${P[0].y}${curve} L${P[last].x} ${H-pad} Z`;
   const grid=[pad,H/2,H-pad].map(gy=>`<line x1="0" y1="${gy}" x2="${W}" y2="${gy}" stroke="rgba(255,255,255,.07)" stroke-dasharray="3 6"/>`).join('');
-  svg.innerHTML=`<defs><linearGradient id="ta" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#e3c08d" stop-opacity=".34"/><stop offset="1" stop-color="#e3c08d" stop-opacity="0"/></linearGradient></defs>
+  svg.innerHTML=`<defs>
+      <linearGradient id="ta" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e3c08d" stop-opacity=".30"/><stop offset="1" stop-color="#e3c08d" stop-opacity="0"/></linearGradient>
+      <linearGradient id="tline" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#c89a55"/><stop offset=".5" stop-color="#f6e3b4"/><stop offset="1" stop-color="#e3c08d"/></linearGradient>
+      <filter id="tglow" x="-3%" y="-40%" width="106%" height="180%"><feGaussianBlur stdDeviation="1.3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
     ${grid}
-    <path d="${area}" fill="url(#ta)"/><path d="${d}" fill="none" stroke="#e3c08d" stroke-width="2.4" stroke-linejoin="round"/>
-    <circle cx="${xt(times[last]).toFixed(1)}" cy="${y(pts[last]).toFixed(1)}" r="4" fill="#0b0f18" stroke="#e3c08d" stroke-width="2"/>`;
+    <path d="${area}" fill="url(#ta)"/>
+    <path d="${d}" fill="none" stroke="url(#tline)" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke" filter="url(#tglow)"/>`;
+  /* punto “en vivo” al final de la línea (HTML → círculo perfecto y pulso suave, sin deformarse) */
+  const liveEl=document.getElementById('trendLive'), lp=plotPos(P[last].x/W, P[last].y/H);
+  if(liveEl && lp){ liveEl.style.display='block'; liveEl.style.left=lp.left+'px'; liveEl.style.top=lp.top+'px'; }
   yAx.innerHTML=`<span style="top:${pad}px">${fmt(max)}</span><span style="top:${H/2}px">${fmt(mid)}</span><span style="top:${H-pad}px">${fmt(min)}</span>`;
   const xf=new Intl.DateTimeFormat('es-ES',cfg.xfmt), xsf=cfg.xsub?new Intl.DateTimeFormat('es-ES',cfg.xsub):null;
   xAx.innerHTML=[0,0.25,0.5,0.75,1].map(f=>{ const dt=new Date(times[0]+f*(times[last]-times[0]));
@@ -1092,22 +1131,32 @@ function valOnSeries(rows,t){
   let i=lastLE(rows,t); if(i>=rows.length-1) return rows[rows.length-1].v;
   const a=rows[i],b=rows[i+1],f=(t-a.t)/((b.t-a.t)||1); return a.v+(b.v-a.v)*f;
 }
+/* posición en píxeles dentro de .trend-plot a partir de fracciones (0..1) del SVG.
+   Usa getBoundingClientRect (no offsetWidth) porque en SVG no es fiable entre navegadores
+   — era una de las causas del punto descolocado. */
+function plotPos(fracX,fracY){
+  const svg=document.getElementById('trend'), plot=document.getElementById('trendPlot');
+  if(!svg||!plot) return null;
+  const s=svg.getBoundingClientRect(), p=plot.getBoundingClientRect();
+  if(!s.width||!s.height) return null;
+  const sx=s.left-p.left, sy=s.top-p.top;
+  return { left:sx+fracX*s.width, top:sy+fracY*s.height, sx, sy, w:s.width, h:s.height };
+}
 function showCrosshair(frac){
-  const svg=document.getElementById('trend'); const cr=document.getElementById('trendCross'), dot=document.getElementById('trendDot'), tip=document.getElementById('trendTip');
-  if(!trendDraw||!svg||!cr) return;
+  const cr=document.getElementById('trendCross'), dot=document.getElementById('trendDot'), tip=document.getElementById('trendTip');
+  if(!trendDraw||!cr) return;
   frac=Math.max(0,Math.min(1,frac));
   const t=trendDraw.t0+frac*(trendDraw.t1-trendDraw.t0);
   const val=valOnSeries(trendDraw.rows,t); if(val==null) return;
   const {min,max,H,pad}=trendDraw;
   const yv=H-pad-((val-min)/((max-min)||1))*(H-2*pad);
-  const left=svg.offsetLeft+frac*svg.offsetWidth;
-  const topDot=svg.offsetTop+(yv/H)*svg.offsetHeight;
-  cr.style.display='block'; cr.style.left=left+'px'; cr.style.top=svg.offsetTop+'px'; cr.style.height=svg.offsetHeight+'px';
-  dot.style.display='block'; dot.style.left=left+'px'; dot.style.top=topDot+'px';
-  const cfg=RANGES[trendRange()]; const xf=new Intl.DateTimeFormat('es-ES',{day:'2-digit',month:'short',year:'2-digit',hour:'2-digit',minute:'2-digit'});
+  const pos=plotPos(frac, yv/H); if(!pos) return;
+  cr.style.display='block'; cr.style.left=pos.left+'px'; cr.style.top=pos.sy+'px'; cr.style.height=pos.h+'px';
+  dot.style.display='block'; dot.style.left=pos.left+'px'; dot.style.top=pos.top+'px';
+  const xf=new Intl.DateTimeFormat('es-ES',{day:'2-digit',month:'short',year:'2-digit',hour:'2-digit',minute:'2-digit'});
   tip.style.display='block'; tip.innerHTML=`<b>${fmt2(val)}</b><span>${xf.format(new Date(t))}</span>`;
-  const tw=tip.offsetWidth||120; let tl=left+12; if(tl+tw>svg.offsetLeft+svg.offsetWidth) tl=left-tw-12;
-  tip.style.left=Math.max(svg.offsetLeft,tl)+'px'; tip.style.top=(svg.offsetTop+6)+'px';
+  const tw=tip.offsetWidth||120; let tl=pos.left+12; if(tl+tw>pos.sx+pos.w) tl=pos.left-tw-12;
+  tip.style.left=Math.max(pos.sx,tl)+'px'; tip.style.top=(pos.sy+6)+'px';
 }
 function hideCrosshair(){ ['trendCross','trendDot','trendTip'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display='none'; }); }
 /* --- gestos: arrastrar para desplazar, rueda para zoom, pellizco en táctil --- */
@@ -1131,7 +1180,10 @@ function initTrendGestures(){
       if(Math.abs(dx)>0) trendPan(-dx/r.width); return; }
     showCrosshair(fracX(e));
   });
-  const end=e=>{ ptrs.delete(e.pointerId); if(ptrs.size<2) pinchD=0; if(ptrs.size===0){ dragX=null; scrub=false; svg.style.cursor='grab'; } };
+  const end=e=>{ ptrs.delete(e.pointerId); if(ptrs.size<2) pinchD=0;
+    if(ptrs.size===0){ dragX=null;
+      if(scrub||e.pointerType==='touch') hideCrosshair();   /* al soltar el dedo, ocultar el punto (evita que quede uno “fantasma” colgado) */
+      scrub=false; svg.style.cursor='grab'; } };
   svg.addEventListener('pointerup',end); svg.addEventListener('pointercancel',end);
   svg.addEventListener('pointerleave',e=>{ if(e.pointerType!=='touch' && dragX==null) hideCrosshair(); });
   svg.addEventListener('wheel',e=>{ e.preventDefault(); const f=e.deltaY>0?1.18:0.85; trendZoom(f,fracX(e)); },{passive:false});
@@ -1354,6 +1406,11 @@ window.addEventListener('resize',()=>{ hideCrosshair(); drawTrend(); });
 setInterval(render, 60000);                 /* recalcula el devengo de las monedas cada minuto */
 setInterval(()=>refresh(), 300000);         /* refresca precios y tarjetas cada 5 min, sin intervención */
 setInterval(()=>loadTrend(true), 180000);   /* reconstruye el gráfico con datos de mercado cada 3 min */
+/* Al día sin intervención: al volver a la app (reabrir / cambiar de pestaña) o al recuperar
+   conexión, refresca precios e histórico de mercado al instante — el gráfico avanza solo,
+   aunque la app haya estado cerrada, porque se reconstruye con el histórico real del mercado. */
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ refresh(); loadTrend(true); } });
+window.addEventListener('online',()=>{ refresh(); loadTrend(true); });
 </script>
 </body>
 </html>
