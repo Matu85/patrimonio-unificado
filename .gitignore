@@ -12,6 +12,7 @@ make-icons.mjs
 package.json
 package-lock.json
 
-# Config local privada — contiene tu email; la usa la tarea local del
-# resumen semanal. NO se versiona ni se publica.
+# Config y datos locales privados — los usa la tarea local del resumen
+# semanal. Contienen tu email y tus cifras. NO se versionan ni se publican.
 portfolio.json
+snapshots.json
