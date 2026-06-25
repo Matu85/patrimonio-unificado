@@ -1,11 +1,16 @@
 {
+  "id": "/",
   "name": "Patrimonio Unificado",
   "short_name": "Patrimonio",
   "description": "Broker, fondos y cripto en una sola vista, con precios en vivo y rebalanceo.",
+  "lang": "es",
+  "dir": "ltr",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "orientation": "portrait",
+  "categories": ["finance", "productivity", "business"],
   "background_color": "#0A0A08",
   "theme_color": "#0A0A08",
   "icons": [

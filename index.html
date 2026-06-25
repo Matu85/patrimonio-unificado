@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Patrimonio Unificado · Wealth Dashboard</title>
 <link rel="manifest" href="manifest.json">
 <!-- Configuración de la cuenta/nube (login + sincronización). Si no está rellenada,
@@ -14,6 +14,15 @@
   window.CLOUD_ON = !!(window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.apiKey
                        && String(window.FIREBASE_CONFIG.apiKey).indexOf('PEGA-AQUI') < 0);
   if(window.CLOUD_ON) document.documentElement.classList.add('cloud-on');
+  /* ¿Corriendo dentro de la app nativa (Capacitor)? Entonces la función /api/yahoo no existe
+     en este origen: apuntamos a la desplegada en Vercel. En la web normal se queda relativa. */
+  window.apiBase = function(){ try{ return (window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform())
+                       ? 'https://patrimonio-unificado.vercel.app' : ''; }catch(e){ return ''; } };
+  window.isNativeApp = function(){ try{ return !!(window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform()); }catch(e){ return false; } };
+  /* Service worker: hace la web instalable y offline (no se registra dentro de la app nativa) */
+  if('serviceWorker' in navigator && location.protocol.startsWith('http') && !window.isNativeApp()){
+    addEventListener('load', ()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
+  }
 </script>
 <!-- Fuentes sin bloquear el render: se cargan en paralelo y aparecen al estar listas -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -63,6 +72,15 @@
     background-attachment:fixed; min-height:100vh;
   }
   .shell{max-width:1280px;margin:0 auto;padding:32px 28px 80px}
+  /* App instalada / nativa: respeta el notch y el indicador inferior (safe-area) */
+  @media (display-mode:standalone){
+    .shell{ padding-top:max(32px, calc(env(safe-area-inset-top) + 14px));
+            padding-bottom:max(80px, calc(env(safe-area-inset-bottom) + 24px));
+            padding-left:max(28px, env(safe-area-inset-left));
+            padding-right:max(28px, env(safe-area-inset-right)); }
+  }
+  html.cap-native .shell{ padding-top:max(32px, calc(env(safe-area-inset-top) + 14px));
+            padding-bottom:max(80px, calc(env(safe-area-inset-bottom) + 24px)); }
 
   /* ---------- Top bar ---------- */
   .topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:26px}
@@ -891,7 +909,7 @@ const fxCache={};
 async function yahooJson(sym,range,interval){
   const direct=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=${range}&interval=${interval}`;
   const urls=[
-    `/api/yahoo?symbol=${encodeURIComponent(sym)}&range=${range}&interval=${interval}`,
+    `${window.apiBase?window.apiBase():''}/api/yahoo?symbol=${encodeURIComponent(sym)}&range=${range}&interval=${interval}`,
     `https://corsproxy.io/?url=${encodeURIComponent(direct)}`,
     `https://api.allorigins.win/raw?url=${encodeURIComponent(direct)}`
   ];
