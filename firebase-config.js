@@ -12,7 +12,7 @@
    ============================================================ */
 window.FIREBASE_CONFIG = {
   apiKey: "AIzaSyA_slAZM6qLBxaWoFFpxGyTDsQf-UdKUeU",
-  authDomain: "patrimonio-unificado.firebaseapp.com",
+  authDomain: "patrimonio-unificado.vercel.app",  // el login pasa por nuestro propio dominio (proxy en vercel.json) para que funcione en móvil/PWA
   projectId: "patrimonio-unificado",
   appId: "1:651508515879:web:a30e11e219719829123a02"
 };
