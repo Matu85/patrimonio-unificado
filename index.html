@@ -798,14 +798,17 @@ function seedHistory(){
 }
 
 /* ----------------------------- Precios ----------------------------- */
+let _cryptoBusy=false;   /* guardia anti-concurrencia: nunca dos peticiones de precio crypto a la vez */
 async function fetchCrypto(){
   const ids=[...new Set(state.holdings.filter(h=>h.src==='crypto'&&h.cg).map(h=>h.cg))];
-  if(!ids.length) return;
+  if(!ids.length || _cryptoBusy) return;
+  _cryptoBusy=true;
   try{
     const r=await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids.join(',')}&vs_currencies=eur`,{cache:'no-store'});
     if(!r.ok) throw 0; const d=await r.json();
     state.holdings.forEach(h=>{ if(h.src==='crypto'&&d[h.cg]&&d[h.cg].eur){ h.price=d[h.cg].eur; h.live=true; }});
   }catch(e){ state.holdings.forEach(h=>{ if(h.src==='crypto') h.live=false; }); }
+  finally{ _cryptoBusy=false; }
 }
 function ysym(s){ return (s||'').replace(/\.us$/i,'').toUpperCase(); } /* vt.us→VT · vwce.de→VWCE.DE · AAPL→AAPL */
 const fxCache={};
@@ -944,7 +947,7 @@ function render(){
   document.getElementById('updated').textContent='actualizado '+new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
 
   drawDonut(cls,tot); drawLegend(cls,tot); drawClasses(cls,tot);
-  drawAlerts(cls,tot); drawDeltas(cls,tot); renderTrendRanges(); drawTrend(); drawYields(); drawPositions(tot);
+  drawAlerts(cls,tot); drawDeltas(cls,tot); renderTrendRanges(); noteLiveTrend(); drawTrend(); drawYields(); drawPositions(tot);
 }
 function drawDonut(cls,tot){
   const svg=document.getElementById('donut'), r=74, cx=105, cy=105, C=2*Math.PI*r, gap=C*0.02;
@@ -1042,10 +1045,20 @@ const MINSPAN=5*60*1000;        /* zoom máximo: 5 min de ventana */
 let trendCache={}, trendLoading=false, trendView={}, trendDraw=null;
 function trendRange(){ return RANGES[state.trendRange] ? state.trendRange : 'semana'; }
 function rangeTTL(k){ return (k==='hora'||k==='dia') ? 120000 : (k==='semana' ? 600000 : 1800000); }
+/* Normaliza una serie de puntos {t,p}: descarta inválidos, fuerza orden ASCENDENTE por tiempo
+   y funde duplicados de timestamp (el último gana). Una serie así nunca produce "líneas hacia
+   atrás": la búsqueda binaria y la fusión asumen orden creciente estricto. */
+function sortDedupPts(pts){
+  if(!pts||!pts.length) return null;
+  const m=new Map();
+  for(const p of pts){ if(p && isFinite(p.t) && isFinite(p.p) && p.p>0) m.set(+p.t,{t:+p.t,p:+p.p}); }
+  const out=[...m.values()].sort((a,b)=>a.t-b.t);
+  return out.length?out:null;
+}
 async function histCrypto(cgId,days){
   try{ const r=await fetch(`https://api.coingecko.com/api/v3/coins/${encodeURIComponent(cgId)}/market_chart?vs_currency=eur&days=${days}`,{cache:'no-store'});
     if(!r.ok) return null; const j=await r.json();
-    return (j.prices&&j.prices.length)? j.prices.map(a=>({t:a[0],p:a[1]})) : null;
+    return (j.prices&&j.prices.length)? sortDedupPts(j.prices.map(a=>({t:a[0],p:a[1]}))) : null;
   }catch(e){ return null; }
 }
 async function histStock(sym,range,interval){
@@ -1054,7 +1067,7 @@ async function histStock(sym,range,interval){
   const ts=res.timestamp, q=(res.indicators&&res.indicators.quote&&res.indicators.quote[0]&&res.indicators.quote[0].close)||[];
   const cur=(res.meta&&res.meta.currency)||'EUR', rate = cur==='EUR'?1:((await fxToEur(cur))||1);
   const out=[]; ts.forEach((t,i)=>{ const p=q[i]; if(p!=null&&p>0) out.push({t:t*1000,p:p*rate}); });
-  return out.length?out:null;
+  return sortDedupPts(out);
 }
 /* índice del último punto con t <= objetivo (búsqueda binaria, para que el arrastre sea fluido) */
 function lastLE(pts,t){ if(!pts.length||pts[0].t>=t) return 0; let lo=0,hi=pts.length-1,ans=0;
@@ -1130,15 +1143,30 @@ async function loadTrend(force){
     }
   }
   catch(e){}
-  finally{ trendLoading=false; drawTrend(); }
+  finally{ trendLoading=false; noteLiveTrend(); drawTrend(); }
 }
 function setTrendRange(k){ if(!RANGES[k]) return; state.trendRange=k; save(); renderTrendRanges(); loadTrend(false); }
 /* tras un cambio de saldo: redibuja al instante con la serie cacheada (el borde derecho pasa a ser AHORA) y luego refresca precios */
 function refreshTrendAfterChange(){ const k=trendRange(), c=trendCache[k];
   if(c&&c.assets){ const oldMax=c.dataMax||0, v=trendView[k]; c.dataMax=Math.max(oldMax,Date.now());
     if(v && v.end>=oldMax-1000){ const span=v.end-v.start; v.end=c.dataMax; v.start=Math.max(c.dataMin,c.dataMax-span); }
-    drawTrend(); }
+    noteLiveTrend(); drawTrend(); }
   loadTrend(true); }
+/* Tick en vivo APPEND-ONLY: anota el patrimonio total actual (precio en vivo) como punto al
+   frente de cada serie cacheada, con guardia de tiempo monótono — nunca se inserta un punto
+   con t <= al último. Así el gráfico avanza con cada actualización de precio sin reconstruir
+   el histórico (patrón update(), no setData()). No dibuja: el llamador hace drawTrend(). */
+function noteLiveTrend(){
+  const {tot}=totals(); if(!(tot>0)) return; const t=Date.now();
+  Object.keys(trendCache).forEach(k=>{
+    const c=trendCache[k]; if(!c||!c.assets) return;
+    const prev=c.live;
+    if(prev && t<=prev.t){ if(t===prev.t) prev.v=tot; return; }   /* descarta/funde: jamás retrocede */
+    c.live={t,v:tot};
+    if(t>c.dataMax){ const oldMax=c.dataMax; c.dataMax=t; const v=trendView[k];   /* extiende el borde derecho a AHORA */
+      if(v && v.end>=oldMax-1000){ const span=v.end-v.start; v.end=t; v.start=Math.max(c.dataMin,t-span); } }
+  });
+}
 function renderTrendRanges(){
   const el=document.getElementById('trendRanges'); if(!el) return; const cur=trendRange();
   el.innerHTML=Object.keys(RANGES).map(k=>`<button data-k="${k}" class="${k===cur?'on':''}" onclick="setTrendRange('${k}')">${RANGES[k].label}</button>`).join('');
@@ -1206,6 +1234,14 @@ function drawTrend(){
   }
   const v=viewOf(k);
   const rows=mergeSeries(c.assets,v.start,v.end).filter(r=>r.v>0);
+  /* Punto en vivo al frente: solo si estamos viendo "hoy" (su t cae dentro de la ventana).
+     Append-only — si su t > último, se añade; si coincide, se actualiza el valor; nunca antes. */
+  const live=c.live;
+  if(live && live.v>0 && live.t>=v.start && live.t<=v.end){
+    const lr=rows[rows.length-1];
+    if(!lr || live.t>lr.t) rows.push({t:live.t,v:live.v});
+    else if(live.t===lr.t) lr.v=live.v;
+  }
   if(rows.length<2){ svg.innerHTML=''; yAx.innerHTML=''; xAx.innerHTML=''; nowEl.textContent=''; trendDraw=null; drawBrush(v); return; }
   const pts=rows.map(r=>r.v), times=rows.map(r=>r.t), last=pts.length-1;
   const min=Math.min(...pts),max=Math.max(...pts),mid=(min+max)/2,W=720,H=130,pad=12;
@@ -1529,8 +1565,12 @@ normalizeApy(); normalizeQtyHist(); recordSnapshot(); render(); refresh(); loadT
 if(dispCur!=='EUR'){ loadDispRate(false).then(ok=>{ if(ok){ render(); } else { dispCur='EUR'; state.currency='EUR'; save(); renderCurrencyOptions(); render(); } }); }
 window.addEventListener('resize',()=>{ hideCrosshair(); drawTrend(); });
 setInterval(render, 60000);                 /* recalcula el devengo de las monedas cada minuto */
-setInterval(()=>refresh(), 300000);         /* refresca precios y tarjetas cada 5 min, sin intervención */
-setInterval(()=>loadTrend(true), 180000);   /* reconstruye el gráfico con datos de mercado cada 3 min */
+/* Tick en vivo del gráfico: cada 60 s, con la pestaña visible, baja solo el precio crypto
+   (petición ligera, con guardia de concurrencia) y ANEXA el patrimonio actual al frente del
+   gráfico vía noteLiveTrend() — append-only, sin reconstruir el histórico (patrón update()). */
+setInterval(async()=>{ if(document.hidden) return; await fetchCrypto(); render(); }, 60000);
+setInterval(()=>refresh(), 300000);         /* refresca todos los precios y tarjetas cada 5 min */
+setInterval(()=>{ if(!document.hidden) loadTrend(true); }, 180000);   /* reconstruye el histórico de mercado cada 3 min */
 /* Al día sin intervención: al volver a la app (reabrir / cambiar de pestaña) o al recuperar
    conexión, refresca precios e histórico de mercado al instante — el gráfico avanza solo,
    aunque la app haya estado cerrada, porque se reconstruye con el histórico real del mercado. */
