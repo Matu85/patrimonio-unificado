@@ -18,9 +18,9 @@
 <!-- Fuentes sin bloquear el render: se cargan en paralelo y aparecen al estar listas -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&display=swap" media="print" onload="this.media='all'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&display=swap"></noscript>
-<meta name="theme-color" content="#0b0f1a">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Syne:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Barlow+Condensed:wght@400;600;700&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Syne:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Barlow+Condensed:wght@400;600;700&display=swap"></noscript>
+<meta name="theme-color" content="#0A0A08">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -30,31 +30,39 @@
 <meta name="apple-mobile-web-app-title" content="Patrimonio">
 <style>
   :root{
-    --bg:#070a12;
-    --gold:#e3c08d; --gold-2:#f6e3b4; --gold-3:#c89a55; --gold-dim:rgba(227,192,141,.72);
-    --tx:#eef1f7; --mut:#9aa3b4; --soft:#c2c9d6;
-    --broker:#6aa0ff; --broker-l:#9cc4ff;
-    --fondos:#3fe0b0; --fondos-l:#84f1d2;
-    --cripto:#f5b65a; --cripto-l:#ffd591;
-    --good:#56e08e; --bad:#fb7a8e; --warn:#f0c45e;
-    --line:rgba(255,255,255,.08); --line2:rgba(255,255,255,.15);
-    --glass:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.018));
-    --rad:18px;
-    --shadow:0 24px 60px -28px rgba(0,0,0,.75), inset 0 1px 0 rgba(255,255,255,.07);
+    --bg:#0A0A08; --bg2:#111110; --surface:#141412; --surface2:#1A1A17;
+    --gold:#D4A853; --gold-2:#EBC878; --gold-3:#A07A30; --gold-dim:rgba(212,168,83,.72);
+    --accent:#C8553D; --accent-2:#E07055; --accent-3:#8C3A28; --accent-glow:rgba(200,85,61,.22);
+    --tx:#F0EDE0; --mut:#5C5A50; --soft:#A09D8E;
+    --broker:#7BA7D4; --broker-l:#A9C6E4;
+    --fondos:#6BAE8E; --fondos-l:#93C8AE;
+    --cripto:#C8B85A; --cripto-l:#DBCE85;
+    --good:#6BAE8E; --bad:#C8553D; --warn:#C8B85A;
+    --line:rgba(255,253,240,.07); --line2:rgba(255,253,240,.14);
+    --glass:linear-gradient(180deg,#171715,#141412);
+    --rad:10px; --rad-sm:4px; --rad-lg:12px;
+    --shadow:0 16px 48px -22px rgba(0,0,0,.92), inset 0 1px 0 rgba(255,253,240,.03);
+    --font-display:'Playfair Display',Georgia,serif;
+    --font-body:'Syne',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    --font-mono:'IBM Plex Mono',ui-monospace,'Courier New',monospace;
+    --font-num:'Barlow Condensed','Arial Narrow',sans-serif;
   }
   *{box-sizing:border-box}
   html,body{margin:0}
   body{
-    font-family:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    font-family:var(--font-body);
     color:var(--tx); font-variant-numeric:tabular-nums; -webkit-font-smoothing:antialiased;
-    background:
-      radial-gradient(1000px 560px at 8% -10%, rgba(106,160,255,.13), transparent 60%),
-      radial-gradient(900px 560px at 102% -6%, rgba(227,192,141,.14), transparent 55%),
-      radial-gradient(820px 680px at 50% 128%, rgba(63,224,176,.08), transparent 60%),
-      var(--bg);
+    background-color:var(--bg);
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='600' viewBox='0 0 1200 600'%3E%3Cdefs%3E%3ClinearGradient id='g1' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23C8553D' stop-opacity='.06'/%3E%3Cstop offset='1' stop-color='%23C8553D' stop-opacity='0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M0 520 C80 500 120 480 180 440 C240 400 260 420 320 380 C380 340 400 310 460 280 C520 250 540 270 600 220 C660 170 680 190 740 150 C800 110 820 140 880 100 C940 60 960 80 1020 55 C1080 30 1100 45 1200 20' fill='none' stroke='%23D4A853' stroke-width='1.5' stroke-opacity='.12'/%3E%3Cpath d='M0 520 C80 500 120 480 180 440 C240 400 260 420 320 380 C380 340 400 310 460 280 C520 250 540 270 600 220 C660 170 680 190 740 150 C800 110 820 140 880 100 C940 60 960 80 1020 55 C1080 30 1100 45 1200 20 L1200 600 L0 600 Z' fill='url(%23g1)'/%3E%3Cpath d='M0 560 C100 545 150 530 220 510 C290 490 310 505 380 485 C450 465 470 445 540 420 C610 395 630 410 700 385 C770 360 790 375 860 345 C930 315 950 330 1020 295 C1090 260 1120 275 1200 240' fill='none' stroke='%23C8553D' stroke-width='1' stroke-opacity='.08' stroke-dasharray='4 8'/%3E%3Cg stroke='%23F0EDE0' stroke-opacity='.025' stroke-width='.5'%3E%3Cline x1='0' y1='100' x2='1200' y2='100'/%3E%3Cline x1='0' y1='200' x2='1200' y2='200'/%3E%3Cline x1='0' y1='300' x2='1200' y2='300'/%3E%3Cline x1='0' y1='400' x2='1200' y2='400'/%3E%3Cline x1='0' y1='500' x2='1200' y2='500'/%3E%3C/g%3E%3C/svg%3E"),
+      radial-gradient(ellipse 60% 100% at -5% 50%, rgba(200,85,61,.08), transparent 70%),
+      radial-gradient(ellipse 80% 40% at 50% -10%, rgba(212,168,83,.06), transparent 60%);
+    background-size:1200px 600px, auto, auto;
+    background-position:center bottom, left center, center top;
+    background-repeat:no-repeat;
     background-attachment:fixed; min-height:100vh;
   }
-  .shell{max-width:1240px;margin:0 auto;padding:30px 26px 70px}
+  .shell{max-width:1280px;margin:0 auto;padding:32px 28px 80px}
 
   /* ---------- Top bar ---------- */
   .topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:26px}
@@ -405,6 +413,50 @@
   #userChip .uname{font-size:12.5px;color:var(--soft);font-weight:600;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   #userChip .uout{padding:8px 12px;font-size:12.5px}
   @media(max-width:600px){ #userChip .uname{display:none} #userChip{order:-1} .gate-card{padding:26px 20px 22px} }
+
+  /* ════════ DESIGN v2 — reskin editorial (papel oscuro · bermejo · oro) ════════ */
+  .brand-name{text-transform:uppercase;letter-spacing:2px;font-size:14px;font-weight:700;font-family:var(--font-body)}
+  .brand-sub{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.3px}
+  .mark{background:none!important;box-shadow:none!important;width:36px;height:36px;border-radius:0;color:inherit}
+  .mark .ic{display:none}
+  /* etiquetas en monoespaciada, estilo terminal financiera */
+  .eyebrow,.kicker,.mini-l,.dcell .lbl,.set-h,.muted,.trend-legend,.trend-x,.trend-y,
+  th,.badge,.tag,.leg .pc,.leg .am,.trend-now,.trend-hint,.mailmeta,.set-d,.gate-foot,.gate-or,.gate-msg{font-family:var(--font-mono)}
+  .eyebrow{color:var(--mut);letter-spacing:4px;font-size:9.5px;font-weight:600;display:flex;align-items:center;gap:10px}
+  .eyebrow::before{content:"";width:24px;height:1px;background:var(--accent)}
+  .kicker{color:var(--mut);letter-spacing:3px;font-size:9.5px}
+  .kicker .kic{color:var(--accent)}
+  .mini-l{letter-spacing:2px;font-size:9px}
+  .btn{border-radius:var(--rad-sm);text-transform:uppercase;letter-spacing:.4px;font-size:11.5px;font-weight:600;font-family:var(--font-body)}
+  .btn.gold{color:#fff;border:1px solid var(--accent);background:var(--accent);
+    box-shadow:0 4px 20px -8px var(--accent-glow)}
+  .btn.gold:hover{background:var(--accent-2);border-color:var(--accent-2);filter:none}
+  .cur-select{border-radius:var(--rad-sm)}
+  .hero{border-radius:var(--rad);background:var(--surface);overflow:hidden}
+  .hero::after{content:'WEALTH';inset:auto;right:-8px;top:50%;transform:translateY(-50%);
+    font-family:var(--font-display);font-size:clamp(90px,14vw,150px);font-weight:900;
+    color:rgba(255,253,240,.025);letter-spacing:-4px;line-height:1;white-space:nowrap;background:none;border-radius:0}
+  @media(max-width:1000px){.hero::after{display:none}}
+  .total-num{font-family:var(--font-num);font-weight:700;font-style:normal;letter-spacing:-1px;
+    font-size:clamp(54px,8vw,90px);line-height:1;
+    background:linear-gradient(160deg,var(--gold-2),var(--gold) 55%,var(--gold-3));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .mini-v{font-family:var(--font-num);font-weight:700;color:var(--tx)}
+  .pill{border-radius:2px}
+  .mini{border-radius:6px}
+  .card{border-radius:var(--rad);background:var(--surface);border-color:var(--line)}
+  .card::before{inset:0 0 auto 0;height:1px;border-radius:0;
+    background:linear-gradient(90deg,transparent 10%,var(--accent-glow) 50%,transparent 90%)}
+  .classcard,.dcell,.alert,.edcard{border-radius:var(--rad-sm)}
+  .tag{border-radius:2px}
+  .bar .tgt,.trend-cross{background:var(--accent)}
+  .trend-ranges button.on{background:var(--accent);color:#fff}
+  .trend-live{background:var(--accent-2);box-shadow:0 0 9px rgba(224,112,85,.95)}
+  .modal-bg{background:rgba(4,4,3,.85)}
+  .modal{background:var(--surface2);border-radius:var(--rad-lg)}
+  .mailhead b,.set-h{font-family:var(--font-mono);letter-spacing:1px;text-transform:uppercase}
+  #authGate{background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(200,85,61,.10),transparent 60%),
+    radial-gradient(ellipse 60% 80% at 0% 100%,rgba(212,168,83,.07),transparent 60%),var(--bg)}
+  .gate-card{background:rgba(20,20,18,.97);border-radius:var(--rad-lg)}
 </style>
 </head>
 <body>
@@ -436,7 +488,7 @@
 <div id="authGate" aria-hidden="true">
   <div class="gate-card">
     <div class="gate-brand">
-      <div class="mark"><svg class="ic"><use href="#i-mark"/></svg></div>
+      <div class="mark"><svg width="36" height="36" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="mLine" x1="0" y1="1" x2="1" y2="0"><stop offset="0%" stop-color="#B98E3A"/><stop offset="55%" stop-color="#E6C171"/><stop offset="100%" stop-color="#F2D98C"/></linearGradient><linearGradient id="mArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#D4A853" stop-opacity=".30"/><stop offset="100%" stop-color="#D4A853" stop-opacity="0"/></linearGradient></defs><rect width="36" height="36" rx="8" fill="#141412"/><rect x=".5" y=".5" width="35" height="35" rx="7.5" fill="none" stroke="rgba(212,168,83,.22)" stroke-width="1"/><path d="M6 24 L11 18 L16 20 L23 13 L29 8 L29 27 L6 27 Z" fill="url(#mArea)"/><polyline points="6,24 11,18 16,20 23,13 29,8" fill="none" stroke="url(#mLine)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><line x1="6" y1="27" x2="29" y2="27" stroke="rgba(212,168,83,.25)" stroke-width="1" stroke-linecap="round"/><circle cx="29" cy="8" r="3.3" fill="#C8553D"/><circle cx="29" cy="8" r="3.3" fill="none" stroke="#E07055" stroke-width=".8" opacity=".55"/></svg></div>
       <div>
         <div class="brand-name">Patrimonio Unificado</div>
         <div class="brand-sub">Tu patrimonio, sincronizado en todos tus dispositivos</div>
@@ -474,7 +526,7 @@
   <!-- Top bar -->
   <header class="topbar">
     <div class="brand">
-      <div class="mark"><svg class="ic"><use href="#i-mark"/></svg></div>
+      <div class="mark"><svg width="36" height="36" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="mLine" x1="0" y1="1" x2="1" y2="0"><stop offset="0%" stop-color="#B98E3A"/><stop offset="55%" stop-color="#E6C171"/><stop offset="100%" stop-color="#F2D98C"/></linearGradient><linearGradient id="mArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#D4A853" stop-opacity=".30"/><stop offset="100%" stop-color="#D4A853" stop-opacity="0"/></linearGradient></defs><rect width="36" height="36" rx="8" fill="#141412"/><rect x=".5" y=".5" width="35" height="35" rx="7.5" fill="none" stroke="rgba(212,168,83,.22)" stroke-width="1"/><path d="M6 24 L11 18 L16 20 L23 13 L29 8 L29 27 L6 27 Z" fill="url(#mArea)"/><polyline points="6,24 11,18 16,20 23,13 29,8" fill="none" stroke="url(#mLine)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><line x1="6" y1="27" x2="29" y2="27" stroke="rgba(212,168,83,.25)" stroke-width="1" stroke-linecap="round"/><circle cx="29" cy="8" r="3.3" fill="#C8553D"/><circle cx="29" cy="8" r="3.3" fill="none" stroke="#E07055" stroke-width=".8" opacity=".55"/></svg></div>
       <div>
         <div class="brand-name">Patrimonio Unificado</div>
         <div class="brand-sub">Broker · Fondos · Cripto — una sola vista, precios en vivo</div>
@@ -962,8 +1014,8 @@ function drawDonut(cls,tot){
       transform="rotate(-90 ${cx} ${cy})"/>`;
     off+=frac*C; });
   svg.innerHTML=defs+arcs+
-    `<text x="${cx}" y="${cy-3}" text-anchor="middle" fill="#e3c08d" font-size="17" font-weight="600" font-family="Manrope">${fmt(tot)}</text>
-     <text x="${cx}" y="${cy+17}" text-anchor="middle" fill="#9aa3b4" font-size="10.5" letter-spacing="2" font-family="Manrope">PATRIMONIO</text>`;
+    `<text x="${cx}" y="${cy-2}" text-anchor="middle" fill="#D4A853" font-size="20" font-weight="700" font-family="Barlow Condensed,Arial Narrow,sans-serif">${fmt(tot)}</text>
+     <text x="${cx}" y="${cy+17}" text-anchor="middle" fill="#5C5A50" font-size="9.5" letter-spacing="2.5" font-family="IBM Plex Mono,monospace">PATRIMONIO</text>`;
 }
 function drawLegend(cls,tot){
   document.getElementById('legend').innerHTML=state.categories.map(c=>{ const p=tot?cls[c.key]/tot*100:0;
@@ -1253,8 +1305,8 @@ function drawTrend(){
   const area=`M${P[0].x} ${H-pad} L${P[0].x} ${P[0].y}${curve} L${P[last].x} ${H-pad} Z`;
   const grid=[pad,H/2,H-pad].map(gy=>`<line x1="0" y1="${gy}" x2="${W}" y2="${gy}" stroke="rgba(255,255,255,.07)" stroke-dasharray="3 6"/>`).join('');
   svg.innerHTML=`<defs>
-      <linearGradient id="ta" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e3c08d" stop-opacity=".30"/><stop offset="1" stop-color="#e3c08d" stop-opacity="0"/></linearGradient>
-      <linearGradient id="tline" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#c89a55"/><stop offset=".5" stop-color="#f6e3b4"/><stop offset="1" stop-color="#e3c08d"/></linearGradient>
+      <linearGradient id="ta" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D4A853" stop-opacity=".30"/><stop offset="1" stop-color="#D4A853" stop-opacity="0"/></linearGradient>
+      <linearGradient id="tline" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#A07A30"/><stop offset=".5" stop-color="#EBC878"/><stop offset="1" stop-color="#D4A853"/></linearGradient>
       <filter id="tglow" x="-3%" y="-40%" width="106%" height="180%"><feGaussianBlur stdDeviation="1.3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
     </defs>
     ${grid}
