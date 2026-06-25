@@ -224,7 +224,9 @@
   .trend-tools button{appearance:none;border:1px solid var(--line2);background:rgba(255,255,255,.04);color:var(--soft);font-family:inherit;font-size:12px;font-weight:600;padding:5px 11px;border-radius:9px;cursor:pointer;transition:.15s}
   .trend-tools button:hover{color:var(--gold-2);border-color:rgba(227,192,141,.4)}
   .trend-hint{color:var(--mut);font-size:10.5px;margin-left:4px}
-  @media(max-width:560px){ .trend-hint{display:none} .trend-brush,.trend-tools{margin-left:0} }
+  @media(max-width:560px){ .trend-hint{display:none}
+    .trend-plot{padding-left:46px} .trend-y{width:40px;font-size:9.5px} .trend-x{padding-left:46px;font-size:10px}
+    .trend-brush,.trend-tools{margin-left:0} }
 
   /* Table */
   table{width:100%;border-collapse:collapse;font-size:14px}
@@ -1273,19 +1275,23 @@ function trendGoStart(){ const k=trendRange(),c=trendCache[k]; if(!c)return; con
   trendView[k]={start:c.dataMin,end:Math.min(c.dataMax,c.dataMin+span)}; drawTrend(); }
 function trendGoEnd(){ const k=trendRange(),c=trendCache[k]; if(!c)return; const v=viewOf(k), span=v.end-v.start;
   trendView[k]={start:Math.max(c.dataMin,c.dataMax-span),end:c.dataMax}; drawTrend(); }
-/* Catmull-Rom uniforme → curva Bézier suave. Los puntos de control se ACOTAN al rango del
-   tramo, de modo que la línea nunca sobreoscila por encima/debajo de los datos reales: queda
-   sedosa pero sin inventar máximos ni mínimos que no ocurrieron. */
+/* Catmull-Rom uniforme → curva Bézier suave. Los puntos de control se ACOTAN al tramo:
+   - en Y, entre el mínimo y el máximo del tramo → nunca sobreoscila por encima/debajo de los
+     datos reales (no inventa máximos ni mínimos que no ocurrieron).
+   - en X, dentro del propio tramo (a un tercio) → la curva SIEMPRE avanza hacia la derecha y
+     jamás se combea hacia atrás, ni en escalones ni en saltos casi verticales (ese era el bug
+     de las "líneas hacia atrás": los controles en X se salían del tramo y formaban un gancho). */
 function smoothCurve(P){
   if(P.length<2) return '';
   if(P.length===2) return ` L${P[1].x} ${P[1].y}`;
   let d='';
   for(let i=0;i<P.length-1;i++){
     const p0=P[i-1]||P[i], p1=P[i], p2=P[i+1], p3=P[i+2]||P[i+1];
+    const dx=p2.x-p1.x;
     let c1y=p1.y+(p2.y-p0.y)/6, c2y=p2.y-(p3.y-p1.y)/6;
     const lo=Math.min(p1.y,p2.y), hi=Math.max(p1.y,p2.y);
     c1y=Math.max(lo,Math.min(hi,c1y)); c2y=Math.max(lo,Math.min(hi,c2y));
-    const c1x=(p1.x+(p2.x-p0.x)/6).toFixed(2), c2x=(p2.x-(p3.x-p1.x)/6).toFixed(2);
+    const c1x=(p1.x+dx/3).toFixed(2), c2x=(p2.x-dx/3).toFixed(2);
     d+=` C${c1x} ${c1y.toFixed(2)} ${c2x} ${c2y.toFixed(2)} ${p2.x} ${p2.y}`;
   }
   return d;
