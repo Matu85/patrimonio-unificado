@@ -468,6 +468,13 @@
   .dcell .big{font-size:25px;letter-spacing:-.2px}
   .dcell .sub{font-size:14px;letter-spacing:.3px}
   .trend-now{font-size:18px}
+  /* …y también las cifras de las tablas, los inputs numéricos y el eje del gráfico */
+  #positions td:nth-child(n+4),#yields td:nth-child(n+2),
+  input.q,.tgt-input,.edtargets input,.catrow .catobj input,
+  .trend-y,.trend-y span,.trend-tip b{font-family:var(--font-num)}
+  #positions td:nth-child(n+4),#yields td:nth-child(n+2){font-size:14.5px;letter-spacing:.2px}
+  .trend-y span{font-size:12px}
+  .rtable td::before{font-family:var(--font-mono)}   /* las etiquetas de la vista móvil siguen mono */
 </style>
 </head>
 <body>
