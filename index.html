@@ -58,7 +58,42 @@ window.I18N = {
     loadingHist:"Cargando histórico de mercado…", noHistRange:"Sin histórico de mercado para este rango.",
     noteSynthetic:" · sin histórico de mercado (valor actual)", notePartial:" · aprox. para activos sin datos de mercado",
     buy:"Comprar", sellTransfer:"Vender/Transferir", sellTransferSp:"Vender / Transferir",
-    buy_t:"Registrar una compra — se suma desde hoy, mantiene el histórico", sell_t:"Registrar venta o transferencia — mantiene el histórico"
+    buy_t:"Registrar una compra — se suma desde hoy, mantiene el histórico", sell_t:"Registrar venta o transferencia — mantiene el histórico",
+    language:"Idioma", languageDesc:"Cambia el idioma de toda la aplicación.", account:"Mi cuenta",
+    cc_actual:"Actual", cc_target:"Objetivo",
+    al_emptyTitle:"Tu cartera está vacía.", al_emptyBody:"Pulsa <b style=\"color:var(--gold)\">{edit}</b> para añadir tus activos. Verás aquí la distribución, las alertas de rebalanceo y el delta semanal.",
+    al_exceeds:"supera el objetivo de rebalanceo.", al_below:"por debajo del objetivo.",
+    al_weighs:"Pesa", al_vsTarget:"frente al objetivo de", al_vs:"frente a", al_band:"banda",
+    al_considerSell:"Considera vender", al_considerBuy:"Considera comprar", al_toBalance:"para volver al equilibrio.",
+    al_balanced:"Todas las categorías dentro de la banda de tolerancia. Cartera equilibrada — sin acción necesaria.",
+    y_annual:"Interés anual estimado", y_perMonth:"/ mes", y_accToday:"Acumulado hasta hoy",
+    y_sinceActivated:"desde que lo activaste", y_wAvgApy:"APY medio ponderado", y_over:"sobre",
+    y_capital:"Capital (live)", y_accumulated:"Acumulado", y_interestYear:"Interés/año",
+    y_note:"Las monedas crecen con el APY (compuesto) desde que lo activas, y se valoran al precio en vivo de la stable. “Acumulado” = monedas ganadas hasta hoy valoradas al precio actual.",
+    p_empty:"Sin posiciones todavía. Pulsa {edit} para añadir tus activos.", badge_last:"último",
+    tx_boughtQty:"Cantidad comprada", tx_sellQty:"Cantidad a vender / transferir", tx_youHave:"Tienes", tx_units:"uds.",
+    tx_buyNote:"Se suma a tu saldo desde hoy; el histórico anterior se mantiene.", tx_sellNote:"Tu histórico anterior se mantiene; el cambio aplica solo de hoy en adelante.",
+    tx_remainPre:"Quedarán", tx_histKept:"El histórico anterior se mantiene.", trend_to:"a",
+    cfm_confirm:"Confirmar", cfm_sure:"¿Seguro que quieres continuar?", cfm_delete:"Eliminar",
+    ed_catName:"Nombre de la categoría", ed_target:"Objetivo", ed_delCat:"Eliminar categoría",
+    ed_catsHead:"Categorías de rebalanceo — define las tuyas (nombre, objetivo % y color):", ed_addCat:"Categoría", ed_noCats:"Sin categorías. Añade al menos una.",
+    ed_band:"Banda ±%", ed_emailLbl:"Email para el informe semanal:",
+    ed_name:"Nombre", ed_ticker:"Ticker", ed_category:"Categoría", ed_priceSrc:"Fuente precio",
+    ed_srcCrypto:"Cripto (en vivo)", ed_srcStock:"Acción/ETF (en vivo)", ed_srcManual:"Manual",
+    ed_qty:"Cantidad", ed_priceEur:"Precio €", ed_fallback:" (fallback)",
+    ed_apy:"APY anual %", ed_apyTitle:"Rendimiento anual estimado: stablecoins, staking, depósitos… Deja 0 si no aplica.",
+    ed_yieldSince:"Rendimiento desde", ed_yieldSinceTitle:"Fecha desde la que cuenta el rendimiento. La cantidad de arriba es el saldo en esa fecha. Solo aplica con APY.",
+    ed_delete:"Eliminar", ed_noAssets:"Sin activos todavía. Pulsa “＋ Añadir activo” para empezar tu cartera.",
+    ed_refCrypto:"ID CoinGecko", ed_refStock:"Símbolo bolsa", ed_refNone:"Sin feed", this_asset:"este activo", no_name:"sin nombre",
+    dlg_importTitle:"Importar cartera", dlg_replace:"Reemplazar", dlg_importMsg:"Esto <b>reemplazará</b> tu cartera actual ({a} activos) por la del archivo ({b} activos) y reiniciará el histórico. ¿Continuar?",
+    dlg_importOk:"Cartera importada correctamente ({n} activos).", dlg_importErr:"No se pudo leer el archivo. Asegúrate de que sea un portfolio.json válido.",
+    dlg_delAssetTitle:"Eliminar activo", dlg_delAssetMsg:"¿Quitar <b>{name}</b> de la lista? El cambio se aplica al pulsar <b>{save}</b>.",
+    dlg_clearTitle:"Vaciar cartera", dlg_clearMsg:"¿Vaciar <b>todos los activos</b> de la lista y empezar de cero? Se aplicará al guardar.",
+    dlg_minCat:"Debe quedar al menos una categoría.", dlg_delCatTitle:"Eliminar categoría", dlg_delCatMsg:"¿Eliminar la categoría <b>{name}</b>? Sus activos se reasignarán a otra categoría.",
+    mail_summary:"Resumen semanal", mail_vsLastWeek:"vs. la semana pasada", mail_distDelta:"DISTRIBUCIÓN Y DELTA", mail_rebalance:"REBALANCEO",
+    mail_class:"Clase", mail_value:"Valor", mail_weight:"Peso", mail_deltaWeek:"Δ semana", mail_at:"al", mail_target:"objetivo", mail_sell:"vender", mail_buy:"comprar",
+    mail_balanced:"Cartera equilibrada — todas las clases dentro de ±{band}%.", mail_auto:"Generado automáticamente cada lunes 08:00 · precios de CoinGecko / Stooq.",
+    mail_subject:"Tu cartera esta semana:", mail_configEmail:"— configúralo en “Editar cartera” —"
   },
   en:{
     tagline:"Broker · Funds · Crypto — one view, live prices",
@@ -91,7 +126,42 @@ window.I18N = {
     loadingHist:"Loading market history…", noHistRange:"No market history for this range.",
     noteSynthetic:" · no market history (current value)", notePartial:" · approx. for assets without market data",
     buy:"Buy", sellTransfer:"Sell/Transfer", sellTransferSp:"Sell / Transfer",
-    buy_t:"Record a buy — added from today, keeps history", sell_t:"Record a sell or transfer — keeps history"
+    buy_t:"Record a buy — added from today, keeps history", sell_t:"Record a sell or transfer — keeps history",
+    language:"Language", languageDesc:"Change the language of the whole app.", account:"My account",
+    cc_actual:"Current", cc_target:"Target",
+    al_emptyTitle:"Your portfolio is empty.", al_emptyBody:"Tap <b style=\"color:var(--gold)\">{edit}</b> to add your assets. You'll see your distribution, rebalancing alerts and the weekly delta here.",
+    al_exceeds:"exceeds the rebalancing target.", al_below:"is below target.",
+    al_weighs:"Weight", al_vsTarget:"vs. the target of", al_vs:"vs.", al_band:"band",
+    al_considerSell:"Consider selling", al_considerBuy:"Consider buying", al_toBalance:"to rebalance.",
+    al_balanced:"All categories within the tolerance band. Portfolio balanced — no action needed.",
+    y_annual:"Estimated annual interest", y_perMonth:"/ month", y_accToday:"Accrued to date",
+    y_sinceActivated:"since you activated it", y_wAvgApy:"Weighted average APY", y_over:"over",
+    y_capital:"Capital (live)", y_accumulated:"Accrued", y_interestYear:"Interest/year",
+    y_note:"Coins grow with APY (compounded) from when you activate it, valued at the stable's live price. “Accrued” = coins earned to date valued at the current price.",
+    p_empty:"No positions yet. Tap {edit} to add your assets.", badge_last:"last",
+    tx_boughtQty:"Quantity bought", tx_sellQty:"Quantity to sell / transfer", tx_youHave:"You have", tx_units:"units",
+    tx_buyNote:"Added to your balance from today; prior history is kept.", tx_sellNote:"Your prior history is kept; the change applies from today onward.",
+    tx_remainPre:"You'll have", tx_histKept:"Prior history is kept.", trend_to:"to",
+    cfm_confirm:"Confirm", cfm_sure:"Are you sure you want to continue?", cfm_delete:"Delete",
+    ed_catName:"Category name", ed_target:"Target", ed_delCat:"Delete category",
+    ed_catsHead:"Rebalancing categories — define your own (name, target % and color):", ed_addCat:"Category", ed_noCats:"No categories. Add at least one.",
+    ed_band:"Band ±%", ed_emailLbl:"Email for the weekly report:",
+    ed_name:"Name", ed_ticker:"Ticker", ed_category:"Category", ed_priceSrc:"Price source",
+    ed_srcCrypto:"Crypto (live)", ed_srcStock:"Stock/ETF (live)", ed_srcManual:"Manual",
+    ed_qty:"Quantity", ed_priceEur:"Price €", ed_fallback:" (fallback)",
+    ed_apy:"Annual APY %", ed_apyTitle:"Estimated annual yield: stablecoins, staking, deposits… Leave 0 if not applicable.",
+    ed_yieldSince:"Yield since", ed_yieldSinceTitle:"Date the yield counts from. The quantity above is the balance on that date. Only applies with APY.",
+    ed_delete:"Delete", ed_noAssets:"No assets yet. Tap “＋ Add asset” to start your portfolio.",
+    ed_refCrypto:"CoinGecko ID", ed_refStock:"Ticker symbol", ed_refNone:"No feed", this_asset:"this asset", no_name:"unnamed",
+    dlg_importTitle:"Import portfolio", dlg_replace:"Replace", dlg_importMsg:"This will <b>replace</b> your current portfolio ({a} assets) with the file's ({b} assets) and reset history. Continue?",
+    dlg_importOk:"Portfolio imported successfully ({n} assets).", dlg_importErr:"Couldn't read the file. Make sure it's a valid portfolio.json.",
+    dlg_delAssetTitle:"Delete asset", dlg_delAssetMsg:"Remove <b>{name}</b> from the list? The change applies when you tap <b>{save}</b>.",
+    dlg_clearTitle:"Clear portfolio", dlg_clearMsg:"Clear <b>all assets</b> from the list and start over? Applied on save.",
+    dlg_minCat:"At least one category must remain.", dlg_delCatTitle:"Delete category", dlg_delCatMsg:"Delete the category <b>{name}</b>? Its assets will be reassigned to another category.",
+    mail_summary:"Weekly summary", mail_vsLastWeek:"vs. last week", mail_distDelta:"DISTRIBUTION & DELTA", mail_rebalance:"REBALANCING",
+    mail_class:"Class", mail_value:"Value", mail_weight:"Weight", mail_deltaWeek:"Δ week", mail_at:"at", mail_target:"target", mail_sell:"sell", mail_buy:"buy",
+    mail_balanced:"Portfolio balanced — all classes within ±{band}%.", mail_auto:"Generated automatically every Monday 08:00 · prices from CoinGecko / Stooq.",
+    mail_subject:"Your portfolio this week:", mail_configEmail:"— set it in “Edit portfolio” —"
   },
   zh:{
     tagline:"券商 · 基金 · 加密货币 — 一个视图，实时价格",
@@ -124,7 +194,42 @@ window.I18N = {
     loadingHist:"加载市场历史…", noHistRange:"该范围无市场历史。",
     noteSynthetic:" · 无市场历史（当前价值）", notePartial:" · 对无市场数据的资产为近似值",
     buy:"买入", sellTransfer:"卖出/转出", sellTransferSp:"卖出 / 转出",
-    buy_t:"记录买入 — 从今天起累加，保留历史", sell_t:"记录卖出或转出 — 保留历史"
+    buy_t:"记录买入 — 从今天起累加，保留历史", sell_t:"记录卖出或转出 — 保留历史",
+    language:"语言", languageDesc:"更改整个应用的语言。", account:"我的账户",
+    cc_actual:"当前", cc_target:"目标",
+    al_emptyTitle:"你的投资组合为空。", al_emptyBody:"点击 <b style=\"color:var(--gold)\">{edit}</b> 添加你的资产。这里将显示资产分布、再平衡提醒和每周变化。",
+    al_exceeds:"超过再平衡目标。", al_below:"低于目标。",
+    al_weighs:"占比", al_vsTarget:"目标为", al_vs:"对比", al_band:"区间",
+    al_considerSell:"考虑卖出", al_considerBuy:"考虑买入", al_toBalance:"以恢复平衡。",
+    al_balanced:"所有类别都在容忍区间内。组合已平衡 — 无需操作。",
+    y_annual:"预计年息", y_perMonth:"/ 月", y_accToday:"至今累计",
+    y_sinceActivated:"自你启用以来", y_wAvgApy:"加权平均 APY", y_over:"基于",
+    y_capital:"本金（实时）", y_accumulated:"累计", y_interestYear:"年息",
+    y_note:"币种自启用起按 APY（复利）增长，并按稳定币实时价格计价。“累计”＝至今赚取的币按当前价格计价。",
+    p_empty:"还没有持仓。点击 {edit} 添加你的资产。", badge_last:"最新",
+    tx_boughtQty:"买入数量", tx_sellQty:"卖出 / 转出数量", tx_youHave:"你持有", tx_units:"单位",
+    tx_buyNote:"从今天起加入你的余额；之前的历史保留。", tx_sellNote:"之前的历史保留；变更从今天起生效。",
+    tx_remainPre:"将剩余", tx_histKept:"之前的历史保留。", trend_to:"至",
+    cfm_confirm:"确认", cfm_sure:"确定要继续吗？", cfm_delete:"删除",
+    ed_catName:"类别名称", ed_target:"目标", ed_delCat:"删除类别",
+    ed_catsHead:"再平衡类别 — 自定义（名称、目标 % 和颜色）：", ed_addCat:"类别", ed_noCats:"没有类别。请至少添加一个。",
+    ed_band:"区间 ±%", ed_emailLbl:"每周报告的邮箱：",
+    ed_name:"名称", ed_ticker:"代码", ed_category:"类别", ed_priceSrc:"价格来源",
+    ed_srcCrypto:"加密货币（实时）", ed_srcStock:"股票/ETF（实时）", ed_srcManual:"手动",
+    ed_qty:"数量", ed_priceEur:"价格 €", ed_fallback:"（备用）",
+    ed_apy:"年化 APY %", ed_apyTitle:"预计年收益：稳定币、质押、存款… 不适用请填 0。",
+    ed_yieldSince:"收益起始", ed_yieldSinceTitle:"收益计算的起始日期。上面的数量是该日期的余额。仅在有 APY 时适用。",
+    ed_delete:"删除", ed_noAssets:"还没有资产。点击“＋ 添加资产”开始你的组合。",
+    ed_refCrypto:"CoinGecko ID", ed_refStock:"交易代码", ed_refNone:"无数据源", this_asset:"该资产", no_name:"未命名",
+    dlg_importTitle:"导入组合", dlg_replace:"替换", dlg_importMsg:"这将用文件中的组合（{b} 项资产）<b>替换</b>你当前的组合（{a} 项资产）并重置历史。是否继续？",
+    dlg_importOk:"组合导入成功（{n} 项资产）。", dlg_importErr:"无法读取文件。请确认是有效的 portfolio.json。",
+    dlg_delAssetTitle:"删除资产", dlg_delAssetMsg:"将 <b>{name}</b> 从列表中移除？变更在你点击 <b>{save}</b> 时生效。",
+    dlg_clearTitle:"清空组合", dlg_clearMsg:"清空列表中的<b>所有资产</b>并重新开始？保存时生效。",
+    dlg_minCat:"至少要保留一个类别。", dlg_delCatTitle:"删除类别", dlg_delCatMsg:"删除类别 <b>{name}</b>？其资产将重新分配到其他类别。",
+    mail_summary:"每周摘要", mail_vsLastWeek:"对比上周", mail_distDelta:"分布与变化", mail_rebalance:"再平衡",
+    mail_class:"类别", mail_value:"价值", mail_weight:"占比", mail_deltaWeek:"Δ 周", mail_at:"为", mail_target:"目标", mail_sell:"卖出", mail_buy:"买入",
+    mail_balanced:"组合已平衡 — 所有类别都在 ±{band}% 以内。", mail_auto:"每周一 08:00 自动生成 · 价格来自 CoinGecko / Stooq。",
+    mail_subject:"你本周的组合：", mail_configEmail:"— 在“编辑投资组合”中设置 —"
   },
   hi:{
     tagline:"ब्रोकर · फंड · क्रिप्टो — एक ही जगह, लाइव कीमतें",
@@ -157,7 +262,42 @@ window.I18N = {
     loadingHist:"मार्केट इतिहास लोड हो रहा है…", noHistRange:"इस रेंज के लिए कोई मार्केट इतिहास नहीं।",
     noteSynthetic:" · कोई मार्केट इतिहास नहीं (मौजूदा मूल्य)", notePartial:" · मार्केट डेटा रहित एसेट के लिए अनुमानित",
     buy:"खरीदें", sellTransfer:"बेचें/ट्रांसफ़र", sellTransferSp:"बेचें / ट्रांसफ़र",
-    buy_t:"खरीद दर्ज करें — आज से जुड़ती है, इतिहास बना रहता है", sell_t:"बिक्री या ट्रांसफ़र दर्ज करें — इतिहास बना रहता है"
+    buy_t:"खरीद दर्ज करें — आज से जुड़ती है, इतिहास बना रहता है", sell_t:"बिक्री या ट्रांसफ़र दर्ज करें — इतिहास बना रहता है",
+    language:"भाषा", languageDesc:"पूरे ऐप की भाषा बदलें।", account:"मेरा खाता",
+    cc_actual:"वर्तमान", cc_target:"लक्ष्य",
+    al_emptyTitle:"आपका पोर्टफोलियो खाली है।", al_emptyBody:"अपनी एसेट जोड़ने के लिए <b style=\"color:var(--gold)\">{edit}</b> दबाएँ। यहाँ वितरण, रीबैलेंसिंग अलर्ट और साप्ताहिक बदलाव दिखेगा।",
+    al_exceeds:"रीबैलेंसिंग लक्ष्य से अधिक है।", al_below:"लक्ष्य से नीचे है।",
+    al_weighs:"भार", al_vsTarget:"लक्ष्य की तुलना में", al_vs:"की तुलना में", al_band:"बैंड",
+    al_considerSell:"बेचने पर विचार करें", al_considerBuy:"खरीदने पर विचार करें", al_toBalance:"संतुलन बहाल करने के लिए।",
+    al_balanced:"सभी श्रेणियाँ सहनशीलता बैंड के भीतर। पोर्टफोलियो संतुलित — कोई कार्रवाई आवश्यक नहीं।",
+    y_annual:"अनुमानित वार्षिक ब्याज", y_perMonth:"/ माह", y_accToday:"आज तक संचित",
+    y_sinceActivated:"जब से आपने इसे सक्रिय किया", y_wAvgApy:"भारित औसत APY", y_over:"पर",
+    y_capital:"पूँजी (लाइव)", y_accumulated:"संचित", y_interestYear:"ब्याज/वर्ष",
+    y_note:"सिक्के सक्रिय करने के समय से APY (चक्रवृद्धि) के साथ बढ़ते हैं और स्टेबल के लाइव मूल्य पर आँके जाते हैं। “संचित” = आज तक कमाए सिक्के मौजूदा मूल्य पर।",
+    p_empty:"अभी कोई पोज़िशन नहीं। अपनी एसेट जोड़ने के लिए {edit} दबाएँ।", badge_last:"अंतिम",
+    tx_boughtQty:"खरीदी गई मात्रा", tx_sellQty:"बेचने / ट्रांसफ़र करने की मात्रा", tx_youHave:"आपके पास है", tx_units:"इकाई",
+    tx_buyNote:"आज से आपके बैलेंस में जुड़ता है; पिछला इतिहास बना रहता है।", tx_sellNote:"आपका पिछला इतिहास बना रहता है; बदलाव आज से लागू होता है।",
+    tx_remainPre:"शेष रहेगा", tx_histKept:"पिछला इतिहास बना रहता है।", trend_to:"से",
+    cfm_confirm:"पुष्टि करें", cfm_sure:"क्या आप वाकई जारी रखना चाहते हैं?", cfm_delete:"हटाएँ",
+    ed_catName:"श्रेणी का नाम", ed_target:"लक्ष्य", ed_delCat:"श्रेणी हटाएँ",
+    ed_catsHead:"रीबैलेंसिंग श्रेणियाँ — अपनी बनाएँ (नाम, लक्ष्य % और रंग):", ed_addCat:"श्रेणी", ed_noCats:"कोई श्रेणी नहीं। कम से कम एक जोड़ें।",
+    ed_band:"बैंड ±%", ed_emailLbl:"साप्ताहिक रिपोर्ट के लिए ईमेल:",
+    ed_name:"नाम", ed_ticker:"टिकर", ed_category:"श्रेणी", ed_priceSrc:"मूल्य स्रोत",
+    ed_srcCrypto:"क्रिप्टो (लाइव)", ed_srcStock:"स्टॉक/ETF (लाइव)", ed_srcManual:"मैनुअल",
+    ed_qty:"मात्रा", ed_priceEur:"मूल्य €", ed_fallback:" (फ़ॉलबैक)",
+    ed_apy:"वार्षिक APY %", ed_apyTitle:"अनुमानित वार्षिक प्रतिफल: स्टेबलकॉइन, स्टेकिंग, जमा… लागू न हो तो 0 रखें।",
+    ed_yieldSince:"प्रतिफल कब से", ed_yieldSinceTitle:"जिस तारीख से प्रतिफल गिना जाए। ऊपर की मात्रा उस तारीख का बैलेंस है। केवल APY के साथ लागू।",
+    ed_delete:"हटाएँ", ed_noAssets:"अभी कोई एसेट नहीं। अपना पोर्टफोलियो शुरू करने के लिए “＋ एसेट जोड़ें” दबाएँ।",
+    ed_refCrypto:"CoinGecko ID", ed_refStock:"टिकर सिंबल", ed_refNone:"कोई फ़ीड नहीं", this_asset:"यह एसेट", no_name:"बिना नाम",
+    dlg_importTitle:"पोर्टफोलियो आयात करें", dlg_replace:"बदलें", dlg_importMsg:"यह आपके मौजूदा पोर्टफोलियो ({a} एसेट) को फ़ाइल के ({b} एसेट) से <b>बदल</b> देगा और इतिहास रीसेट कर देगा। जारी रखें?",
+    dlg_importOk:"पोर्टफोलियो सफलतापूर्वक आयात हुआ ({n} एसेट)।", dlg_importErr:"फ़ाइल नहीं पढ़ी जा सकी। सुनिश्चित करें कि यह मान्य portfolio.json है।",
+    dlg_delAssetTitle:"एसेट हटाएँ", dlg_delAssetMsg:"<b>{name}</b> को सूची से हटाएँ? बदलाव <b>{save}</b> दबाने पर लागू होता है।",
+    dlg_clearTitle:"पोर्टफोलियो खाली करें", dlg_clearMsg:"सूची से <b>सभी एसेट</b> हटाकर नए सिरे से शुरू करें? सहेजने पर लागू।",
+    dlg_minCat:"कम से कम एक श्रेणी बची रहनी चाहिए।", dlg_delCatTitle:"श्रेणी हटाएँ", dlg_delCatMsg:"श्रेणी <b>{name}</b> हटाएँ? इसकी एसेट दूसरी श्रेणी में पुनः सौंपी जाएँगी।",
+    mail_summary:"साप्ताहिक सारांश", mail_vsLastWeek:"पिछले सप्ताह की तुलना में", mail_distDelta:"वितरण और बदलाव", mail_rebalance:"रीबैलेंसिंग",
+    mail_class:"वर्ग", mail_value:"मूल्य", mail_weight:"भार", mail_deltaWeek:"Δ सप्ताह", mail_at:"पर", mail_target:"लक्ष्य", mail_sell:"बेचें", mail_buy:"खरीदें",
+    mail_balanced:"पोर्टफोलियो संतुलित — सभी वर्ग ±{band}% के भीतर।", mail_auto:"हर सोमवार 08:00 स्वतः जनरेट · कीमतें CoinGecko / Stooq से।",
+    mail_subject:"इस सप्ताह आपका पोर्टफोलियो:", mail_configEmail:"— इसे “पोर्टफोलियो संपादित करें” में सेट करें —"
   }
 };
 window.LANG = (function(){ try{ var s=localStorage.getItem('lang'); if(s&&I18N[s]) return s;
@@ -597,12 +737,27 @@ document.addEventListener('DOMContentLoaded', function(){
   .gate-msg.err{color:var(--bad)} .gate-msg.ok{color:var(--good)}
   .gate-foot{margin-top:20px;text-align:center;color:var(--mut);font-size:11.5px;line-height:1.6}
   /* chip de usuario en la barra superior (solo con sesión iniciada) */
-  #userChip{display:none;align-items:center;gap:9px}
+  #userChip{display:none;position:relative}
   html.cloud-on body.authed #userChip{display:inline-flex}
-  #userChip .uava{width:30px;height:30px;border-radius:50%;flex:none;object-fit:cover;border:1px solid var(--line2);background:rgba(255,255,255,.06)}
-  #userChip .uname{font-size:12.5px;color:var(--soft);font-weight:600;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  #userChip .uout{padding:8px 12px;font-size:12.5px}
-  @media(max-width:600px){ #userChip .uname{display:none} #userChip{order:-1} .gate-card{padding:26px 20px 22px} }
+  .uavabtn{cursor:pointer;padding:0;border:none;background:none;width:34px;height:34px;border-radius:50%;position:relative;display:grid;place-items:center;transition:.18s}
+  .uavabtn:hover{transform:translateY(-1px)}
+  .uavabtn:focus-visible{outline:2px solid var(--gold-2);outline-offset:2px}
+  #userChip .uava{width:34px;height:34px;border-radius:50%;flex:none;object-fit:cover;border:1px solid var(--line2);background:rgba(255,255,255,.06)}
+  .uava-fallback{position:absolute;inset:0;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:14px;color:#191205;
+    background:linear-gradient(135deg,var(--gold-2),var(--gold-3));border:1px solid var(--line2)}
+  .umenu{position:absolute;top:calc(100% + 10px);right:0;min-width:208px;z-index:90;
+    background:#161513;border:1px solid var(--line2);border-radius:14px;padding:7px;
+    box-shadow:0 20px 50px -16px rgba(0,0,0,.7);opacity:0;visibility:hidden;transform:translateY(-6px);transition:.16s}
+  #userChip.open .umenu{opacity:1;visibility:visible;transform:none}
+  #userChip.open .uavabtn{box-shadow:0 0 0 2px rgba(227,192,141,.45)}
+  .umenu-head{padding:9px 11px 11px;border-bottom:1px solid var(--line);margin-bottom:6px;display:flex;flex-direction:column;gap:2px}
+  .umenu-name{font-size:13px;color:var(--tx);font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .umenu-mail{font-size:11.5px;color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .umenu-item{width:100%;cursor:pointer;border:none;background:none;color:var(--soft);font-family:inherit;font-size:13px;font-weight:600;
+    text-align:left;padding:10px 11px;border-radius:9px;display:flex;align-items:center;gap:9px;transition:.14s}
+  .umenu-item:hover{background:rgba(255,90,90,.12);color:#ff8585}
+  .umenu-item .ic{width:15px;height:15px;opacity:.8}
+  @media(max-width:600px){ #userChip{order:-1} .gate-card{padding:26px 20px 22px} }
 
   /* ════════ DESIGN v2 — reskin editorial (papel oscuro · bermejo · oro) ════════ */
   .brand-name{text-transform:uppercase;letter-spacing:2px;font-size:14px;font-weight:700;font-family:var(--font-body)}
@@ -746,16 +901,18 @@ document.addEventListener('DOMContentLoaded', function(){
       </div>
     </div>
     <div class="actions">
-      <select class="lang-select" onchange="setLang(this.value)" aria-label="Idioma / Language" title="Idioma / Language">
-        <option value="es">🌐 ES</option><option value="en">🌐 EN</option><option value="zh">🌐 中文</option><option value="hi">🌐 हिन्दी</option>
-      </select>
       <button class="btn gold" onclick="refresh()"><svg class="ic"><use href="#i-refresh"/></svg> <span data-i18n="refresh">Actualizar precios</span></button>
       <button class="btn" onclick="openEditor()"><svg class="ic"><use href="#i-edit"/></svg> <span data-i18n="editPortfolio">Editar cartera</span></button>
       <button class="btn" onclick="openSettings()"><svg class="ic"><use href="#i-settings"/></svg> <span data-i18n="settings">Configuración</span></button>
       <span id="userChip">
-        <img class="uava" id="userPic" alt="" referrerpolicy="no-referrer">
-        <span class="uname" id="userName"></span>
-        <button class="btn uout" type="button" onclick="cloudSignOut()" data-i18n-title="signout_t" title="Cerrar sesión"><svg class="ic"><use href="#i-x"/></svg> <span data-i18n="signout">Salir</span></button>
+        <button class="uavabtn" id="userMenuBtn" type="button" onclick="toggleUserMenu(event)" aria-haspopup="true" aria-expanded="false" aria-label="Cuenta">
+          <img class="uava" id="userPic" alt="" referrerpolicy="no-referrer">
+          <span class="uava-fallback" id="userInitial"></span>
+        </button>
+        <div class="umenu" id="userMenu" role="menu">
+          <div class="umenu-head"><span class="umenu-name uname" id="userName"></span><span class="umenu-mail" id="userMail"></span></div>
+          <button class="umenu-item" type="button" role="menuitem" onclick="cloudSignOut()"><svg class="ic"><use href="#i-x"/></svg> <span data-i18n="signout">Salir</span></button>
+        </div>
       </span>
     </div>
   </header>
@@ -898,6 +1055,12 @@ document.addEventListener('DOMContentLoaded', function(){
       <div class="set-sec">
         <div class="set-h" data-i18n="display">Visualización</div>
         <div class="set-row">
+          <div><div class="set-t" data-i18n="language">Idioma</div><div class="set-d" data-i18n="languageDesc">Cambia el idioma de toda la aplicación.</div></div>
+          <select class="cur-select lang-select" onchange="setLang(this.value)" aria-label="Idioma / Language">
+            <option value="es">Español</option><option value="en">English</option><option value="zh">中文</option><option value="hi">हिन्दी</option>
+          </select>
+        </div>
+        <div class="set-row" style="margin-top:16px">
           <div><div class="set-t" data-i18n="currency">Moneda</div><div class="set-d" data-i18n="currencyDesc">Convierte todos los importes al vuelo. Los datos se siguen calculando en euros.</div></div>
           <select class="cur-select" id="curSelect" onchange="setCurrency(this.value)" aria-label="Moneda de visualización"></select>
         </div>
@@ -1243,7 +1406,7 @@ function drawClasses(cls,tot){
   document.getElementById('classes').innerHTML=state.categories.map(c=>{
     const actual=tot?cls[c.key]/tot*100:0, tgt=c.target, dev=actual-tgt;
     let tag='ok',txt=t('onTargetTxt');
-    if(!tot){tag='neutral';txt='objetivo '+tgt+'%';}
+    if(!tot){tag='neutral';txt=t('cc_target')+' '+tgt+'%';}
     else if(dev>state.band){tag='over';txt='+'+dev.toFixed(1)+'% '+t('overTarget');}
     else if(dev<-state.band){tag='under';txt=dev.toFixed(1)+'% '+t('underTarget');}
     return `<div class="classcard">
@@ -1251,22 +1414,22 @@ function drawClasses(cls,tot){
         <span class="tag ${tag}">${txt}</span></div>
       <div class="bar"><div class="fill" style="width:${Math.min(100,actual)}%;background:linear-gradient(90deg,${c.color},${lighten(c.color,.35)});--c:${c.color}66"></div>
         <div class="tgt" style="left:${Math.min(100,tgt)}%"></div></div>
-      <div class="cc-meta"><span>Actual <b>${actual.toFixed(1)}%</b> · ${fmt(cls[c.key])}</span>
-        <span>Objetivo <input class="tgt-input" type="number" min="0" value="${tgt}" onchange="setTarget('${c.key}',this.value)">%</span></div>
+      <div class="cc-meta"><span>${t('cc_actual')} <b>${actual.toFixed(1)}%</b> · ${fmt(cls[c.key])}</span>
+        <span>${t('cc_target')} <input class="tgt-input" type="number" min="0" value="${tgt}" onchange="setTarget('${c.key}',this.value)">%</span></div>
     </div>`;
   }).join('');
 }
 function drawAlerts(cls,tot){
-  if(!tot){ document.getElementById('alerts').innerHTML=`<div class="alert calm"><span class="ico calm">${ic('plus')}</span><div><b>Tu cartera está vacía.</b><br>Pulsa <b style="color:var(--gold)">Editar cartera</b> para añadir tus activos. Verás aquí la distribución, las alertas de rebalanceo y el delta semanal.</div></div>`; return; }
+  if(!tot){ document.getElementById('alerts').innerHTML=`<div class="alert calm"><span class="ico calm">${ic('plus')}</span><div><b>${t('al_emptyTitle')}</b><br>${t('al_emptyBody').replace('{edit}',t('editPortfolio'))}</div></div>`; return; }
   const al=[];
   state.categories.forEach(c=>{ const actual=cls[c.key]/tot*100, tgt=c.target, dev=actual-tgt, diff=cls[c.key]-tot*tgt/100;
     if(dev>state.band) al.push(`<div class="alert over"><span class="ico over">${ic('up')}</span><div>
-      <b>${c.label} supera el objetivo de rebalanceo.</b><br>Pesa <b>${actual.toFixed(1)}%</b> frente al objetivo de ${tgt}% (banda ±${state.band}%). Considera <b>vender ${fmt(diff)}</b> para volver al equilibrio.</div></div>`);
+      <b>${c.label} ${t('al_exceeds')}</b><br>${t('al_weighs')} <b>${actual.toFixed(1)}%</b> ${t('al_vsTarget')} ${tgt}% (${t('al_band')} ±${state.band}%). ${t('al_considerSell')} <b>${fmt(diff)}</b> ${t('al_toBalance')}</div></div>`);
     else if(dev<-state.band) al.push(`<div class="alert under"><span class="ico under">${ic('down')}</span><div>
-      <b>${c.label} por debajo del objetivo.</b><br>Pesa <b>${actual.toFixed(1)}%</b> frente a ${tgt}%. Considera <b>comprar ${fmt(Math.abs(diff))}</b>.</div></div>`);
+      <b>${c.label} ${t('al_below')}</b><br>${t('al_weighs')} <b>${actual.toFixed(1)}%</b> ${t('al_vs')} ${tgt}%. ${t('al_considerBuy')} <b>${fmt(Math.abs(diff))}</b>.</div></div>`);
   });
   document.getElementById('alerts').innerHTML = al.length? al.join('')
-    : `<div class="alert calm"><span class="ico calm">${ic('check')}</span><div>Todas las categorías dentro de la banda de tolerancia. Cartera equilibrada — sin acción necesaria.</div></div>`;
+    : `<div class="alert calm"><span class="ico calm">${ic('check')}</span><div>${t('al_balanced')}</div></div>`;
 }
 function drawDeltas(cls,tot){
   const prev=prevWeekSnapshot(), cells=[];
@@ -1283,19 +1446,19 @@ function drawYields(){
   if(!ys.length){ card.style.display='none'; return; } card.style.display='';
   let totA=0, totAcc=0; const cap=ys.reduce((s,h)=>s+valueOf(h),0);
   const rows=ys.map(h=>{ const c=valueOf(h), a=c*h.apy/100, accCoins=liveQty(h)-h.qty, accEur=accCoins*h.price; totA+=a; totAcc+=accEur;
-    return `<tr><td data-l="Activo"><b>${h.name}</b> <span class="muted">${h.ticker||''}</span></td>
-      <td data-l="Capital (live)">${fmt2(c)}</td><td data-l="APY">${(+h.apy).toFixed(2)}%</td>
-      <td data-l="Acumulado"><b style="color:var(--fondos)">+${fmt2(accEur)}</b> <span class="muted">(+${accCoins.toFixed(4)} ${h.ticker||''})</span></td>
-      <td data-l="Interés/año">${fmt2(a)}</td></tr>`; }).join('');
+    return `<tr><td data-l="${t('asset')}"><b>${h.name}</b> <span class="muted">${h.ticker||''}</span></td>
+      <td data-l="${t('y_capital')}">${fmt2(c)}</td><td data-l="APY">${(+h.apy).toFixed(2)}%</td>
+      <td data-l="${t('y_accumulated')}"><b style="color:var(--fondos)">+${fmt2(accEur)}</b> <span class="muted">(+${accCoins.toFixed(4)} ${h.ticker||''})</span></td>
+      <td data-l="${t('y_interestYear')}">${fmt2(a)}</td></tr>`; }).join('');
   document.getElementById('yields').innerHTML=`
     <div class="delta-grid" style="margin-bottom:15px">
-      ${dcell('Interés anual estimado', fmt(totA), '≈ '+fmt2(totA/12)+' / mes', true)}
-      ${dcell('Acumulado hasta hoy', '+'+fmt2(totAcc), 'desde que lo activaste', true)}
-      ${dcell('APY medio ponderado', wAvgApy(ys)+'%', 'sobre '+fmt(cap), true)}
+      ${dcell(t('y_annual'), fmt(totA), '≈ '+fmt2(totA/12)+' '+t('y_perMonth'), true)}
+      ${dcell(t('y_accToday'), '+'+fmt2(totAcc), t('y_sinceActivated'), true)}
+      ${dcell(t('y_wAvgApy'), wAvgApy(ys)+'%', t('y_over')+' '+fmt(cap), true)}
     </div>
-    <div class="tablewrap"><table class="rtable"><colgroup><col style="width:22%"><col style="width:18%"><col style="width:13%"><col style="width:29%"><col style="width:18%"></colgroup><thead><tr><th>Activo</th><th>Capital (live)</th><th>APY</th><th>Acumulado</th><th>Interés/año</th></tr></thead>
+    <div class="tablewrap"><table class="rtable"><colgroup><col style="width:22%"><col style="width:18%"><col style="width:13%"><col style="width:29%"><col style="width:18%"></colgroup><thead><tr><th>${t('asset')}</th><th>${t('y_capital')}</th><th>APY</th><th>${t('y_accumulated')}</th><th>${t('y_interestYear')}</th></tr></thead>
       <tbody>${rows}</tbody></table></div>
-    <div class="muted" style="margin-top:11px">Las monedas crecen con el APY (compuesto) desde que lo activas, y se valoran al precio en vivo de la stable. “Acumulado” = monedas ganadas hasta hoy valoradas al precio actual.</div>`;
+    <div class="muted" style="margin-top:11px">${t('y_note')}</div>`;
 }
 /* ----------------------------- Gráfico de evolución (histórico real de mercado, con desplazamiento/zoom) ----------------------------- */
 /* Cada rango define la GRANULARIDAD de los datos y el ANCHO inicial de la ventana visible.
@@ -1542,8 +1705,8 @@ function drawTrend(){
   const diff=pts[last]-pts[0], p=pts[0]?diff/pts[0]*100:0, clsd=diff>=0?'up':'down';
   nowEl.innerHTML=`${fmt(pts[last])} <span class="d ${clsd}">${diff>=0?'+':'−'}${fmt(Math.abs(diff))} (${pct(p)})</span>`;
   const note = c.synthetic ? t('noteSynthetic') : (c.partial ? t('notePartial') : '');
-  const dfmt=new Intl.DateTimeFormat('es-ES',{day:'2-digit',month:'short',year:'2-digit'});
-  lbl.textContent=`${dfmt.format(new Date(times[0]))} → ${dfmt.format(new Date(times[last]))} · ${fmt(pts[0])} a ${fmt(pts[last])}${note}`;
+  const dfmt=new Intl.DateTimeFormat(LOC(),{day:'2-digit',month:'short',year:'2-digit'});
+  lbl.textContent=`${dfmt.format(new Date(times[0]))} → ${dfmt.format(new Date(times[last]))} · ${fmt(pts[0])} ${t('trend_to')} ${fmt(pts[last])}${note}`;
   trendDraw={rows,times,t0:times[0],t1:times[last],min,max,H,pad};
   drawBrush(v);
 }
@@ -1640,10 +1803,10 @@ function initTrendGestures(){
 }
 function drawPositions(tot){
   const tb=document.querySelector('#positions tbody');
-  if(!state.holdings.length){ tb.innerHTML=`<tr><td colspan="6" style="text-align:center;color:var(--mut);padding:28px">Sin posiciones todavía. Pulsa <b style="color:var(--gold)">Editar cartera</b> para añadir tus activos.</td></tr>`; return; }
+  if(!state.holdings.length){ tb.innerHTML=`<tr><td colspan="6" style="text-align:center;color:var(--mut);padding:28px">${t('p_empty').replace('{edit}','<b style="color:var(--gold)">'+t('editPortfolio')+'</b>')}</td></tr>`; return; }
   tb.innerHTML=state.holdings.map((h,i)=>{
     const v=valueOf(h);
-    const badge=h.src==='manual'?'<span class="badge man">VNL</span>':h.live?'<span class="badge live">LIVE</span>':'<span class="badge stale">último</span>';
+    const badge=h.src==='manual'?'<span class="badge man">VNL</span>':h.live?'<span class="badge live">LIVE</span>':`<span class="badge stale">${t('badge_last')}</span>`;
     return `<tr><td data-l="${t('asset')}"><b>${h.name}</b> <span class="muted">${h.ticker||''}</span> ${badge} <button class="sellbtn" title="${t('buy_t')}" onclick="openBuy(${i})">${t('buy')}</button> <button class="sellbtn" title="${t('sell_t')}" onclick="openSell(${i})">${t('sellTransfer')}</button></td>
       <td data-l="${t('category')}"><span class="clschip"><span class="dot" style="width:9px;height:9px;background:${catOf(h.cls).color};--c:${catOf(h.cls).color}88"></span>${catOf(h.cls).label}</span></td>
       <td data-l="${t('quantity')}"><input class="q" type="number" step="any" value="${parseFloat(liveQty(h).toFixed(8))}" onchange="setQty(${i},this.value)"></td>
@@ -1657,17 +1820,17 @@ function openBuy(i){ openTx(i,'buy'); }
 function openSell(i){ openTx(i,'sell'); }
 function openTx(i,mode){ const h=state.holdings[i]; if(!h) return; _txIdx=i; _txMode=mode; const q=liveQty(h); const buy=mode==='buy';
   document.getElementById('txTitle').textContent=buy?t('buy'):t('sellTransferSp');
-  document.getElementById('txLbl').textContent=buy?'Cantidad comprada':'Cantidad a vender / transferir';
+  document.getElementById('txLbl').textContent=buy?t('tx_boughtQty'):t('tx_sellQty');
   document.getElementById('txAllBtn').style.display=buy?'none':'';
-  document.getElementById('txInfo').innerHTML=`<b>${(h.name||'').replace(/</g,'&lt;')}</b> <span class="muted">${h.ticker||''}</span><br>Tienes <b style="color:var(--tx)">${parseFloat(q.toFixed(8))}</b> ${h.ticker||'uds.'} · ${fmt(valueOf(h))}`;
+  document.getElementById('txInfo').innerHTML=`<b>${(h.name||'').replace(/</g,'&lt;')}</b> <span class="muted">${h.ticker||''}</span><br>${t('tx_youHave')} <b style="color:var(--tx)">${parseFloat(q.toFixed(8))}</b> ${h.ticker||t('tx_units')} · ${fmt(valueOf(h))}`;
   const inp=document.getElementById('txQty'); inp.value=''; if(buy) inp.removeAttribute('max'); else inp.max=q;
-  document.getElementById('txPreview').textContent=buy?'Se suma a tu saldo desde hoy; el histórico anterior se mantiene.':'Tu histórico anterior se mantiene; el cambio aplica solo de hoy en adelante.';
+  document.getElementById('txPreview').textContent=buy?t('tx_buyNote'):t('tx_sellNote');
   document.getElementById('txModal').classList.add('show'); setTimeout(()=>inp.focus(),60); }
 function closeTx(){ document.getElementById('txModal').classList.remove('show'); _txIdx=-1; }
 function txAll(){ const h=state.holdings[_txIdx]; if(!h)return; document.getElementById('txQty').value=parseFloat(liveQty(h).toFixed(8)); txPreview(); }
 function txPreview(){ const h=state.holdings[_txIdx]; if(!h)return; const q=liveQty(h); const buy=_txMode==='buy';
   let amt=+document.getElementById('txQty').value||0; if(amt<0)amt=0; if(!buy&&amt>q)amt=q; const nv=buy?q+amt:q-amt;
-  document.getElementById('txPreview').innerHTML=`Quedarán <b style="color:var(--tx)">${parseFloat(nv.toFixed(8))}</b> ${h.ticker||'uds.'} (${fmt(nv*(h.price||0))}). El histórico anterior se mantiene.`; }
+  document.getElementById('txPreview').innerHTML=`${t('tx_remainPre')} <b style="color:var(--tx)">${parseFloat(nv.toFixed(8))}</b> ${h.ticker||t('tx_units')} (${fmt(nv*(h.price||0))}). ${t('tx_histKept')}`; }
 function confirmTx(){ const h=state.holdings[_txIdx]; if(!h){ closeTx(); return; } const q=liveQty(h); const buy=_txMode==='buy';
   let amt=+document.getElementById('txQty').value||0; if(amt<=0){ closeTx(); return; } if(!buy&&amt>q)amt=q;
   applyQtyChange(h, buy?q+amt:q-amt); recordSnapshot(); save(); closeTx(); render(); refreshTrendAfterChange(); }
@@ -1679,29 +1842,29 @@ function setBand(v){ state.band=Math.max(0,+v||0); save(); render(); }
 function buildMail(){
   const {cls,tot}=totals(), prev=prevWeekSnapshot();
   const dTot=prev&&prev.total?tot-prev.total:0, pTot=prev&&prev.total?dTot/prev.total*100:0;
-  const subject=prev&&prev.total?`Tu cartera esta semana: ${dTot>=0?'+':''}${fmt(dTot)} (${pct(pTot)})`:`Tu cartera esta semana: ${fmt(tot)}`;
+  const subject=prev&&prev.total?`${t('mail_subject')} ${dTot>=0?'+':''}${fmt(dTot)} (${pct(pTot)})`:`${t('mail_subject')} ${fmt(tot)}`;
   document.getElementById('mSubject').textContent=subject;
   const alerts=[];
-  state.categories.forEach(c=>{ const a=tot?cls[c.key]/tot*100:0,t=c.target,dev=a-t,diff=cls[c.key]-tot*t/100;
-    if(dev>state.band) alerts.push(`🔴 <b>${c.label}</b> al ${a.toFixed(1)}% (objetivo ${t}%) — vender ${fmt(diff)}`);
-    else if(dev<-state.band) alerts.push(`🟡 <b>${c.label}</b> al ${a.toFixed(1)}% (objetivo ${t}%) — comprar ${fmt(Math.abs(diff))}`); });
+  state.categories.forEach(c=>{ const a=tot?cls[c.key]/tot*100:0,tg=c.target,dev=a-tg,diff=cls[c.key]-tot*tg/100;
+    if(dev>state.band) alerts.push(`🔴 <b>${c.label}</b> ${t('mail_at')} ${a.toFixed(1)}% (${t('mail_target')} ${tg}%) — ${t('mail_sell')} ${fmt(diff)}`);
+    else if(dev<-state.band) alerts.push(`🟡 <b>${c.label}</b> ${t('mail_at')} ${a.toFixed(1)}% (${t('mail_target')} ${tg}%) — ${t('mail_buy')} ${fmt(Math.abs(diff))}`); });
   const rows=state.categories.map(c=>{ const pc=prev&&prev.classes&&prev.classes[c.key]!==undefined?cls[c.key]-prev.classes[c.key]:null;
     const col=pc===null?'#9aa3b4':(pc>=0?'#3fb950':'#f85149');
     return `<tr><td style="padding:7px 0">${c.label}</td><td style="text-align:right">${fmt(cls[c.key])}</td>
       <td style="text-align:right">${tot?(cls[c.key]/tot*100).toFixed(1):0}%</td>
       <td style="text-align:right;color:${col}">${pc===null?'—':(pc>=0?'+':'')+fmt(pc)}</td></tr>`; }).join('');
   return `<div style="font-family:system-ui,Arial;color:#eef1f7">
-      <div style="font-size:13px;color:#9aa3b4">Resumen semanal · ${new Date().toLocaleDateString('es-ES',{day:'numeric',month:'long',year:'numeric'})}</div>
+      <div style="font-size:13px;color:#9aa3b4">${t('mail_summary')} · ${new Date().toLocaleDateString(LOC(),{day:'numeric',month:'long',year:'numeric'})}</div>
       <div style="font-size:30px;font-weight:700;margin:6px 0;color:#e3c08d">${fmt(tot)}</div>
-      <div style="font-size:15px;color:${dTot>=0?'#3fb950':'#f85149'};font-weight:600;margin-bottom:16px">${dTot>=0?'▲':'▼'} ${fmt(Math.abs(dTot))} (${pct(pTot)}) vs. la semana pasada</div>
-      <div style="font-weight:700;margin:18px 0 6px;font-size:13px;letter-spacing:.5px;color:#c2c9d6">DISTRIBUCIÓN Y DELTA</div>
+      <div style="font-size:15px;color:${dTot>=0?'#3fb950':'#f85149'};font-weight:600;margin-bottom:16px">${dTot>=0?'▲':'▼'} ${fmt(Math.abs(dTot))} (${pct(pTot)}) ${t('mail_vsLastWeek')}</div>
+      <div style="font-weight:700;margin:18px 0 6px;font-size:13px;letter-spacing:.5px;color:#c2c9d6">${t('mail_distDelta')}</div>
       <table style="width:100%;border-collapse:collapse;font-size:14px">
-        <tr style="color:#9aa3b4;font-size:12px"><td>Clase</td><td style="text-align:right">Valor</td><td style="text-align:right">Peso</td><td style="text-align:right">Δ semana</td></tr>${rows}</table>
-      <div style="font-weight:700;margin:20px 0 6px;font-size:13px;letter-spacing:.5px;color:#c2c9d6">REBALANCEO</div>
-      ${alerts.length?`<div style="font-size:14px;line-height:1.9">${alerts.join('<br>')}</div>`:`<div style="font-size:14px;color:#3fb950">🟢 Cartera equilibrada — todas las clases dentro de ±${state.band}%.</div>`}
-      <div style="margin-top:22px;font-size:12px;color:#9aa3b4;border-top:1px solid #283142;padding-top:12px">Generado automáticamente cada lunes 08:00 · precios de CoinGecko / Stooq.</div></div>`;
+        <tr style="color:#9aa3b4;font-size:12px"><td>${t('mail_class')}</td><td style="text-align:right">${t('mail_value')}</td><td style="text-align:right">${t('mail_weight')}</td><td style="text-align:right">${t('mail_deltaWeek')}</td></tr>${rows}</table>
+      <div style="font-weight:700;margin:20px 0 6px;font-size:13px;letter-spacing:.5px;color:#c2c9d6">${t('mail_rebalance')}</div>
+      ${alerts.length?`<div style="font-size:14px;line-height:1.9">${alerts.join('<br>')}</div>`:`<div style="font-size:14px;color:#3fb950">🟢 ${t('mail_balanced').replace('{band}',state.band)}</div>`}
+      <div style="margin-top:22px;font-size:12px;color:#9aa3b4;border-top:1px solid #283142;padding-top:12px">${t('mail_auto')}</div></div>`;
 }
-function openMail(){ document.getElementById('mTo').textContent = state.email || '— configúralo en “Editar cartera” —'; document.getElementById('mailbody').innerHTML=buildMail(); document.getElementById('modal').classList.add('show'); }
+function openMail(){ document.getElementById('mTo').textContent = state.email || t('mail_configEmail'); document.getElementById('mailbody').innerHTML=buildMail(); document.getElementById('modal').classList.add('show'); }
 function closeMail(){ document.getElementById('modal').classList.remove('show'); }
 document.getElementById('modal').addEventListener('click',e=>{ if(e.target.id==='modal') closeMail(); });
 
@@ -1710,15 +1873,22 @@ function openSettings(){ document.getElementById('settings').classList.add('show
 function closeSettings(){ document.getElementById('settings').classList.remove('show'); }
 document.getElementById('settings').addEventListener('click',e=>{ if(e.target.id==='settings') closeSettings(); });
 
+/* ---- Menú de la sesión (avatar de Google): contiene "Salir" ---- */
+function toggleUserMenu(e){ if(e){ e.stopPropagation(); } const chip=document.getElementById('userChip'); const open=chip.classList.toggle('open');
+  const btn=document.getElementById('userMenuBtn'); if(btn) btn.setAttribute('aria-expanded', open?'true':'false'); }
+function closeUserMenu(){ const chip=document.getElementById('userChip'); if(chip){ chip.classList.remove('open'); const btn=document.getElementById('userMenuBtn'); if(btn) btn.setAttribute('aria-expanded','false'); } }
+document.addEventListener('click',e=>{ const chip=document.getElementById('userChip'); if(chip && chip.classList.contains('open') && !chip.contains(e.target)) closeUserMenu(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeUserMenu(); });
+
 /* ----------------------------- Confirmación reutilizable ----------------------------- */
 let _confirmResolve=null;
 function confirmDialog(opts){
   opts=opts||{};
   return new Promise(res=>{
     _confirmResolve=res;
-    document.getElementById('confirmTitle').textContent=opts.title||'Confirmar';
-    document.getElementById('confirmMsg').innerHTML=opts.message||'¿Seguro que quieres continuar?';
-    document.getElementById('confirmOkLbl').textContent=opts.okLabel||'Eliminar';
+    document.getElementById('confirmTitle').textContent=opts.title||t('cfm_confirm');
+    document.getElementById('confirmMsg').innerHTML=opts.message||t('cfm_sure');
+    document.getElementById('confirmOkLbl').textContent=opts.okLabel||t('cfm_delete');
     document.getElementById('confirmModal').classList.add('show');
   });
 }
@@ -1742,8 +1912,8 @@ function importJSON(){
     rd.onload=async()=>{ try{
       const d=JSON.parse(rd.result);
       if(!d||!Array.isArray(d.holdings)) throw new Error('formato');
-      if(!await confirmDialog({title:'Importar cartera', okLabel:'Reemplazar',
-        message:`Esto <b>reemplazará</b> tu cartera actual (${state.holdings.length} activos) por la del archivo (${d.holdings.length} activos) y reiniciará el histórico. ¿Continuar?`})) return;
+      if(!await confirmDialog({title:t('dlg_importTitle'), okLabel:t('dlg_replace'),
+        message:t('dlg_importMsg').replace('{a}',state.holdings.length).replace('{b}',d.holdings.length)})) return;
       state.holdings=d.holdings;
       if(Array.isArray(d.categories)&&d.categories.length) state.categories=d.categories;
       if(d.band!=null) state.band=+d.band||0;
@@ -1751,8 +1921,8 @@ function importJSON(){
       state.snapshots={}; lastTotal=0; trendCache={}; trendView={};
       sanitizeState();
       normalizeApy(); normalizeQtyHist(); recordSnapshot(); save(); render(); refresh(); loadTrend(true);
-      alert('Cartera importada correctamente ('+state.holdings.length+' activos).');
-    }catch(e){ alert('No se pudo leer el archivo. Asegúrate de que sea un portfolio.json válido.'); } };
+      alert(t('dlg_importOk').replace('{n}',state.holdings.length));
+    }catch(e){ alert(t('dlg_importErr')); } };
     rd.readAsText(f);
   };
   inp.click();
@@ -1762,58 +1932,58 @@ function importJSON(){
 let editRows=[], editCats=[], editBand=5, editEmail='';
 function openEditor(){ editRows=JSON.parse(JSON.stringify(state.holdings)); editRows.forEach(h=>{ h.apyStartStr = h.apyTs ? new Date(h.apyTs).toISOString().slice(0,10) : ''; }); editCats=JSON.parse(JSON.stringify(state.categories)); editBand=state.band; editEmail=state.email||''; renderEditor(); document.getElementById('editor').classList.add('show'); }
 function closeEditor(){ document.getElementById('editor').classList.remove('show'); }
-function refLabel(s){ return s==='crypto'?'ID CoinGecko':s==='stock'?'Símbolo bolsa':'Sin feed'; }
+function refLabel(s){ return s==='crypto'?t('ed_refCrypto'):s==='stock'?t('ed_refStock'):t('ed_refNone'); }
 function refPH(s){ return s==='crypto'?'bitcoin':s==='stock'?'VT':''; }
 function refVal(h){ return h.src==='crypto'?(h.cg||''):h.src==='stock'?(h.stooq||''):''; }
 function renderEditor(){
   const catRows=editCats.map((c,i)=>`<div class="catrow">
       <input class="catcolor" type="color" value="${c.color}" oninput="editCats[${i}].color=this.value" title="Color">
-      <input class="catname" value="${(c.label||'').replace(/"/g,'&quot;')}" placeholder="Nombre de la categoría" onchange="editCats[${i}].label=this.value; renderEditor()">
-      <span class="catobj">Objetivo <input type="number" min="0" value="${c.target}" oninput="editCats[${i}].target=+this.value">%</span>
-      <button class="del" onclick="delCat(${i})" title="Eliminar categoría">✕</button></div>`).join('');
-  const t=`<div class="catmgr">
-      <div class="catmgr-h"><span class="muted">Categorías de rebalanceo — define las tuyas (nombre, objetivo % y color):</span>
-        <button class="btn" style="padding:5px 11px;font-size:12px" onclick="addCat()">＋ Categoría</button></div>
-      ${catRows||'<div class="muted" style="padding:8px 0">Sin categorías. Añade al menos una.</div>'}
+      <input class="catname" value="${(c.label||'').replace(/"/g,'&quot;')}" placeholder="${t('ed_catName')}" onchange="editCats[${i}].label=this.value; renderEditor()">
+      <span class="catobj">${t('ed_target')} <input type="number" min="0" value="${c.target}" oninput="editCats[${i}].target=+this.value">%</span>
+      <button class="del" onclick="delCat(${i})" title="${t('ed_delCat')}">✕</button></div>`).join('');
+  const head=`<div class="catmgr">
+      <div class="catmgr-h"><span class="muted">${t('ed_catsHead')}</span>
+        <button class="btn" style="padding:5px 11px;font-size:12px" onclick="addCat()">＋ ${t('ed_addCat')}</button></div>
+      ${catRows||`<div class="muted" style="padding:8px 0">${t('ed_noCats')}</div>`}
       <div class="edtargets" style="margin-top:12px;border-top:1px solid var(--line);padding-top:12px">
-        <label>Banda ±% <input type="number" value="${editBand}" oninput="editBand=+this.value"></label>
-        <span class="muted" style="margin-left:auto">Email para el informe semanal:</span>
-        <label><input type="email" value="${(editEmail||'').replace(/"/g,'&quot;')}" oninput="editEmail=this.value" placeholder="tucorreo@ejemplo.com" style="width:220px;color:var(--tx);font-weight:400;text-align:left"></label></div>
+        <label>${t('ed_band')} <input type="number" value="${editBand}" oninput="editBand=+this.value"></label>
+        <span class="muted" style="margin-left:auto">${t('ed_emailLbl')}</span>
+        <label><input type="email" value="${(editEmail||'').replace(/"/g,'&quot;')}" oninput="editEmail=this.value" placeholder="${t('emailPh')}" style="width:220px;color:var(--tx);font-weight:400;text-align:left"></label></div>
     </div>`;
   const cards=editRows.map((h,i)=>`<div class="edcard"><div class="edgrid">
-    <label>Nombre<input value="${(h.name||'').replace(/"/g,'&quot;')}" oninput="editRows[${i}].name=this.value"></label>
-    <label>Ticker<input value="${(h.ticker||'').replace(/"/g,'&quot;')}" oninput="editRows[${i}].ticker=this.value.toUpperCase()"></label>
-    <label>Categoría<select onchange="editRows[${i}].cls=this.value">
+    <label>${t('ed_name')}<input value="${(h.name||'').replace(/"/g,'&quot;')}" oninput="editRows[${i}].name=this.value"></label>
+    <label>${t('ed_ticker')}<input value="${(h.ticker||'').replace(/"/g,'&quot;')}" oninput="editRows[${i}].ticker=this.value.toUpperCase()"></label>
+    <label>${t('ed_category')}<select onchange="editRows[${i}].cls=this.value">
       ${editCats.map(c=>`<option value="${c.key}"${h.cls===c.key?' selected':''}>${(c.label||c.key)}</option>`).join('')}</select></label>
-    <label>Fuente precio<select onchange="edSrc(${i},this.value)">
-      <option value="crypto"${h.src==='crypto'?' selected':''}>Cripto (en vivo)</option>
-      <option value="stock"${h.src==='stock'?' selected':''}>Acción/ETF (en vivo)</option>
-      <option value="manual"${h.src==='manual'?' selected':''}>Manual</option></select></label>
+    <label>${t('ed_priceSrc')}<select onchange="edSrc(${i},this.value)">
+      <option value="crypto"${h.src==='crypto'?' selected':''}>${t('ed_srcCrypto')}</option>
+      <option value="stock"${h.src==='stock'?' selected':''}>${t('ed_srcStock')}</option>
+      <option value="manual"${h.src==='manual'?' selected':''}>${t('ed_srcManual')}</option></select></label>
     <label>${refLabel(h.src)}<input ${h.src==='manual'?'disabled':''} placeholder="${refPH(h.src)}" value="${refVal(h)}" oninput="edRef(${i},this.value)"></label>
-    <label>Cantidad<input type="number" step="any" value="${h.qty||0}" oninput="editRows[${i}].qty=+this.value"></label>
-    <label>Precio €${h.src!=='manual'?' (fallback)':''}<input type="number" step="any" value="${h.price||0}" oninput="editRows[${i}].price=+this.value"></label>
-    <label title="Rendimiento anual estimado: stablecoins, staking, depósitos… Deja 0 si no aplica.">APY anual %<input type="number" step="any" value="${h.apy||0}" oninput="editRows[${i}].apy=+this.value"></label>
-    <label title="Fecha desde la que cuenta el rendimiento. La cantidad de arriba es el saldo en esa fecha. Solo aplica con APY.">Rendimiento desde<input type="date" value="${h.apyStartStr||''}" oninput="editRows[${i}].apyStartStr=this.value"></label>
-    </div><div style="text-align:right;margin-top:10px"><button class="del" onclick="delRow(${i})">Eliminar</button></div></div>`).join('');
-  document.getElementById('editorBody').innerHTML=t+(cards||'<div class="muted" style="padding:18px 0">Sin activos todavía. Pulsa “＋ Añadir activo” para empezar tu cartera.</div>');
+    <label>${t('ed_qty')}<input type="number" step="any" value="${h.qty||0}" oninput="editRows[${i}].qty=+this.value"></label>
+    <label>${t('ed_priceEur')}${h.src!=='manual'?t('ed_fallback'):''}<input type="number" step="any" value="${h.price||0}" oninput="editRows[${i}].price=+this.value"></label>
+    <label title="${t('ed_apyTitle')}">${t('ed_apy')}<input type="number" step="any" value="${h.apy||0}" oninput="editRows[${i}].apy=+this.value"></label>
+    <label title="${t('ed_yieldSinceTitle')}">${t('ed_yieldSince')}<input type="date" value="${h.apyStartStr||''}" oninput="editRows[${i}].apyStartStr=this.value"></label>
+    </div><div style="text-align:right;margin-top:10px"><button class="del" onclick="delRow(${i})">${t('ed_delete')}</button></div></div>`).join('');
+  document.getElementById('editorBody').innerHTML=head+(cards||`<div class="muted" style="padding:18px 0">${t('ed_noAssets')}</div>`);
 }
 function edSrc(i,v){ editRows[i].src=v; if(v!=='stock')delete editRows[i].stooq; if(v!=='crypto')delete editRows[i].cg; renderEditor(); }
 function edRef(i,v){ const h=editRows[i]; if(h.src==='crypto')h.cg=v.trim().toLowerCase(); else if(h.src==='stock')h.stooq=v.trim().toLowerCase(); }
 function addRow(){ editRows.push({name:'',ticker:'',cls:(editCats[0]?editCats[0].key:'cripto'),qty:0,price:0,src:'manual'}); renderEditor(); }
 async function delRow(i){ const h=editRows[i]||{};
-  if(!await confirmDialog({title:'Eliminar activo', okLabel:'Eliminar',
-    message:`¿Quitar <b>${(h.name||'este activo').replace(/</g,'&lt;')}</b> de la lista? El cambio se aplica al pulsar <b>Guardar y actualizar</b>.`})) return;
+  if(!await confirmDialog({title:t('dlg_delAssetTitle'), okLabel:t('ed_delete'),
+    message:t('dlg_delAssetMsg').replace('{name}',(h.name||t('this_asset')).replace(/</g,'&lt;')).replace('{save}',t('saveUpdate'))})) return;
   editRows.splice(i,1); renderEditor(); }
 async function clearAll(){
-  if(!await confirmDialog({title:'Vaciar cartera', okLabel:'Vaciar todo',
-    message:'¿Vaciar <b>todos los activos</b> de la lista y empezar de cero? Se aplicará al guardar.'})) return;
+  if(!await confirmDialog({title:t('dlg_clearTitle'), okLabel:t('clearAll'),
+    message:t('dlg_clearMsg')})) return;
   editRows=[]; renderEditor(); }
 function nextColorEdit(){ const used=editCats.map(c=>c.color); return PALETTE.find(c=>!used.includes(c)) || PALETTE[editCats.length%PALETTE.length]; }
 function addCat(){ editCats.push({key:'cat'+Date.now()+Math.floor(Math.random()*9999),label:'',color:nextColorEdit(),target:0}); renderEditor(); }
-async function delCat(i){ if(editCats.length<=1){ alert('Debe quedar al menos una categoría.'); return; }
+async function delCat(i){ if(editCats.length<=1){ alert(t('dlg_minCat')); return; }
   const c=editCats[i]||{};
-  if(!await confirmDialog({title:'Eliminar categoría', okLabel:'Eliminar',
-    message:`¿Eliminar la categoría <b>${(c.label||'sin nombre').replace(/</g,'&lt;')}</b>? Sus activos se reasignarán a otra categoría.`})) return;
+  if(!await confirmDialog({title:t('dlg_delCatTitle'), okLabel:t('ed_delete'),
+    message:t('dlg_delCatMsg').replace('{name}',(c.label||t('no_name')).replace(/</g,'&lt;'))})) return;
   const k=editCats[i].key; editCats.splice(i,1); const fb=editCats[0].key; editRows.forEach(h=>{ if(h.cls===k)h.cls=fb; }); renderEditor(); }
 function saveEditor(){
   state.holdings=editRows.filter(h=>(h.name||h.ticker)).map((h,i)=>{
@@ -1961,9 +2131,12 @@ else {
     currentUser = user;
     if(user){
       document.body.classList.add('authed');
-      const pic=document.getElementById('userPic'), nm=document.getElementById('userName');
-      if(nm) nm.textContent = user.displayName || user.email || 'Mi cuenta';
-      if(pic){ if(user.photoURL){ pic.src=user.photoURL; pic.style.display=''; } else pic.style.display='none'; }
+      const pic=document.getElementById('userPic'), nm=document.getElementById('userName'), ml=document.getElementById('userMail'), ini=document.getElementById('userInitial');
+      const dispName = user.displayName || user.email || t('account');
+      if(nm) nm.textContent = dispName;
+      if(ml) ml.textContent = (user.email && user.email!==dispName) ? user.email : '';
+      if(ini) ini.textContent = (dispName.trim()[0]||'·').toUpperCase();
+      if(pic){ if(user.photoURL){ pic.src=user.photoURL; pic.style.display=''; if(ini) ini.style.display='none'; } else { pic.style.display='none'; if(ini) ini.style.display='grid'; } }
       window.__cloudMaybeSetEmail(user.email);
       firstSync = true;
       userRef = doc(db, 'portfolios', user.uid);
