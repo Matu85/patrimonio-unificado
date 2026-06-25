@@ -1,40 +1,50 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#0c1526"/><stop offset="1" stop-color="#070a12"/>
-    </linearGradient>
-    <radialGradient id="halo" cx="62%" cy="34%" r="62%">
-      <stop offset="0%" stop-color="#e7c98a" stop-opacity="0.34"/>
-      <stop offset="55%" stop-color="#caa15a" stop-opacity="0.08"/>
-      <stop offset="100%" stop-color="#caa15a" stop-opacity="0"/>
+    <radialGradient id="bg" cx="50%" cy="32%" r="82%">
+      <stop offset="0" stop-color="#1b1b18"/>
+      <stop offset="55%" stop-color="#121210"/>
+      <stop offset="100%" stop-color="#0A0A08"/>
     </radialGradient>
-    <linearGradient id="ln" x1="0" y1="1" x2="1" y2="0">
-      <stop offset="0" stop-color="#c89a55"/><stop offset="0.5" stop-color="#f6e3b4"/><stop offset="1" stop-color="#fbeecb"/>
+    <radialGradient id="halo" cx="56%" cy="40%" r="56%">
+      <stop offset="0" stop-color="#D4A853" stop-opacity=".42"/>
+      <stop offset="60%" stop-color="#D4A853" stop-opacity=".10"/>
+      <stop offset="100%" stop-color="#D4A853" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="line" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#B98E3A"/>
+      <stop offset="55%" stop-color="#E6C171"/>
+      <stop offset="100%" stop-color="#F2D98C"/>
     </linearGradient>
-    <linearGradient id="ar" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#e3c08d" stop-opacity="0.40"/>
-      <stop offset="1" stop-color="#e3c08d" stop-opacity="0"/>
+    <linearGradient id="area" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#D4A853" stop-opacity=".34"/>
+      <stop offset="100%" stop-color="#D4A853" stop-opacity="0"/>
     </linearGradient>
-    <filter id="gl" x="-40%" y="-40%" width="180%" height="180%">
-      <feGaussianBlur stdDeviation="10" result="b"/>
+    <filter id="glow" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="9" result="b"/>
       <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
   </defs>
 
+  <!-- Fondo papel oscuro + halo oro (luz desde arriba) -->
   <rect width="1024" height="1024" fill="url(#bg)"/>
   <rect width="1024" height="1024" fill="url(#halo)"/>
 
-  <!-- línea base sutil -->
-  <line x1="230" y1="712" x2="794" y2="712" stroke="#e3c08d" stroke-opacity="0.12" stroke-width="4" stroke-dasharray="2 22" stroke-linecap="round"/>
+  <!-- Cuadrícula sutil tipo terminal financiera -->
+  <g stroke="#F0EDE0" stroke-opacity=".05" stroke-width="2">
+    <line x1="250" y1="455" x2="774" y2="455"/>
+    <line x1="250" y1="607" x2="774" y2="607"/>
+  </g>
 
-  <!-- área bajo la curva -->
-  <path d="M230 712 L230 678 C 350 678 408 566 506 542 C 604 518 660 470 794 312 L794 712 Z" fill="url(#ar)"/>
-  <!-- curva de crecimiento del patrimonio -->
-  <path d="M230 678 C 350 678 408 566 506 542 C 604 518 660 470 794 312"
-        fill="none" stroke="url(#ln)" stroke-width="36" stroke-linecap="round" stroke-linejoin="round" filter="url(#gl)"/>
-
-  <!-- punto "en vivo" al final (igual que en el gráfico de la app) -->
-  <circle cx="794" cy="312" r="52" fill="#f6e3b4" opacity="0.16"/>
-  <circle cx="794" cy="312" r="24" fill="#fbeecb" filter="url(#gl)"/>
-  <circle cx="782" cy="300" r="7" fill="#ffffff" opacity="0.9"/>
+  <!-- Área bajo la curva -->
+  <path d="M250 700 L364 561 L478 608 L637 446 L774 330 L774 760 L250 760 Z" fill="url(#area)"/>
+  <!-- Línea base -->
+  <line x1="250" y1="760" x2="774" y2="760" stroke="#D4A853" stroke-opacity=".30" stroke-width="6" stroke-linecap="round"/>
+  <!-- Curva de rendimiento de cartera (degradado oro) -->
+  <polyline points="250,700 364,561 478,608 637,446 774,330" fill="none" stroke="url(#line)"
+            stroke-width="26" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+  <!-- Punto pico — firma bermejo -->
+  <circle cx="774" cy="330" r="34" fill="#C8553D" filter="url(#glow)"/>
+  <circle cx="774" cy="330" r="34" fill="none" stroke="#E07055" stroke-width="6" opacity=".6"/>
+  <!-- Destello especular -->
+  <circle cx="763" cy="319" r="9" fill="#fff" opacity=".82"/>
 </svg>
