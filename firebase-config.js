@@ -11,8 +11,8 @@
    Estos valores son públicos: pueden ir en el código sin riesgo.
    ============================================================ */
 window.FIREBASE_CONFIG = {
-  apiKey: "PEGA-AQUI",
-  authDomain: "PEGA-AQUI",      // p. ej. tu-proyecto.firebaseapp.com
-  projectId: "PEGA-AQUI",
-  appId: "PEGA-AQUI"
+  apiKey: "AIzaSyA_slAZM6qLBxaWoFFpxGyTDsQf-UdKUeU",
+  authDomain: "patrimonio-unificado.firebaseapp.com",
+  projectId: "patrimonio-unificado",
+  appId: "1:651508515879:web:a30e11e219719829123a02"
 };
