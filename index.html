@@ -24,6 +24,168 @@
     addEventListener('load', ()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
   }
 </script>
+<!-- ============ Idiomas (i18n): Español · English · 中文 · हिन्दी ============ -->
+<script>
+window.I18N = {
+  es:{
+    tagline:"Broker · Fondos · Cripto — una sola vista, precios en vivo",
+    refresh:"Actualizar precios", editPortfolio:"Editar cartera", settings:"Configuración",
+    signout:"Salir", signout_t:"Cerrar sesión",
+    totalWealth:"Patrimonio total", thisWeek:"esta semana", positions:"Posiciones", onTarget:"En objetivo", alerts:"Alertas",
+    distribution:"Distribución del patrimonio", rebalanceTarget:"Objetivo de rebalanceo", band:"Banda ±",
+    rebalanceAlerts:"Alertas de rebalanceo", evolution:"Evolución del patrimonio · delta semanal", estimatedYields:"Rendimientos estimados",
+    brushTitle:"Arrastra la ventana para desplazarte por el histórico",
+    start:"Inicio", start_t:"Ir al primer dato histórico", today:"Hoy", today_t:"Ir a hoy", zoomIn_t:"Acercar", zoomOut_t:"Alejar",
+    trendHint:"Toca o desliza sobre la línea para ver cada valor · pellizca para zoom · usa la barra inferior para desplazarte",
+    asset:"Activo", category:"Categoría", quantity:"Cantidad", price:"Precio", value:"Valor", pctPortfolio:"% cartera",
+    positionsNote:"Cripto vía CoinGecko · Acciones/ETF vía Stooq · Fondos por VNL manual. Edita la cantidad en línea — se guarda en tu cuenta y se sincroniza.",
+    footer1:"Dashboard de patrimonio · precios en vivo · alerta de rebalanceo · resumen semanal con delta.",
+    footer2:"Todo editable y <b>privado</b>: con tu sesión iniciada, tus datos se guardan en tu cuenta y se sincronizan entre tus dispositivos.",
+    gateSub:"Tu patrimonio, sincronizado en todos tus dispositivos", connecting:"Conectando…",
+    continueGoogle:"Continuar con Google", orEmail:"o con tu correo", emailPh:"tucorreo@ejemplo.com", passwordPh:"Contraseña",
+    signIn:"Entrar", createAccount:"Crear cuenta", forgotPassword:"¿Olvidaste tu contraseña?",
+    gateFoot:"Tus datos se guardan de forma privada en tu cuenta<br>y se sincronizan entre tus dispositivos.",
+    emailPreview:"Email semanal — vista previa", to:"Para:", subject:"Asunto:", summaryLbl:"Resumen:", weeklyMonday:"semanal · lunes 08:00",
+    editorTitle:"Editar cartera — ingresa tus activos reales", addAsset:"Añadir activo", clearAll:"Vaciar todo", saveUpdate:"Guardar y actualizar",
+    editorHelp:"<b style='color:var(--cripto)'>Cripto (en vivo):</b> ID de CoinGecko — bitcoin, ethereum, solana, cardano… &nbsp;·&nbsp; <b style='color:var(--broker)'>Acción/ETF (en vivo):</b> símbolo de bolsa — VT, AAPL, MSFT, VWCE.DE… &nbsp;·&nbsp; <b style='color:var(--fondos)'>Manual:</b> escribe tú el precio/VNL.<br>Tras guardar, pulsa <b>Exportar JSON</b> y reemplaza el archivo de la carpeta para que el email del lunes use tus cifras.",
+    display:"Visualización", currency:"Moneda", currencyDesc:"Convierte todos los importes al vuelo. Los datos se siguen calculando en euros.",
+    report:"Informe", weeklyEmail:"Email semanal", weeklyEmailDesc:"Vista previa del correo del lunes a las 08:00 con el delta de la semana.", viewEmail:"Ver email",
+    data:"Datos", backup:"Copia de seguridad", backupDesc:"Exporta tu cartera a un archivo <b>portfolio.json</b> o impórtala. Importar <b>reemplaza</b> la cartera actual.", export:"Exportar", import:"Importar",
+    movement:"Movimiento", all:"Todo", cancel:"Cancelar", register:"Registrar", confirm:"Confirmar", delete:"Eliminar",
+    rng_hora:"Hora", rng_dia:"Día", rng_semana:"Semana", rng_mes:"Mes", rng_anio:"Año", rng_todo:"Todo", rng_todo_full:"Histórico completo",
+    updating:"actualizando…", updated:"actualizado", noHistory:"sin histórico",
+    onTargetTxt:"en objetivo", overTarget:"sobre objetivo", underTarget:"bajo objetivo",
+    loadingHist:"Cargando histórico de mercado…", noHistRange:"Sin histórico de mercado para este rango.",
+    noteSynthetic:" · sin histórico de mercado (valor actual)", notePartial:" · aprox. para activos sin datos de mercado",
+    buy:"Comprar", sellTransfer:"Vender/Transferir", sellTransferSp:"Vender / Transferir",
+    buy_t:"Registrar una compra — se suma desde hoy, mantiene el histórico", sell_t:"Registrar venta o transferencia — mantiene el histórico"
+  },
+  en:{
+    tagline:"Broker · Funds · Crypto — one view, live prices",
+    refresh:"Refresh prices", editPortfolio:"Edit portfolio", settings:"Settings",
+    signout:"Sign out", signout_t:"Sign out",
+    totalWealth:"Total wealth", thisWeek:"this week", positions:"Positions", onTarget:"On target", alerts:"Alerts",
+    distribution:"Wealth distribution", rebalanceTarget:"Rebalancing target", band:"Band ±",
+    rebalanceAlerts:"Rebalancing alerts", evolution:"Wealth evolution · weekly delta", estimatedYields:"Estimated yields",
+    brushTitle:"Drag the window to scroll through history",
+    start:"Start", start_t:"Go to the first data point", today:"Today", today_t:"Go to today", zoomIn_t:"Zoom in", zoomOut_t:"Zoom out",
+    trendHint:"Tap or drag on the line to see each value · pinch to zoom · use the bottom bar to scroll",
+    asset:"Asset", category:"Category", quantity:"Quantity", price:"Price", value:"Value", pctPortfolio:"% portfolio",
+    positionsNote:"Crypto via CoinGecko · Stocks/ETFs via Stooq · Funds by manual NAV. Edit the quantity inline — it is saved to your account and synced.",
+    footer1:"Wealth dashboard · live prices · rebalancing alert · weekly summary with delta.",
+    footer2:"Fully editable and <b>private</b>: when signed in, your data is saved to your account and synced across your devices.",
+    gateSub:"Your wealth, synced across all your devices", connecting:"Connecting…",
+    continueGoogle:"Continue with Google", orEmail:"or with your email", emailPh:"you@example.com", passwordPh:"Password",
+    signIn:"Sign in", createAccount:"Create account", forgotPassword:"Forgot your password?",
+    gateFoot:"Your data is stored privately in your account<br>and synced across your devices.",
+    emailPreview:"Weekly email — preview", to:"To:", subject:"Subject:", summaryLbl:"Summary:", weeklyMonday:"weekly · Monday 08:00",
+    editorTitle:"Edit portfolio — enter your real assets", addAsset:"Add asset", clearAll:"Clear all", saveUpdate:"Save and update",
+    editorHelp:"<b style='color:var(--cripto)'>Crypto (live):</b> CoinGecko ID — bitcoin, ethereum, solana, cardano… &nbsp;·&nbsp; <b style='color:var(--broker)'>Stock/ETF (live):</b> ticker — VT, AAPL, MSFT, VWCE.DE… &nbsp;·&nbsp; <b style='color:var(--fondos)'>Manual:</b> type the price/NAV yourself.<br>After saving, click <b>Export JSON</b> and replace the file in the folder so Monday's email uses your figures.",
+    display:"Display", currency:"Currency", currencyDesc:"Converts all amounts on the fly. Data is still computed in euros.",
+    report:"Report", weeklyEmail:"Weekly email", weeklyEmailDesc:"Preview of Monday's 08:00 email with the week's delta.", viewEmail:"View email",
+    data:"Data", backup:"Backup", backupDesc:"Export your portfolio to a <b>portfolio.json</b> file or import it. Importing <b>replaces</b> the current portfolio.", export:"Export", import:"Import",
+    movement:"Movement", all:"All", cancel:"Cancel", register:"Record", confirm:"Confirm", delete:"Delete",
+    rng_hora:"Hour", rng_dia:"Day", rng_semana:"Week", rng_mes:"Month", rng_anio:"Year", rng_todo:"All", rng_todo_full:"Full history",
+    updating:"updating…", updated:"updated", noHistory:"no history",
+    onTargetTxt:"on target", overTarget:"over target", underTarget:"under target",
+    loadingHist:"Loading market history…", noHistRange:"No market history for this range.",
+    noteSynthetic:" · no market history (current value)", notePartial:" · approx. for assets without market data",
+    buy:"Buy", sellTransfer:"Sell/Transfer", sellTransferSp:"Sell / Transfer",
+    buy_t:"Record a buy — added from today, keeps history", sell_t:"Record a sell or transfer — keeps history"
+  },
+  zh:{
+    tagline:"券商 · 基金 · 加密货币 — 一个视图，实时价格",
+    refresh:"刷新价格", editPortfolio:"编辑投资组合", settings:"设置",
+    signout:"退出", signout_t:"退出登录",
+    totalWealth:"总资产", thisWeek:"本周", positions:"持仓", onTarget:"达标", alerts:"提醒",
+    distribution:"资产分布", rebalanceTarget:"再平衡目标", band:"区间 ±",
+    rebalanceAlerts:"再平衡提醒", evolution:"资产走势 · 每周变化", estimatedYields:"预计收益",
+    brushTitle:"拖动窗口浏览历史",
+    start:"起点", start_t:"跳到最早数据", today:"今天", today_t:"跳到今天", zoomIn_t:"放大", zoomOut_t:"缩小",
+    trendHint:"在曲线上点按或滑动查看数值 · 双指缩放 · 用底部条滚动",
+    asset:"资产", category:"类别", quantity:"数量", price:"价格", value:"价值", pctPortfolio:"组合占比",
+    positionsNote:"加密货币来自 CoinGecko · 股票/ETF 来自 Stooq · 基金按手动净值。可直接编辑数量 — 自动保存到你的账户并同步。",
+    footer1:"资产看板 · 实时价格 · 再平衡提醒 · 每周变化摘要。",
+    footer2:"完全可编辑且<b>私密</b>：登录后，你的数据保存在账户中并在设备间同步。",
+    gateSub:"你的资产，在所有设备间同步", connecting:"连接中…",
+    continueGoogle:"使用 Google 继续", orEmail:"或使用邮箱", emailPh:"you@example.com", passwordPh:"密码",
+    signIn:"登录", createAccount:"注册", forgotPassword:"忘记密码？",
+    gateFoot:"你的数据私密保存在账户中<br>并在设备间同步。",
+    emailPreview:"每周邮件 — 预览", to:"收件人：", subject:"主题：", summaryLbl:"摘要：", weeklyMonday:"每周 · 周一 08:00",
+    editorTitle:"编辑投资组合 — 输入你的真实资产", addAsset:"添加资产", clearAll:"清空", saveUpdate:"保存并更新",
+    editorHelp:"<b style='color:var(--cripto)'>加密货币（实时）：</b>CoinGecko ID — bitcoin、ethereum、solana、cardano… &nbsp;·&nbsp; <b style='color:var(--broker)'>股票/ETF（实时）：</b>交易代码 — VT、AAPL、MSFT、VWCE.DE… &nbsp;·&nbsp; <b style='color:var(--fondos)'>手动：</b>自行输入价格/净值。<br>保存后，点击<b>导出 JSON</b>并替换文件夹中的文件，使周一邮件使用你的数据。",
+    display:"显示", currency:"货币", currencyDesc:"实时换算所有金额。数据仍以欧元计算。",
+    report:"报告", weeklyEmail:"每周邮件", weeklyEmailDesc:"预览周一 08:00 的邮件，包含本周变化。", viewEmail:"查看邮件",
+    data:"数据", backup:"备份", backupDesc:"将投资组合导出为 <b>portfolio.json</b> 文件或导入。导入会<b>替换</b>当前组合。", export:"导出", import:"导入",
+    movement:"操作", all:"全部", cancel:"取消", register:"记录", confirm:"确认", delete:"删除",
+    rng_hora:"小时", rng_dia:"日", rng_semana:"周", rng_mes:"月", rng_anio:"年", rng_todo:"全部", rng_todo_full:"全部历史",
+    updating:"更新中…", updated:"已更新", noHistory:"无历史",
+    onTargetTxt:"达标", overTarget:"超出目标", underTarget:"低于目标",
+    loadingHist:"加载市场历史…", noHistRange:"该范围无市场历史。",
+    noteSynthetic:" · 无市场历史（当前价值）", notePartial:" · 对无市场数据的资产为近似值",
+    buy:"买入", sellTransfer:"卖出/转出", sellTransferSp:"卖出 / 转出",
+    buy_t:"记录买入 — 从今天起累加，保留历史", sell_t:"记录卖出或转出 — 保留历史"
+  },
+  hi:{
+    tagline:"ब्रोकर · फंड · क्रिप्टो — एक ही जगह, लाइव कीमतें",
+    refresh:"कीमतें अपडेट करें", editPortfolio:"पोर्टफोलियो संपादित करें", settings:"सेटिंग्स",
+    signout:"साइन आउट", signout_t:"साइन आउट करें",
+    totalWealth:"कुल संपत्ति", thisWeek:"इस सप्ताह", positions:"पोज़िशन", onTarget:"लक्ष्य पर", alerts:"अलर्ट",
+    distribution:"संपत्ति वितरण", rebalanceTarget:"रीबैलेंसिंग लक्ष्य", band:"बैंड ±",
+    rebalanceAlerts:"रीबैलेंसिंग अलर्ट", evolution:"संपत्ति का विकास · साप्ताहिक बदलाव", estimatedYields:"अनुमानित प्रतिफल",
+    brushTitle:"इतिहास देखने के लिए विंडो खींचें",
+    start:"शुरुआत", start_t:"पहले डेटा पर जाएँ", today:"आज", today_t:"आज पर जाएँ", zoomIn_t:"ज़ूम इन", zoomOut_t:"ज़ूम आउट",
+    trendHint:"मान देखने के लिए लाइन पर टैप या ड्रैग करें · ज़ूम के लिए पिंच करें · स्क्रॉल के लिए नीचे की पट्टी इस्तेमाल करें",
+    asset:"एसेट", category:"श्रेणी", quantity:"मात्रा", price:"कीमत", value:"मूल्य", pctPortfolio:"% पोर्टफोलियो",
+    positionsNote:"क्रिप्टो CoinGecko से · स्टॉक/ETF Stooq से · फंड मैनुअल NAV से। मात्रा को इनलाइन संपादित करें — यह आपके खाते में सहेजी और सिंक होती है।",
+    footer1:"संपत्ति डैशबोर्ड · लाइव कीमतें · रीबैलेंसिंग अलर्ट · साप्ताहिक सारांश।",
+    footer2:"पूरी तरह संपादन योग्य और <b>निजी</b>: साइन इन करने पर आपका डेटा आपके खाते में सहेजा जाता है और डिवाइसों में सिंक होता है।",
+    gateSub:"आपकी संपत्ति, आपके सभी डिवाइसों पर सिंक", connecting:"कनेक्ट हो रहा है…",
+    continueGoogle:"Google से जारी रखें", orEmail:"या अपने ईमेल से", emailPh:"you@example.com", passwordPh:"पासवर्ड",
+    signIn:"साइन इन", createAccount:"खाता बनाएँ", forgotPassword:"पासवर्ड भूल गए?",
+    gateFoot:"आपका डेटा आपके खाते में निजी रूप से सहेजा जाता है<br>और डिवाइसों में सिंक होता है।",
+    emailPreview:"साप्ताहिक ईमेल — पूर्वावलोकन", to:"किसे:", subject:"विषय:", summaryLbl:"सारांश:", weeklyMonday:"साप्ताहिक · सोमवार 08:00",
+    editorTitle:"पोर्टफोलियो संपादित करें — अपनी असली एसेट दर्ज करें", addAsset:"एसेट जोड़ें", clearAll:"सब हटाएँ", saveUpdate:"सहेजें और अपडेट करें",
+    editorHelp:"<b style='color:var(--cripto)'>क्रिप्टो (लाइव):</b> CoinGecko ID — bitcoin, ethereum, solana, cardano… &nbsp;·&nbsp; <b style='color:var(--broker)'>स्टॉक/ETF (लाइव):</b> टिकर — VT, AAPL, MSFT, VWCE.DE… &nbsp;·&nbsp; <b style='color:var(--fondos)'>मैनुअल:</b> कीमत/NAV खुद लिखें।<br>सहेजने के बाद <b>JSON निर्यात करें</b> दबाएँ और फ़ोल्डर की फ़ाइल बदलें ताकि सोमवार का ईमेल आपके आँकड़े इस्तेमाल करे।",
+    display:"प्रदर्शन", currency:"मुद्रा", currencyDesc:"सभी राशियों को तुरंत बदलता है। डेटा फिर भी यूरो में गणना होता है।",
+    report:"रिपोर्ट", weeklyEmail:"साप्ताहिक ईमेल", weeklyEmailDesc:"सोमवार 08:00 के ईमेल का पूर्वावलोकन, सप्ताह के बदलाव के साथ।", viewEmail:"ईमेल देखें",
+    data:"डेटा", backup:"बैकअप", backupDesc:"अपना पोर्टफोलियो <b>portfolio.json</b> फ़ाइल में निर्यात करें या आयात करें। आयात मौजूदा पोर्टफोलियो को <b>बदल</b> देता है।", export:"निर्यात", import:"आयात",
+    movement:"लेन-देन", all:"सब", cancel:"रद्द करें", register:"दर्ज करें", confirm:"पुष्टि करें", delete:"हटाएँ",
+    rng_hora:"घंटा", rng_dia:"दिन", rng_semana:"सप्ताह", rng_mes:"महीना", rng_anio:"वर्ष", rng_todo:"सभी", rng_todo_full:"पूरा इतिहास",
+    updating:"अपडेट हो रहा है…", updated:"अपडेट किया गया", noHistory:"कोई इतिहास नहीं",
+    onTargetTxt:"लक्ष्य पर", overTarget:"लक्ष्य से ऊपर", underTarget:"लक्ष्य से नीचे",
+    loadingHist:"मार्केट इतिहास लोड हो रहा है…", noHistRange:"इस रेंज के लिए कोई मार्केट इतिहास नहीं।",
+    noteSynthetic:" · कोई मार्केट इतिहास नहीं (मौजूदा मूल्य)", notePartial:" · मार्केट डेटा रहित एसेट के लिए अनुमानित",
+    buy:"खरीदें", sellTransfer:"बेचें/ट्रांसफ़र", sellTransferSp:"बेचें / ट्रांसफ़र",
+    buy_t:"खरीद दर्ज करें — आज से जुड़ती है, इतिहास बना रहता है", sell_t:"बिक्री या ट्रांसफ़र दर्ज करें — इतिहास बना रहता है"
+  }
+};
+window.LANG = (function(){ try{ var s=localStorage.getItem('lang'); if(s&&I18N[s]) return s;
+  var n=(navigator.language||'es').slice(0,2).toLowerCase(); return I18N[n]?n:'es'; }catch(e){ return 'es'; } })();
+window.t = function(k){ var d=I18N[LANG]||I18N.es; return (d[k]!=null?d[k]:(I18N.es[k]!=null?I18N.es[k]:k)); };
+window.LOC = function(){ return ({es:'es-ES',en:'en-US',zh:'zh-CN',hi:'hi-IN'})[LANG] || 'es-ES'; };
+window.applyI18n = function(root){
+  root=root||document;
+  root.querySelectorAll('[data-i18n]').forEach(function(el){ el.textContent=t(el.getAttribute('data-i18n')); });
+  root.querySelectorAll('[data-i18n-html]').forEach(function(el){ el.innerHTML=t(el.getAttribute('data-i18n-html')); });
+  root.querySelectorAll('[data-i18n-ph]').forEach(function(el){ el.setAttribute('placeholder', t(el.getAttribute('data-i18n-ph'))); });
+  root.querySelectorAll('[data-i18n-title]').forEach(function(el){ el.setAttribute('title', t(el.getAttribute('data-i18n-title'))); });
+  document.documentElement.lang = LANG;
+};
+window.setLang = function(l){
+  if(!I18N[l]) return; window.LANG=l; try{ localStorage.setItem('lang', l); }catch(e){}
+  applyI18n();
+  try{ if(window.renderTrendRanges) renderTrendRanges(); }catch(e){}
+  try{ if(window.buildCurrencyOptions) buildCurrencyOptions(); }catch(e){}
+  try{ if(window.render) render(); }catch(e){}
+  try{ if(window.drawTrend) drawTrend(); }catch(e){}
+  document.querySelectorAll('.lang-select').forEach(function(s){ s.value=l; });
+};
+document.addEventListener('DOMContentLoaded', function(){
+  applyI18n();
+  document.querySelectorAll('.lang-select').forEach(function(s){ s.value=LANG; });
+});
+</script>
 <!-- Fuentes sin bloquear el render: se cargan en paralelo y aparecen al estar listas -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -90,6 +252,12 @@
   .brand-name{font-weight:700;font-size:18px;letter-spacing:.2px}
   .brand-sub{color:var(--mut);font-size:12.5px;margin-top:2px}
   .actions{display:flex;gap:9px;flex-wrap:wrap}
+  .lang-select{appearance:none;-webkit-appearance:none;cursor:pointer;border:1px solid var(--line2);
+    background:rgba(255,255,255,.04);color:var(--soft);font-family:inherit;font-size:12.5px;font-weight:600;
+    padding:9px 12px;border-radius:11px;transition:.18s}
+  .lang-select:hover{border-color:rgba(227,192,141,.4);color:var(--gold-2)}
+  .lang-select option{background:#141412;color:var(--tx)}
+  .gate-lang{display:flex;justify-content:flex-end;margin-bottom:4px}
   .btn{cursor:pointer;border:1px solid var(--line2);background:var(--glass);color:var(--tx);
     padding:9px 15px;border-radius:11px;font-size:13px;font-weight:600;font-family:inherit;
     backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:.18s;display:inline-flex;align-items:center;gap:7px}
@@ -527,37 +695,42 @@
 <!-- Pantalla de acceso — solo aparece cuando la cuenta/nube está configurada -->
 <div id="authGate" aria-hidden="true">
   <div class="gate-card">
+    <div class="gate-lang">
+      <select class="lang-select" onchange="setLang(this.value)" aria-label="Idioma / Language" title="Idioma / Language">
+        <option value="es">🌐 ES</option><option value="en">🌐 EN</option><option value="zh">🌐 中文</option><option value="hi">🌐 हिन्दी</option>
+      </select>
+    </div>
     <div class="gate-brand">
       <div class="mark"><svg width="36" height="36" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="mLine" x1="0" y1="1" x2="1" y2="0"><stop offset="0%" stop-color="#B98E3A"/><stop offset="55%" stop-color="#E6C171"/><stop offset="100%" stop-color="#F2D98C"/></linearGradient><linearGradient id="mArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#D4A853" stop-opacity=".30"/><stop offset="100%" stop-color="#D4A853" stop-opacity="0"/></linearGradient></defs><rect width="36" height="36" rx="8" fill="#141412"/><rect x=".5" y=".5" width="35" height="35" rx="7.5" fill="none" stroke="rgba(212,168,83,.22)" stroke-width="1"/><path d="M6 24 L11 18 L16 20 L23 13 L29 8 L29 27 L6 27 Z" fill="url(#mArea)"/><polyline points="6,24 11,18 16,20 23,13 29,8" fill="none" stroke="url(#mLine)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><line x1="6" y1="27" x2="29" y2="27" stroke="rgba(212,168,83,.25)" stroke-width="1" stroke-linecap="round"/><circle cx="29" cy="8" r="3.3" fill="#C8553D"/><circle cx="29" cy="8" r="3.3" fill="none" stroke="#E07055" stroke-width=".8" opacity=".55"/></svg></div>
       <div>
         <div class="brand-name">Ascent</div>
-        <div class="brand-sub">Tu patrimonio, sincronizado en todos tus dispositivos</div>
+        <div class="brand-sub" data-i18n="gateSub">Tu patrimonio, sincronizado en todos tus dispositivos</div>
       </div>
     </div>
 
-    <div class="gate-loading" id="gateLoading"><span class="gate-spinner"></span> Conectando…</div>
+    <div class="gate-loading" id="gateLoading"><span class="gate-spinner"></span> <span data-i18n="connecting">Conectando…</span></div>
 
     <div class="gate-form" id="gateForm" hidden>
       <button class="gbtn" type="button" onclick="cloudGoogle()">
         <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8a12 12 0 0 1 0-24c3.1 0 5.9 1.2 8 3.1l5.7-5.7A20 20 0 1 0 24 44c11 0 20-9 20-20 0-1.3-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8A12 12 0 0 1 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7A20 20 0 0 0 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2A12 12 0 0 1 12.7 29l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3a12 12 0 0 1-4.1 5.6l6.2 5.2C39.9 41 44 36 44 24c0-1.3-.1-2.3-.4-3.5z"/></svg>
-        Continuar con Google
+        <span data-i18n="continueGoogle">Continuar con Google</span>
       </button>
 
-      <div class="gate-or">o con tu correo</div>
+      <div class="gate-or" data-i18n="orEmail">o con tu correo</div>
 
-      <input id="authEmail" type="email" inputmode="email" autocomplete="email" placeholder="tucorreo@ejemplo.com">
-      <input id="authPass" type="password" autocomplete="current-password" placeholder="Contraseña" onkeydown="if(event.key==='Enter')cloudEmailSignIn()">
+      <input id="authEmail" type="email" inputmode="email" autocomplete="email" data-i18n-ph="emailPh" placeholder="tucorreo@ejemplo.com">
+      <input id="authPass" type="password" autocomplete="current-password" data-i18n-ph="passwordPh" placeholder="Contraseña" onkeydown="if(event.key==='Enter')cloudEmailSignIn()">
 
       <div class="gate-actions">
-        <button class="btn gold" type="button" onclick="cloudEmailSignIn()"><svg class="ic"><use href="#i-check"/></svg> Entrar</button>
-        <button class="btn" type="button" onclick="cloudEmailSignUp()"><svg class="ic"><use href="#i-plus"/></svg> Crear cuenta</button>
+        <button class="btn gold" type="button" onclick="cloudEmailSignIn()"><svg class="ic"><use href="#i-check"/></svg> <span data-i18n="signIn">Entrar</span></button>
+        <button class="btn" type="button" onclick="cloudEmailSignUp()"><svg class="ic"><use href="#i-plus"/></svg> <span data-i18n="createAccount">Crear cuenta</span></button>
       </div>
 
-      <button class="gate-link" type="button" onclick="cloudReset()">¿Olvidaste tu contraseña?</button>
+      <button class="gate-link" type="button" onclick="cloudReset()" data-i18n="forgotPassword">¿Olvidaste tu contraseña?</button>
       <div class="gate-msg" id="authMsg" role="status"></div>
     </div>
 
-    <div class="gate-foot">Tus datos se guardan de forma privada en tu cuenta<br>y se sincronizan entre tus dispositivos.</div>
+    <div class="gate-foot" data-i18n-html="gateFoot">Tus datos se guardan de forma privada en tu cuenta<br>y se sincronizan entre tus dispositivos.</div>
   </div>
 </div>
 
@@ -569,17 +742,20 @@
       <div class="mark"><svg width="36" height="36" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="mLine" x1="0" y1="1" x2="1" y2="0"><stop offset="0%" stop-color="#B98E3A"/><stop offset="55%" stop-color="#E6C171"/><stop offset="100%" stop-color="#F2D98C"/></linearGradient><linearGradient id="mArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#D4A853" stop-opacity=".30"/><stop offset="100%" stop-color="#D4A853" stop-opacity="0"/></linearGradient></defs><rect width="36" height="36" rx="8" fill="#141412"/><rect x=".5" y=".5" width="35" height="35" rx="7.5" fill="none" stroke="rgba(212,168,83,.22)" stroke-width="1"/><path d="M6 24 L11 18 L16 20 L23 13 L29 8 L29 27 L6 27 Z" fill="url(#mArea)"/><polyline points="6,24 11,18 16,20 23,13 29,8" fill="none" stroke="url(#mLine)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><line x1="6" y1="27" x2="29" y2="27" stroke="rgba(212,168,83,.25)" stroke-width="1" stroke-linecap="round"/><circle cx="29" cy="8" r="3.3" fill="#C8553D"/><circle cx="29" cy="8" r="3.3" fill="none" stroke="#E07055" stroke-width=".8" opacity=".55"/></svg></div>
       <div>
         <div class="brand-name">Ascent</div>
-        <div class="brand-sub">Broker · Fondos · Cripto — una sola vista, precios en vivo</div>
+        <div class="brand-sub" data-i18n="tagline">Broker · Fondos · Cripto — una sola vista, precios en vivo</div>
       </div>
     </div>
     <div class="actions">
-      <button class="btn gold" onclick="refresh()"><svg class="ic"><use href="#i-refresh"/></svg> Actualizar precios</button>
-      <button class="btn" onclick="openEditor()"><svg class="ic"><use href="#i-edit"/></svg> Editar cartera</button>
-      <button class="btn" onclick="openSettings()"><svg class="ic"><use href="#i-settings"/></svg> Configuración</button>
+      <select class="lang-select" onchange="setLang(this.value)" aria-label="Idioma / Language" title="Idioma / Language">
+        <option value="es">🌐 ES</option><option value="en">🌐 EN</option><option value="zh">🌐 中文</option><option value="hi">🌐 हिन्दी</option>
+      </select>
+      <button class="btn gold" onclick="refresh()"><svg class="ic"><use href="#i-refresh"/></svg> <span data-i18n="refresh">Actualizar precios</span></button>
+      <button class="btn" onclick="openEditor()"><svg class="ic"><use href="#i-edit"/></svg> <span data-i18n="editPortfolio">Editar cartera</span></button>
+      <button class="btn" onclick="openSettings()"><svg class="ic"><use href="#i-settings"/></svg> <span data-i18n="settings">Configuración</span></button>
       <span id="userChip">
         <img class="uava" id="userPic" alt="" referrerpolicy="no-referrer">
         <span class="uname" id="userName"></span>
-        <button class="btn uout" type="button" onclick="cloudSignOut()" title="Cerrar sesión"><svg class="ic"><use href="#i-x"/></svg> Salir</button>
+        <button class="btn uout" type="button" onclick="cloudSignOut()" data-i18n-title="signout_t" title="Cerrar sesión"><svg class="ic"><use href="#i-x"/></svg> <span data-i18n="signout">Salir</span></button>
       </span>
     </div>
   </header>
@@ -587,24 +763,24 @@
   <!-- Hero -->
   <section class="hero">
     <div>
-      <div class="eyebrow">Patrimonio total</div>
+      <div class="eyebrow" data-i18n="totalWealth">Patrimonio total</div>
       <div class="total-num" id="totalVal">—</div>
       <div class="hero-meta">
         <span class="pill up" id="wowPill">—</span>
-        <span>esta semana</span><span class="dot-sep">·</span>
-        <span id="updated">actualizando…</span>
+        <span data-i18n="thisWeek">esta semana</span><span class="dot-sep">·</span>
+        <span id="updated" data-i18n="updating">actualizando…</span>
       </div>
     </div>
     <div class="hero-right">
-      <div class="mini"><span class="mini-head"><svg class="ic"><use href="#i-layers"/></svg><span class="mini-l">Posiciones</span></span><span class="mini-v" id="posCount">—</span></div>
-      <div class="mini"><span class="mini-head"><svg class="ic"><use href="#i-target"/></svg><span class="mini-l">En objetivo</span></span><span class="mini-v" id="okCount">—</span></div>
-      <div class="mini"><span class="mini-head"><svg class="ic"><use href="#i-bell"/></svg><span class="mini-l">Alertas</span></span><span class="mini-v" id="alertCount">—</span></div>
+      <div class="mini"><span class="mini-head"><svg class="ic"><use href="#i-layers"/></svg><span class="mini-l" data-i18n="positions">Posiciones</span></span><span class="mini-v" id="posCount">—</span></div>
+      <div class="mini"><span class="mini-head"><svg class="ic"><use href="#i-target"/></svg><span class="mini-l" data-i18n="onTarget">En objetivo</span></span><span class="mini-v" id="okCount">—</span></div>
+      <div class="mini"><span class="mini-head"><svg class="ic"><use href="#i-bell"/></svg><span class="mini-l" data-i18n="alerts">Alertas</span></span><span class="mini-v" id="alertCount">—</span></div>
     </div>
   </section>
 
   <div class="grid">
     <div class="card">
-      <div class="card-h"><span class="kicker"><svg class="ic kic"><use href="#i-pie"/></svg>Distribución del patrimonio</span></div>
+      <div class="card-h"><span class="kicker"><svg class="ic kic"><use href="#i-pie"/></svg><span data-i18n="distribution">Distribución del patrimonio</span></span></div>
       <div class="donutwrap">
         <svg id="donut" viewBox="0 0 210 210" width="200" height="200" style="flex:none"></svg>
         <div class="legend" id="legend"></div>
@@ -613,23 +789,23 @@
 
     <div class="card">
       <div class="card-h">
-        <span class="kicker"><svg class="ic kic"><use href="#i-target"/></svg>Objetivo de rebalanceo</span>
-        <span class="band-edit">Banda ± <input class="tgt-input" id="bandInput" type="number" min="0" onchange="setBand(this.value)"> %</span>
+        <span class="kicker"><svg class="ic kic"><use href="#i-target"/></svg><span data-i18n="rebalanceTarget">Objetivo de rebalanceo</span></span>
+        <span class="band-edit"><span data-i18n="band">Banda ±</span> <input class="tgt-input" id="bandInput" type="number" min="0" onchange="setBand(this.value)"> %</span>
       </div>
       <div id="classes"></div>
     </div>
 
     <div class="card full">
-      <div class="card-h"><span class="kicker"><svg class="ic kic"><use href="#i-bell"/></svg>Alertas de rebalanceo</span></div>
+      <div class="card-h"><span class="kicker"><svg class="ic kic"><use href="#i-bell"/></svg><span data-i18n="rebalanceAlerts">Alertas de rebalanceo</span></span></div>
       <div id="alerts"></div>
     </div>
 
     <div class="card full">
-      <div class="card-h"><span class="kicker"><svg class="ic kic"><use href="#i-activity"/></svg>Evolución del patrimonio · delta semanal</span></div>
+      <div class="card-h"><span class="kicker"><svg class="ic kic"><use href="#i-activity"/></svg><span data-i18n="evolution">Evolución del patrimonio · delta semanal</span></span></div>
       <div class="delta-grid" id="deltas"></div>
       <div class="trend-head">
         <div class="trend-meta">
-          <span class="trend-legend"><i></i>Patrimonio total (<span id="curBadge">€</span>)</span>
+          <span class="trend-legend"><i></i><span data-i18n="totalWealth">Patrimonio total</span> (<span id="curBadge">€</span>)</span>
           <span class="trend-now" id="trendNow"></span>
         </div>
         <div class="trend-ranges" id="trendRanges"></div>
@@ -643,50 +819,50 @@
         <div class="trend-tip" id="trendTip"></div>
       </div>
       <div class="trend-x" id="trendX"></div>
-      <div class="trend-brush" id="trendBrush" title="Arrastra la ventana para desplazarte por el histórico">
+      <div class="trend-brush" id="trendBrush" data-i18n-title="brushTitle" title="Arrastra la ventana para desplazarte por el histórico">
         <div class="brush-fill" id="brushFill"></div>
         <div class="brush-win" id="brushWin"></div>
       </div>
       <div class="trend-tools">
-        <button onclick="trendGoStart()" title="Ir al primer dato histórico">⏮ Inicio</button>
-        <button onclick="trendZoomBtn(0.6)" title="Acercar">＋</button>
-        <button onclick="trendZoomBtn(1.7)" title="Alejar">－</button>
-        <button onclick="trendGoEnd()" title="Ir a hoy">Hoy ⏭</button>
-        <span class="trend-hint">Toca o desliza sobre la línea para ver cada valor · pellizca para zoom · usa la barra inferior para desplazarte</span>
+        <button onclick="trendGoStart()" data-i18n-title="start_t" title="Ir al primer dato histórico">⏮ <span data-i18n="start">Inicio</span></button>
+        <button onclick="trendZoomBtn(0.6)" data-i18n-title="zoomIn_t" title="Acercar">＋</button>
+        <button onclick="trendZoomBtn(1.7)" data-i18n-title="zoomOut_t" title="Alejar">－</button>
+        <button onclick="trendGoEnd()" data-i18n-title="today_t" title="Ir a hoy"><span data-i18n="today">Hoy</span> ⏭</button>
+        <span class="trend-hint" data-i18n="trendHint">Toca o desliza sobre la línea para ver cada valor · pellizca para zoom · usa la barra inferior para desplazarte</span>
       </div>
       <div class="muted" id="trendLbl" style="margin-top:8px"></div>
     </div>
 
     <div class="card full" id="yieldCard" style="display:none">
-      <div class="card-h"><span class="kicker"><svg class="ic kic"><use href="#i-percent"/></svg>Rendimientos estimados</span></div>
+      <div class="card-h"><span class="kicker"><svg class="ic kic"><use href="#i-percent"/></svg><span data-i18n="estimatedYields">Rendimientos estimados</span></span></div>
       <div id="yields"></div>
     </div>
 
     <div class="card full">
-      <div class="card-h"><span class="kicker"><svg class="ic kic"><use href="#i-list"/></svg>Posiciones</span></div>
+      <div class="card-h"><span class="kicker"><svg class="ic kic"><use href="#i-list"/></svg><span data-i18n="positions">Posiciones</span></span></div>
       <div class="tablewrap"><table id="positions" class="rtable">
         <colgroup><col style="width:23%"><col style="width:19%"><col style="width:16%"><col style="width:14%"><col style="width:14%"><col style="width:14%"></colgroup>
-        <thead><tr><th>Activo</th><th>Categoría</th><th>Cantidad</th><th>Precio</th><th>Valor</th><th>% cartera</th></tr></thead>
+        <thead><tr><th data-i18n="asset">Activo</th><th data-i18n="category">Categoría</th><th data-i18n="quantity">Cantidad</th><th data-i18n="price">Precio</th><th data-i18n="value">Valor</th><th data-i18n="pctPortfolio">% cartera</th></tr></thead>
         <tbody></tbody>
       </table></div>
-      <div class="muted" style="margin-top:12px">Cripto vía CoinGecko · Acciones/ETF vía Stooq · Fondos por VNL manual. Edita la cantidad en línea — se guarda en tu cuenta y se sincroniza.</div>
+      <div class="muted" style="margin-top:12px" data-i18n="positionsNote">Cripto vía CoinGecko · Acciones/ETF vía Stooq · Fondos por VNL manual. Edita la cantidad en línea — se guarda en tu cuenta y se sincroniza.</div>
     </div>
   </div>
 
   <div class="foot">
-    Dashboard de patrimonio · precios en vivo · alerta de rebalanceo · resumen semanal con delta.<br>
-    Todo editable y <b>privado</b>: con tu sesión iniciada, tus datos se guardan en tu cuenta y se sincronizan entre tus dispositivos.
+    <span data-i18n="footer1">Dashboard de patrimonio · precios en vivo · alerta de rebalanceo · resumen semanal con delta.</span><br>
+    <span data-i18n-html="footer2">Todo editable y <b>privado</b>: con tu sesión iniciada, tus datos se guardan en tu cuenta y se sincronizan entre tus dispositivos.</span>
   </div>
 </div>
 
 <!-- Modal email -->
 <div class="modal-bg" id="modal">
   <div class="modal">
-    <div class="mailhead"><b><svg class="mh-ic"><use href="#i-mail"/></svg>Email semanal — vista previa</b><button class="x" onclick="closeMail()"><svg class="ic"><use href="#i-x"/></svg></button></div>
+    <div class="mailhead"><b><svg class="mh-ic"><use href="#i-mail"/></svg><span data-i18n="emailPreview">Email semanal — vista previa</span></b><button class="x" onclick="closeMail()"><svg class="ic"><use href="#i-x"/></svg></button></div>
     <div class="mailmeta">
-      <div><b>Para:</b> <span id="mTo"></span></div>
-      <div><b>Asunto:</b> <span id="mSubject"></span></div>
-      <div><b>Resumen:</b> semanal · lunes 08:00</div>
+      <div><b data-i18n="to">Para:</b> <span id="mTo"></span></div>
+      <div><b data-i18n="subject">Asunto:</b> <span id="mSubject"></span></div>
+      <div><b data-i18n="summaryLbl">Resumen:</b> <span data-i18n="weeklyMonday">semanal · lunes 08:00</span></div>
     </div>
     <div class="mailbody" id="mailbody"></div>
   </div>
@@ -695,16 +871,16 @@
 <!-- Modal editor -->
 <div class="modal-bg" id="editor">
   <div class="modal" style="max-width:820px">
-    <div class="mailhead"><b><svg class="mh-ic"><use href="#i-edit"/></svg>Editar cartera — ingresa tus activos reales</b><button class="x" onclick="closeEditor()"><svg class="ic"><use href="#i-x"/></svg></button></div>
+    <div class="mailhead"><b><svg class="mh-ic"><use href="#i-edit"/></svg><span data-i18n="editorTitle">Editar cartera — ingresa tus activos reales</span></b><button class="x" onclick="closeEditor()"><svg class="ic"><use href="#i-x"/></svg></button></div>
     <div class="mailbody">
       <div id="editorBody"></div>
       <div class="edactions">
-        <button class="btn" onclick="addRow()"><svg class="ic"><use href="#i-plus"/></svg> Añadir activo</button>
-        <button class="del" onclick="clearAll()"><svg class="ic"><use href="#i-trash"/></svg> Vaciar todo</button>
+        <button class="btn" onclick="addRow()"><svg class="ic"><use href="#i-plus"/></svg> <span data-i18n="addAsset">Añadir activo</span></button>
+        <button class="del" onclick="clearAll()"><svg class="ic"><use href="#i-trash"/></svg> <span data-i18n="clearAll">Vaciar todo</span></button>
         <span style="flex:1"></span>
-        <button class="btn gold" onclick="saveEditor()"><svg class="ic"><use href="#i-check"/></svg> Guardar y actualizar</button>
+        <button class="btn gold" onclick="saveEditor()"><svg class="ic"><use href="#i-check"/></svg> <span data-i18n="saveUpdate">Guardar y actualizar</span></button>
       </div>
-      <div class="muted" style="margin-top:14px;line-height:1.8">
+      <div class="muted" style="margin-top:14px;line-height:1.8" data-i18n-html="editorHelp">
         <b style="color:var(--cripto)">Cripto (en vivo):</b> ID de CoinGecko — bitcoin, ethereum, solana, cardano… &nbsp;·&nbsp;
         <b style="color:var(--broker)">Acción/ETF (en vivo):</b> símbolo de bolsa — VT, AAPL, MSFT, VWCE.DE… &nbsp;·&nbsp;
         <b style="color:var(--fondos)">Manual:</b> escribe tú el precio/VNL.<br>
@@ -717,29 +893,29 @@
 <!-- Modal configuración -->
 <div class="modal-bg" id="settings">
   <div class="modal" style="max-width:560px">
-    <div class="mailhead"><b><svg class="mh-ic"><use href="#i-settings"/></svg>Configuración</b><button class="x" onclick="closeSettings()"><svg class="ic"><use href="#i-x"/></svg></button></div>
+    <div class="mailhead"><b><svg class="mh-ic"><use href="#i-settings"/></svg><span data-i18n="settings">Configuración</span></b><button class="x" onclick="closeSettings()"><svg class="ic"><use href="#i-x"/></svg></button></div>
     <div class="mailbody">
       <div class="set-sec">
-        <div class="set-h">Visualización</div>
+        <div class="set-h" data-i18n="display">Visualización</div>
         <div class="set-row">
-          <div><div class="set-t">Moneda</div><div class="set-d">Convierte todos los importes al vuelo. Los datos se siguen calculando en euros.</div></div>
+          <div><div class="set-t" data-i18n="currency">Moneda</div><div class="set-d" data-i18n="currencyDesc">Convierte todos los importes al vuelo. Los datos se siguen calculando en euros.</div></div>
           <select class="cur-select" id="curSelect" onchange="setCurrency(this.value)" aria-label="Moneda de visualización"></select>
         </div>
       </div>
       <div class="set-sec">
-        <div class="set-h">Informe</div>
+        <div class="set-h" data-i18n="report">Informe</div>
         <div class="set-row">
-          <div><div class="set-t">Email semanal</div><div class="set-d">Vista previa del correo del lunes a las 08:00 con el delta de la semana.</div></div>
-          <button class="btn" onclick="closeSettings();openMail()"><svg class="ic"><use href="#i-mail"/></svg> Ver email</button>
+          <div><div class="set-t" data-i18n="weeklyEmail">Email semanal</div><div class="set-d" data-i18n="weeklyEmailDesc">Vista previa del correo del lunes a las 08:00 con el delta de la semana.</div></div>
+          <button class="btn" onclick="closeSettings();openMail()"><svg class="ic"><use href="#i-mail"/></svg> <span data-i18n="viewEmail">Ver email</span></button>
         </div>
       </div>
       <div class="set-sec">
-        <div class="set-h">Datos</div>
+        <div class="set-h" data-i18n="data">Datos</div>
         <div class="set-row">
-          <div><div class="set-t">Copia de seguridad</div><div class="set-d">Exporta tu cartera a un archivo <b>portfolio.json</b> o impórtala. Importar <b>reemplaza</b> la cartera actual.</div></div>
+          <div><div class="set-t" data-i18n="backup">Copia de seguridad</div><div class="set-d" data-i18n-html="backupDesc">Exporta tu cartera a un archivo <b>portfolio.json</b> o impórtala. Importar <b>reemplaza</b> la cartera actual.</div></div>
           <div class="set-btns">
-            <button class="btn" onclick="exportJSON()"><svg class="ic"><use href="#i-download"/></svg> Exportar</button>
-            <button class="btn" onclick="importJSON()"><svg class="ic"><use href="#i-upload"/></svg> Importar</button>
+            <button class="btn" onclick="exportJSON()"><svg class="ic"><use href="#i-download"/></svg> <span data-i18n="export">Exportar</span></button>
+            <button class="btn" onclick="importJSON()"><svg class="ic"><use href="#i-upload"/></svg> <span data-i18n="import">Importar</span></button>
           </div>
         </div>
       </div>
@@ -750,17 +926,17 @@
 <!-- Modal Comprar / Vender / Transferir -->
 <div class="modal-bg" id="txModal" style="z-index:80">
   <div class="modal" style="max-width:430px">
-    <div class="mailhead"><b><svg class="mh-ic"><use href="#i-activity"/></svg><span id="txTitle">Movimiento</span></b><button class="x" onclick="closeTx()"><svg class="ic"><use href="#i-x"/></svg></button></div>
+    <div class="mailhead"><b><svg class="mh-ic"><use href="#i-activity"/></svg><span id="txTitle" data-i18n="movement">Movimiento</span></b><button class="x" onclick="closeTx()"><svg class="ic"><use href="#i-x"/></svg></button></div>
     <div class="mailbody">
       <div id="txInfo" style="font-size:14px;line-height:1.6;color:var(--soft);margin-bottom:14px"></div>
       <div class="sell-grid">
-        <label class="sell-l"><span id="txLbl">Cantidad</span><input id="txQty" type="number" step="any" min="0" placeholder="0" oninput="txPreview()"></label>
-        <button class="btn" type="button" id="txAllBtn" onclick="txAll()">Todo</button>
+        <label class="sell-l"><span id="txLbl" data-i18n="quantity">Cantidad</span><input id="txQty" type="number" step="any" min="0" placeholder="0" oninput="txPreview()"></label>
+        <button class="btn" type="button" id="txAllBtn" onclick="txAll()" data-i18n="all">Todo</button>
       </div>
       <div id="txPreview" class="muted" style="margin-top:11px;font-size:12.5px;line-height:1.5"></div>
       <div class="edactions" style="justify-content:flex-end;margin-top:20px">
-        <button class="btn" onclick="closeTx()">Cancelar</button>
-        <button class="btn gold" onclick="confirmTx()"><svg class="ic"><use href="#i-check"/></svg> Registrar</button>
+        <button class="btn" onclick="closeTx()" data-i18n="cancel">Cancelar</button>
+        <button class="btn gold" onclick="confirmTx()"><svg class="ic"><use href="#i-check"/></svg> <span data-i18n="register">Registrar</span></button>
       </div>
     </div>
   </div>
@@ -769,12 +945,12 @@
 <!-- Modal de confirmación reutilizable -->
 <div class="modal-bg" id="confirmModal" style="z-index:80">
   <div class="modal" style="max-width:430px">
-    <div class="mailhead"><b><svg class="mh-ic"><use href="#i-bell"/></svg><span id="confirmTitle">Confirmar</span></b><button class="x" onclick="closeConfirm(false)"><svg class="ic"><use href="#i-x"/></svg></button></div>
+    <div class="mailhead"><b><svg class="mh-ic"><use href="#i-bell"/></svg><span id="confirmTitle" data-i18n="confirm">Confirmar</span></b><button class="x" onclick="closeConfirm(false)"><svg class="ic"><use href="#i-x"/></svg></button></div>
     <div class="mailbody">
       <div id="confirmMsg" style="font-size:14px;line-height:1.65;color:var(--soft)"></div>
       <div class="edactions" style="justify-content:flex-end;margin-top:20px">
-        <button class="btn" onclick="closeConfirm(false)">Cancelar</button>
-        <button class="del" id="confirmOk" style="font-size:13px;padding:9px 16px" onclick="closeConfirm(true)"><svg class="ic"><use href="#i-trash"/></svg> <span id="confirmOkLbl">Eliminar</span></button>
+        <button class="btn" onclick="closeConfirm(false)" data-i18n="cancel">Cancelar</button>
+        <button class="del" id="confirmOk" style="font-size:13px;padding:9px 16px" onclick="closeConfirm(true)"><svg class="ic"><use href="#i-trash"/></svg> <span id="confirmOkLbl" data-i18n="delete">Eliminar</span></button>
       </div>
     </div>
   </div>
@@ -969,7 +1145,7 @@ async function fetchStock(h){
 }
 async function refresh(){
   const rb=document.querySelector('.btn.gold'); if(rb) rb.classList.add('loading');
-  document.getElementById('updated').textContent='actualizando…';
+  document.getElementById('updated').textContent=t('updating');
   try{
     await fetchCrypto();
     await Promise.all(state.holdings.filter(h=>h.src==='stock'&&h.stooq).map(fetchStock));
@@ -1035,8 +1211,8 @@ function render(){
   const prev=prevWeekSnapshot(), pill=document.getElementById('wowPill');
   if(prev&&prev.total){ const d=tot-prev.total,p=d/prev.total*100;
     pill.className='pill '+(d>=0?'up':'down'); pill.innerHTML=ic(d>=0?'up':'down')+fmt(Math.abs(d))+' ('+pct(p)+')'; }
-  else{ pill.textContent='sin histórico'; pill.className='pill up'; }
-  document.getElementById('updated').textContent='actualizado '+new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+  else{ pill.textContent=t('noHistory'); pill.className='pill up'; }
+  document.getElementById('updated').textContent=t('updated')+' '+new Date().toLocaleTimeString(LOC(),{hour:'2-digit',minute:'2-digit'});
 
   drawDonut(cls,tot); drawLegend(cls,tot); drawClasses(cls,tot);
   drawAlerts(cls,tot); drawDeltas(cls,tot); renderTrendRanges(); noteLiveTrend(); drawTrend(); drawYields(); drawPositions(tot);
@@ -1066,10 +1242,10 @@ function drawLegend(cls,tot){
 function drawClasses(cls,tot){
   document.getElementById('classes').innerHTML=state.categories.map(c=>{
     const actual=tot?cls[c.key]/tot*100:0, tgt=c.target, dev=actual-tgt;
-    let tag='ok',txt='en objetivo';
+    let tag='ok',txt=t('onTargetTxt');
     if(!tot){tag='neutral';txt='objetivo '+tgt+'%';}
-    else if(dev>state.band){tag='over';txt='+'+dev.toFixed(1)+'% sobre objetivo';}
-    else if(dev<-state.band){tag='under';txt=dev.toFixed(1)+'% bajo objetivo';}
+    else if(dev>state.band){tag='over';txt='+'+dev.toFixed(1)+'% '+t('overTarget');}
+    else if(dev<-state.band){tag='under';txt=dev.toFixed(1)+'% '+t('underTarget');}
     return `<div class="classcard">
       <div class="cc-top"><div class="cc-name"><span class="dot" style="background:${c.color};--c:${c.color}88"></span>${c.label}</div>
         <span class="tag ${tag}">${txt}</span></div>
@@ -1095,7 +1271,7 @@ function drawAlerts(cls,tot){
 function drawDeltas(cls,tot){
   const prev=prevWeekSnapshot(), cells=[];
   const dTot=prev&&prev.total?tot-prev.total:0, pTot=prev&&prev.total?dTot/prev.total*100:0;
-  cells.push(dcell('Patrimonio total',fmt(tot),prev?`${dTot>=0?'+':''}${fmt(dTot)} (${pct(pTot)})`:'sin histórico',dTot>=0));
+  cells.push(dcell(t('totalWealth'),fmt(tot),prev?`${dTot>=0?'+':''}${fmt(dTot)} (${pct(pTot)})`:t('noHistory'),dTot>=0));
   state.categories.forEach(c=>{ const pc=prev&&prev.classes&&prev.classes[c.key]!==undefined?cls[c.key]-prev.classes[c.key]:null;
     cells.push(dcell(c.label,fmt(cls[c.key]),pc===null?'—':`${pc>=0?'+':''}${fmt(pc)}`,pc===null?true:pc>=0)); });
   document.getElementById('deltas').innerHTML=cells.join('');
@@ -1223,7 +1399,7 @@ async function loadTrend(force){
   if(!force && c && (Date.now()-c.ts)<rangeTTL(k)){ drawTrend(); return; }
   if(trendLoading){ return; }
   trendLoading=true;
-  const lbl=document.getElementById('trendLbl'); if(lbl && !(c&&c.assets)) lbl.textContent='Cargando histórico de mercado…';
+  const lbl=document.getElementById('trendLbl'); if(lbl && !(c&&c.assets)) lbl.textContent=t('loadingHist');
   try{
     const oldMax = c&&c.dataMax;
     const data=await buildTrendData(k);
@@ -1261,7 +1437,7 @@ function noteLiveTrend(){
 }
 function renderTrendRanges(){
   const el=document.getElementById('trendRanges'); if(!el) return; const cur=trendRange();
-  el.innerHTML=Object.keys(RANGES).map(k=>`<button data-k="${k}" class="${k===cur?'on':''}" onclick="setTrendRange('${k}')">${RANGES[k].label}</button>`).join('');
+  el.innerHTML=Object.keys(RANGES).map(k=>`<button data-k="${k}" class="${k===cur?'on':''}" onclick="setTrendRange('${k}')">${t('rng_'+k)}</button>`).join('');
 }
 /* --- visor: ventana [start,end] sobre el histórico completo [dataMin,dataMax] --- */
 function viewOf(k){
@@ -1325,7 +1501,7 @@ function drawTrend(){
   if(!c || !c.assets || c.dataMax<=c.dataMin){
     svg.innerHTML=''; yAx.innerHTML=''; xAx.innerHTML=''; nowEl.textContent=''; trendDraw=null;
     drawBrush(null);
-    if(!c) lbl.textContent = trendLoading?'Cargando histórico de mercado…':'Sin histórico de mercado para este rango.';
+    if(!c) lbl.textContent = trendLoading?t('loadingHist'):t('noHistRange');
     return;
   }
   const v=viewOf(k);
@@ -1365,7 +1541,7 @@ function drawTrend(){
     return `<span><em>${xf.format(dt)}</em>${xsf?`<i>${xsf.format(dt)}</i>`:''}</span>`; }).join('');
   const diff=pts[last]-pts[0], p=pts[0]?diff/pts[0]*100:0, clsd=diff>=0?'up':'down';
   nowEl.innerHTML=`${fmt(pts[last])} <span class="d ${clsd}">${diff>=0?'+':'−'}${fmt(Math.abs(diff))} (${pct(p)})</span>`;
-  const note = c.synthetic ? ' · sin histórico de mercado (valor actual)' : (c.partial ? ' · aprox. para activos sin datos de mercado' : '');
+  const note = c.synthetic ? t('noteSynthetic') : (c.partial ? t('notePartial') : '');
   const dfmt=new Intl.DateTimeFormat('es-ES',{day:'2-digit',month:'short',year:'2-digit'});
   lbl.textContent=`${dfmt.format(new Date(times[0]))} → ${dfmt.format(new Date(times[last]))} · ${fmt(pts[0])} a ${fmt(pts[last])}${note}`;
   trendDraw={rows,times,t0:times[0],t1:times[last],min,max,H,pad};
@@ -1468,10 +1644,10 @@ function drawPositions(tot){
   tb.innerHTML=state.holdings.map((h,i)=>{
     const v=valueOf(h);
     const badge=h.src==='manual'?'<span class="badge man">VNL</span>':h.live?'<span class="badge live">LIVE</span>':'<span class="badge stale">último</span>';
-    return `<tr><td data-l="Activo"><b>${h.name}</b> <span class="muted">${h.ticker||''}</span> ${badge} <button class="sellbtn" title="Registrar una compra — se suma desde hoy, mantiene el histórico" onclick="openBuy(${i})">Comprar</button> <button class="sellbtn" title="Registrar venta o transferencia — mantiene el histórico" onclick="openSell(${i})">Vender/Transferir</button></td>
-      <td data-l="Categoría"><span class="clschip"><span class="dot" style="width:9px;height:9px;background:${catOf(h.cls).color};--c:${catOf(h.cls).color}88"></span>${catOf(h.cls).label}</span></td>
-      <td data-l="Cantidad"><input class="q" type="number" step="any" value="${parseFloat(liveQty(h).toFixed(8))}" onchange="setQty(${i},this.value)"></td>
-      <td data-l="Precio">${fmt2(h.price)}</td><td data-l="Valor"><b>${fmt(v)}</b></td><td data-l="% cartera">${tot?(v/tot*100).toFixed(1):0}%</td></tr>`;
+    return `<tr><td data-l="${t('asset')}"><b>${h.name}</b> <span class="muted">${h.ticker||''}</span> ${badge} <button class="sellbtn" title="${t('buy_t')}" onclick="openBuy(${i})">${t('buy')}</button> <button class="sellbtn" title="${t('sell_t')}" onclick="openSell(${i})">${t('sellTransfer')}</button></td>
+      <td data-l="${t('category')}"><span class="clschip"><span class="dot" style="width:9px;height:9px;background:${catOf(h.cls).color};--c:${catOf(h.cls).color}88"></span>${catOf(h.cls).label}</span></td>
+      <td data-l="${t('quantity')}"><input class="q" type="number" step="any" value="${parseFloat(liveQty(h).toFixed(8))}" onchange="setQty(${i},this.value)"></td>
+      <td data-l="${t('price')}">${fmt2(h.price)}</td><td data-l="${t('value')}"><b>${fmt(v)}</b></td><td data-l="${t('pctPortfolio')}">${tot?(v/tot*100).toFixed(1):0}%</td></tr>`;
   }).join('');
 }
 function setQty(i,v){ const h=state.holdings[i]; correctQty(h,parseFloat(v)||0); recordSnapshot(); save(); render(); refreshTrendAfterChange(); }
@@ -1480,7 +1656,7 @@ let _txIdx=-1, _txMode='sell';
 function openBuy(i){ openTx(i,'buy'); }
 function openSell(i){ openTx(i,'sell'); }
 function openTx(i,mode){ const h=state.holdings[i]; if(!h) return; _txIdx=i; _txMode=mode; const q=liveQty(h); const buy=mode==='buy';
-  document.getElementById('txTitle').textContent=buy?'Comprar':'Vender / Transferir';
+  document.getElementById('txTitle').textContent=buy?t('buy'):t('sellTransferSp');
   document.getElementById('txLbl').textContent=buy?'Cantidad comprada':'Cantidad a vender / transferir';
   document.getElementById('txAllBtn').style.display=buy?'none':'';
   document.getElementById('txInfo').innerHTML=`<b>${(h.name||'').replace(/</g,'&lt;')}</b> <span class="muted">${h.ticker||''}</span><br>Tienes <b style="color:var(--tx)">${parseFloat(q.toFixed(8))}</b> ${h.ticker||'uds.'} · ${fmt(valueOf(h))}`;
