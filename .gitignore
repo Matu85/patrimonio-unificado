@@ -16,3 +16,14 @@ package-lock.json
 # semanal. Contienen tu email y tus cifras. NO se versionan ni se publican.
 portfolio.json
 snapshots.json
+
+# App nativa (Capacitor). Vive en local y es regenerable con los comandos del
+# README-APP.md. El repositorio publica SOLO la web (Vercel = sitio estático),
+# por eso no versionamos el proyecto nativo ni su tooling.
+capacitor.config.json
+scripts/
+www/
+android/
+ios/
+assets/
+icons/

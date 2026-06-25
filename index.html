@@ -1804,5 +1804,26 @@ else {
   try{ await getRedirectResult(auth); }catch(e){ if(friendly(e)) authMsg(friendly(e),'err'); }
 }
 </script>
+<script>
+/* === Inicialización de la APP NATIVA (Capacitor) === En la web normal no hace nada. */
+(function(){
+  if(!(window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform())) return;
+  document.documentElement.classList.add('cap-native');
+  var P = (window.Capacitor && Capacitor.Plugins) || {};
+  function ready(fn){ if(document.readyState!=='loading') fn(); else document.addEventListener('DOMContentLoaded', fn); }
+  ready(function(){
+    /* Barra de estado: texto claro sobre fondo oscuro de la app */
+    try{ P.StatusBar && P.StatusBar.setStyle({ style:'DARK' }); }catch(e){}
+    try{ P.StatusBar && P.StatusBar.setBackgroundColor && P.StatusBar.setBackgroundColor({ color:'#0A0A08' }); }catch(e){}
+    /* Oculta la pantalla de carga (splash) cuando la app ya está pintada */
+    setTimeout(function(){ try{ P.SplashScreen && P.SplashScreen.hide(); }catch(e){} }, 300);
+    /* Botón "atrás" de Android: vuelve dentro de la app o la minimiza, nunca la cierra de golpe */
+    try{ P.App && P.App.addListener && P.App.addListener('backButton', function(info){
+      if(info && info.canGoBack && history.length>1){ history.back(); }
+      else { P.App.minimizeApp && P.App.minimizeApp(); }
+    }); }catch(e){}
+  });
+})();
+</script>
 </body>
 </html>
