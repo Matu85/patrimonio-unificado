@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Patrimonio Unificado · Wealth Dashboard</title>
 <link rel="manifest" href="manifest.json">
+<!-- Configuración de la cuenta/nube (login + sincronización). Si no está rellenada,
+     la app funciona como antes (solo en este dispositivo). -->
+<script src="firebase-config.js"></script>
+<script>
+  /* Con Firebase configurado, la app exige iniciar sesión: marcamos el documento para
+     mostrar la pantalla de acceso desde el primer instante (sin parpadeo del tablero). */
+  window.CLOUD_ON = !!(window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.apiKey
+                       && String(window.FIREBASE_CONFIG.apiKey).indexOf('PEGA-AQUI') < 0);
+  if(window.CLOUD_ON) document.documentElement.classList.add('cloud-on');
+</script>
 <!-- Fuentes sin bloquear el render: se cargan en paralelo y aparecen al estar listas -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -351,6 +361,48 @@
     .rtable .clschip{justify-content:flex-end}
     .rtable input.q{width:104px}
   }
+
+  /* ---------- Pantalla de acceso (login) + chip de usuario ---------- */
+  #authGate{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;padding:22px;
+    background:
+      radial-gradient(900px 520px at 12% -8%, rgba(106,160,255,.16), transparent 60%),
+      radial-gradient(820px 520px at 100% 0%, rgba(227,192,141,.18), transparent 55%),
+      radial-gradient(760px 620px at 50% 120%, rgba(63,224,176,.10), transparent 60%),
+      var(--bg);}
+  html.cloud-on #authGate{display:flex}
+  body.authed #authGate{display:none}
+  .gate-card{width:100%;max-width:392px;border:1px solid var(--line2);border-radius:24px;padding:34px 30px 26px;
+    background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);box-shadow:var(--shadow);animation:rise .55s cubic-bezier(.2,.7,.2,1) both}
+  .gate-brand{display:flex;align-items:center;gap:13px;margin-bottom:26px}
+  .gate-brand .brand-name{font-size:17px}
+  .gate-loading{display:flex;align-items:center;justify-content:center;gap:12px;color:var(--mut);font-size:14px;padding:26px 0}
+  .gate-spinner{width:22px;height:22px;border-radius:50%;border:2.5px solid rgba(255,255,255,.14);border-top-color:var(--gold);animation:spin .8s linear infinite}
+  .gate-form{display:flex;flex-direction:column;gap:12px}
+  .gbtn{cursor:pointer;border:1px solid var(--line2);background:#fff;color:#1f2330;font-family:inherit;font-size:14.5px;font-weight:600;
+    border-radius:12px;padding:12px 16px;display:flex;align-items:center;justify-content:center;gap:11px;transition:.16s}
+  .gbtn:hover{filter:brightness(.97);transform:translateY(-1px)}
+  .gbtn svg{width:18px;height:18px;flex:none}
+  .gate-or{display:flex;align-items:center;gap:12px;color:var(--mut);font-size:12px;margin:4px 0}
+  .gate-or::before,.gate-or::after{content:"";flex:1;height:1px;background:var(--line)}
+  .gate-form input{background:rgba(0,0,0,.32);border:1px solid var(--line2);color:var(--tx);border-radius:11px;
+    padding:12px 13px;font-size:14px;font-family:inherit;width:100%}
+  .gate-form input:focus{outline:none;border-color:var(--gold)}
+  .gate-actions{display:flex;gap:10px;margin-top:2px}
+  .gate-actions .btn{flex:1;justify-content:center;padding:12px}
+  .gate-link{background:none;border:none;color:var(--gold-dim);font-family:inherit;font-size:12.5px;cursor:pointer;
+    padding:6px;align-self:center;text-decoration:underline;text-underline-offset:3px}
+  .gate-link:hover{color:var(--gold-2)}
+  .gate-msg{font-size:13px;line-height:1.5;text-align:center;min-height:0;color:var(--soft)}
+  .gate-msg.err{color:var(--bad)} .gate-msg.ok{color:var(--good)}
+  .gate-foot{margin-top:20px;text-align:center;color:var(--mut);font-size:11.5px;line-height:1.6}
+  /* chip de usuario en la barra superior (solo con sesión iniciada) */
+  #userChip{display:none;align-items:center;gap:9px}
+  html.cloud-on body.authed #userChip{display:inline-flex}
+  #userChip .uava{width:30px;height:30px;border-radius:50%;flex:none;object-fit:cover;border:1px solid var(--line2);background:rgba(255,255,255,.06)}
+  #userChip .uname{font-size:12.5px;color:var(--soft);font-weight:600;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #userChip .uout{padding:8px 12px;font-size:12.5px}
+  @media(max-width:600px){ #userChip .uname{display:none} #userChip{order:-1} .gate-card{padding:26px 20px 22px} }
 </style>
 </head>
 <body>
@@ -378,6 +430,43 @@
   <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 2 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 17 9 5 9-5"/></symbol>
 </defs></svg>
 
+<!-- Pantalla de acceso — solo aparece cuando la cuenta/nube está configurada -->
+<div id="authGate" aria-hidden="true">
+  <div class="gate-card">
+    <div class="gate-brand">
+      <div class="mark"><svg class="ic"><use href="#i-mark"/></svg></div>
+      <div>
+        <div class="brand-name">Patrimonio Unificado</div>
+        <div class="brand-sub">Tu patrimonio, sincronizado en todos tus dispositivos</div>
+      </div>
+    </div>
+
+    <div class="gate-loading" id="gateLoading"><span class="gate-spinner"></span> Conectando…</div>
+
+    <div class="gate-form" id="gateForm" hidden>
+      <button class="gbtn" type="button" onclick="cloudGoogle()">
+        <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8a12 12 0 0 1 0-24c3.1 0 5.9 1.2 8 3.1l5.7-5.7A20 20 0 1 0 24 44c11 0 20-9 20-20 0-1.3-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8A12 12 0 0 1 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7A20 20 0 0 0 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2A12 12 0 0 1 12.7 29l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3a12 12 0 0 1-4.1 5.6l6.2 5.2C39.9 41 44 36 44 24c0-1.3-.1-2.3-.4-3.5z"/></svg>
+        Continuar con Google
+      </button>
+
+      <div class="gate-or">o con tu correo</div>
+
+      <input id="authEmail" type="email" inputmode="email" autocomplete="email" placeholder="tucorreo@ejemplo.com">
+      <input id="authPass" type="password" autocomplete="current-password" placeholder="Contraseña" onkeydown="if(event.key==='Enter')cloudEmailSignIn()">
+
+      <div class="gate-actions">
+        <button class="btn gold" type="button" onclick="cloudEmailSignIn()"><svg class="ic"><use href="#i-check"/></svg> Entrar</button>
+        <button class="btn" type="button" onclick="cloudEmailSignUp()"><svg class="ic"><use href="#i-plus"/></svg> Crear cuenta</button>
+      </div>
+
+      <button class="gate-link" type="button" onclick="cloudReset()">¿Olvidaste tu contraseña?</button>
+      <div class="gate-msg" id="authMsg" role="status"></div>
+    </div>
+
+    <div class="gate-foot">Tus datos se guardan de forma privada en tu cuenta<br>y se sincronizan entre tus dispositivos.</div>
+  </div>
+</div>
+
 <div class="shell">
 
   <!-- Top bar -->
@@ -393,6 +482,11 @@
       <button class="btn gold" onclick="refresh()"><svg class="ic"><use href="#i-refresh"/></svg> Actualizar precios</button>
       <button class="btn" onclick="openEditor()"><svg class="ic"><use href="#i-edit"/></svg> Editar cartera</button>
       <button class="btn" onclick="openSettings()"><svg class="ic"><use href="#i-settings"/></svg> Configuración</button>
+      <span id="userChip">
+        <img class="uava" id="userPic" alt="" referrerpolicy="no-referrer">
+        <span class="uname" id="userName"></span>
+        <button class="btn uout" type="button" onclick="cloudSignOut()" title="Cerrar sesión"><svg class="ic"><use href="#i-x"/></svg> Salir</button>
+      </span>
     </div>
   </header>
 
@@ -481,13 +575,13 @@
         <thead><tr><th>Activo</th><th>Categoría</th><th>Cantidad</th><th>Precio</th><th>Valor</th><th>% cartera</th></tr></thead>
         <tbody></tbody>
       </table></div>
-      <div class="muted" style="margin-top:12px">Cripto vía CoinGecko · Acciones/ETF vía Stooq · Fondos por VNL manual. Edita la cantidad en línea — se guarda en tu navegador.</div>
+      <div class="muted" style="margin-top:12px">Cripto vía CoinGecko · Acciones/ETF vía Stooq · Fondos por VNL manual. Edita la cantidad en línea — se guarda en tu cuenta y se sincroniza.</div>
     </div>
   </div>
 
   <div class="foot">
     Dashboard de patrimonio · precios en vivo · alerta de rebalanceo · resumen semanal con delta.<br>
-    Todo editable y <b>privado</b>: tus datos se guardan solo en tu navegador, nunca se suben a ningún servidor.
+    Todo editable y <b>privado</b>: con tu sesión iniciada, tus datos se guardan en tu cuenta y se sincronizan entre tus dispositivos.
   </div>
 </div>
 
@@ -652,7 +746,36 @@ function load(){
   }
   return s;
 }
-function save(){ try{ localStorage.setItem(KEY,JSON.stringify(state)); }catch(e){} }
+function save(){
+  try{
+    if(!window.__applyingRemote) state.updatedAt = Date.now();   /* reloj para resolver conflictos entre dispositivos */
+    localStorage.setItem(KEY,JSON.stringify(state));
+  }catch(e){}
+  if(!window.__applyingRemote && window.cloudOnLocalSave) window.cloudOnLocalSave();  /* sube a la nube (si hay sesión) */
+}
+/* ---- Puente con la sincronización en la nube (definida en el módulo de Firebase) ---- */
+window.__cloudGetSnapshot   = ()=> JSON.stringify(state);
+window.__cloudLocalUpdatedAt= ()=> state.updatedAt || 0;
+window.__cloudHoldingsCount = ()=> (state.holdings && state.holdings.length) || 0;
+window.__cloudMaybeSetEmail = (mail)=>{ if(mail && !state.email){ state.email=mail; save(); } };
+/* Aplica el estado recibido de la nube (otro dispositivo) sin volver a subirlo ni alterar su marca de tiempo */
+window.__applyRemoteState = function(obj){
+  if(!obj || !Array.isArray(obj.holdings)) return;
+  window.__applyingRemote = true;
+  try{
+    state = obj;
+    if(!state.snapshots) state.snapshots = {};
+    sanitizeState();
+    try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
+    dispCur = (state.currency && CURRENCIES.some(c=>c.code===state.currency)) ? state.currency : 'EUR';
+    renderCurrencyOptions();
+    normalizeApy(); normalizeQtyHist(); recordSnapshot();
+    lastTotal = 0; trendCache = {}; trendView = {};
+    render(); refresh(); loadTrend(true);
+    if(dispCur!=='EUR') loadDispRate(false).then(ok=>{ if(ok) render(); });
+  }catch(e){ console.warn('applyRemoteState', e); }
+  finally{ window.__applyingRemote = false; }
+};
 function isoWeekKey(dt){
   const d=new Date(Date.UTC(dt.getFullYear(),dt.getMonth(),dt.getDate()));
   const day=(d.getUTCDay()+6)%7; d.setUTCDate(d.getUTCDate()-day+3);
@@ -1344,7 +1467,7 @@ function renderEditor(){
       ${catRows||'<div class="muted" style="padding:8px 0">Sin categorías. Añade al menos una.</div>'}
       <div class="edtargets" style="margin-top:12px;border-top:1px solid var(--line);padding-top:12px">
         <label>Banda ±% <input type="number" value="${editBand}" oninput="editBand=+this.value"></label>
-        <span class="muted" style="margin-left:auto">Email resumen (privado · solo en tu navegador):</span>
+        <span class="muted" style="margin-left:auto">Email para el informe semanal:</span>
         <label><input type="email" value="${(editEmail||'').replace(/"/g,'&quot;')}" oninput="editEmail=this.value" placeholder="tucorreo@ejemplo.com" style="width:220px;color:var(--tx);font-weight:400;text-align:left"></label></div>
     </div>`;
   const cards=editRows.map((h,i)=>`<div class="edcard"><div class="edgrid">
@@ -1411,6 +1534,139 @@ setInterval(()=>loadTrend(true), 180000);   /* reconstruye el gráfico con datos
    aunque la app haya estado cerrada, porque se reconstruye con el histórico real del mercado. */
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ refresh(); loadTrend(true); } });
 window.addEventListener('online',()=>{ refresh(); loadTrend(true); });
+</script>
+
+<!-- ============================================================
+     Cuenta + sincronización en la nube (Firebase Auth + Firestore)
+     Se activa solo si firebase-config.js tiene datos reales.
+     ============================================================ -->
+<script type="module">
+const CFG = window.FIREBASE_CONFIG;
+const CONFIGURED = !!(CFG && CFG.apiKey && String(CFG.apiKey).indexOf('PEGA-AQUI') < 0);
+
+const gateLoading = document.getElementById('gateLoading');
+const gateForm    = document.getElementById('gateForm');
+function showForm(){ if(gateLoading) gateLoading.hidden = true; if(gateForm) gateForm.hidden = false; }
+function authMsg(t, kind){ const el=document.getElementById('authMsg'); if(!el) return; el.textContent=t||''; el.className='gate-msg'+(kind?' '+kind:''); }
+
+/* Sin configurar → la app sigue funcionando solo en este dispositivo. No tocamos nada. */
+if(!CONFIGURED){ console.info('[Patrimonio] Nube no configurada: modo local (solo este dispositivo).'); }
+else {
+  const [{ initializeApp },
+         { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithRedirect,
+           getRedirectResult, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+           signOut, sendPasswordResetEmail },
+         { getFirestore, doc, getDoc, setDoc, onSnapshot, serverTimestamp }] = await Promise.all([
+    import('https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js'),
+    import('https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js'),
+    import('https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js')
+  ]);
+
+  const app  = initializeApp(CFG);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+  const google = new GoogleAuthProvider();
+
+  let currentUser = null, userRef = null, unsub = null, firstSync = false, saveTimer = null;
+
+  const friendly = (e)=>{
+    const c = (e && e.code) || '';
+    if(c.includes('invalid-credential')||c.includes('wrong-password')||c.includes('user-not-found')) return 'Correo o contraseña incorrectos. ¿Es tu primera vez? Pulsa “Crear cuenta”.';
+    if(c.includes('email-already-in-use')) return 'Ese correo ya tiene cuenta. Pulsa “Entrar”.';
+    if(c.includes('weak-password')) return 'La contraseña debe tener al menos 6 caracteres.';
+    if(c.includes('invalid-email')) return 'Escribe un correo válido.';
+    if(c.includes('popup-closed')||c.includes('cancelled-popup')) return '';
+    if(c.includes('network')) return 'Sin conexión. Inténtalo de nuevo.';
+    if(c.includes('unauthorized-domain')) return 'Este dominio no está autorizado en Firebase (Authentication → Settings → Authorized domains).';
+    return (e && e.message) || 'No se pudo completar. Inténtalo de nuevo.';
+  };
+  const getEmail = ()=> (document.getElementById('authEmail').value||'').trim();
+  const getPass  = ()=> (document.getElementById('authPass').value||'');
+
+  /* ---------- Acciones de la pantalla de acceso (expuestas al HTML) ---------- */
+  window.cloudGoogle = async ()=>{
+    authMsg('');
+    try{ await signInWithPopup(auth, google); }
+    catch(e){
+      const c=(e&&e.code)||'';
+      if(c.includes('popup-blocked')||c.includes('operation-not-supported')||c.includes('popup-closed')||c.includes('cancelled-popup')){
+        try{ await signInWithRedirect(auth, google); }catch(e2){ authMsg(friendly(e2),'err'); }
+      } else authMsg(friendly(e),'err');
+    }
+  };
+  window.cloudEmailSignIn = async ()=>{
+    const em=getEmail(), pw=getPass(); if(!em||!pw){ authMsg('Escribe tu correo y contraseña.','err'); return; }
+    authMsg('Entrando…'); try{ await signInWithEmailAndPassword(auth, em, pw); }catch(e){ authMsg(friendly(e),'err'); }
+  };
+  window.cloudEmailSignUp = async ()=>{
+    const em=getEmail(), pw=getPass(); if(!em||pw.length<6){ authMsg('Para crear la cuenta: correo válido y contraseña de 6+ caracteres.','err'); return; }
+    authMsg('Creando tu cuenta…'); try{ await createUserWithEmailAndPassword(auth, em, pw); }catch(e){ authMsg(friendly(e),'err'); }
+  };
+  window.cloudReset = async ()=>{
+    const em=getEmail(); if(!em){ authMsg('Escribe tu correo y vuelve a pulsar para recibir el enlace.','err'); return; }
+    try{ await sendPasswordResetEmail(auth, em); authMsg('Te enviamos un correo para restablecer la contraseña.','ok'); }catch(e){ authMsg(friendly(e),'err'); }
+  };
+  window.cloudSignOut = async ()=>{ try{ await signOut(auth); }catch(e){} };
+
+  /* ---------- Subida (con rebote) y bajada en tiempo real ---------- */
+  async function pushNow(){
+    if(!currentUser || !userRef) return;
+    try{
+      await setDoc(userRef, {
+        data: window.__cloudGetSnapshot(),
+        updatedAt: window.__cloudLocalUpdatedAt(),
+        email: currentUser.email || '',
+        ts: serverTimestamp()
+      });
+    }catch(e){ console.warn('[Patrimonio] No se pudo guardar en la nube:', e); }
+  }
+  window.cloudOnLocalSave = ()=>{ if(!currentUser) return; clearTimeout(saveTimer); saveTimer=setTimeout(pushNow, 900); };
+
+  function handleSnapshot(snap){
+    if(snap.metadata.hasPendingWrites) return;           /* eco de nuestra propia escritura */
+    const localUpd = window.__cloudLocalUpdatedAt();
+    if(!snap.exists()){ if(firstSync){ firstSync=false; pushNow(); } return; }   /* primera vez: crea el documento */
+    let remote=null; try{ remote = JSON.parse(snap.data().data); }catch(e){ return; }
+    const remoteUpd = snap.data().updatedAt || 0;
+
+    if(firstSync){
+      firstSync = false;
+      const localHas  = window.__cloudHoldingsCount() > 0;
+      const remoteHas = remote && Array.isArray(remote.holdings) && remote.holdings.length > 0;
+      if(!localHas && remoteHas){ window.__applyRemoteState(remote); return; }   /* dispositivo nuevo: baja la cartera de la cuenta */
+      if(localHas && !remoteHas){ pushNow(); return; }                            /* cuenta vacía: sube lo de este equipo */
+      if(remoteUpd > localUpd) window.__applyRemoteState(remote);                 /* ambos con datos: gana el más reciente */
+      else if(localUpd > remoteUpd) pushNow();
+      return;
+    }
+    if(remoteUpd > localUpd) window.__applyRemoteState(remote);                    /* cambio llegado de otro dispositivo */
+  }
+
+  /* ---------- Estado de la sesión ---------- */
+  onAuthStateChanged(auth, (user)=>{
+    currentUser = user;
+    if(user){
+      document.body.classList.add('authed');
+      const pic=document.getElementById('userPic'), nm=document.getElementById('userName');
+      if(nm) nm.textContent = user.displayName || user.email || 'Mi cuenta';
+      if(pic){ if(user.photoURL){ pic.src=user.photoURL; pic.style.display=''; } else pic.style.display='none'; }
+      window.__cloudMaybeSetEmail(user.email);
+      firstSync = true;
+      userRef = doc(db, 'portfolios', user.uid);
+      if(unsub) unsub();
+      unsub = onSnapshot(userRef, handleSnapshot, (e)=> console.warn('[Patrimonio] onSnapshot', e));
+    } else {
+      document.body.classList.remove('authed');
+      if(unsub){ unsub(); unsub=null; }
+      userRef = null;
+      showForm();
+      authMsg('');
+    }
+  });
+
+  /* Resultado del login por redirección (móvil / popup bloqueado) */
+  try{ await getRedirectResult(auth); }catch(e){ if(friendly(e)) authMsg(friendly(e),'err'); }
+}
 </script>
 </body>
 </html>
