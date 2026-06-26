@@ -1239,6 +1239,15 @@ window.__applyRemoteState = function(obj){
       if(Date.now()<end) requestAnimationFrame(tick); else cleanup(); };
     const cleanup=()=>{ window.removeEventListener('wheel',onUserScroll); window.removeEventListener('touchmove',onUserScroll); window.removeEventListener('keydown',onUserScroll); };
     tick(); };
+  /* La firma estructural identifica si lo que cambió fue solo precios/cantidades (lo más
+     habitual: cada refresco de precio en CUALQUIER pestaña abierta sube un cambio y lo baja
+     aquí) o si de verdad cambiaron los activos/categorías. Si es solo precio, NO se toca el
+     histórico del gráfico (trendCache/trendView) ni se relanza loadTrend(true) — eso es lo que
+     antes "reseteaba" el gráfico (perdía el zoom/rango elegido) y volvía a desbordar el layout
+     en cada sincronización, aunque no hubiera nada estructural que redibujar. */
+  const sig=(s)=> (s && Array.isArray(s.holdings)) ?
+    s.holdings.map(h=>h.id+':'+h.cls).join('|')+'#'+(s.categories||[]).map(c=>c.key).join(',')+'#'+(s.band||0)+'#'+(s.currency||'') : '';
+  const sameStructure = sig(state)===sig(obj);
   try{
     state = obj;
     if(!state.snapshots) state.snapshots = {};
@@ -1247,8 +1256,12 @@ window.__applyRemoteState = function(obj){
     dispCur = (state.currency && CURRENCIES.some(c=>c.code===state.currency)) ? state.currency : 'EUR';
     renderCurrencyOptions();
     normalizeApy(); normalizeQtyHist(); recordSnapshot();
-    lastTotal = 0; trendCache = {}; trendView = {};
-    render(); refresh(); loadTrend(true);
+    if(sameStructure){
+      render(); refresh();
+    } else {
+      lastTotal = 0; trendCache = {}; trendView = {};
+      render(); refresh(); loadTrend(true);
+    }
     if(dispCur!=='EUR') loadDispRate(false).then(ok=>{ if(ok) render(); });
     pinUntil(3000);
   }catch(e){ console.warn('applyRemoteState', e); }
