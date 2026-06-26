@@ -1220,6 +1220,25 @@ window.__cloudMaybeSetEmail = (mail)=>{ if(mail && !state.email){ state.email=ma
 window.__applyRemoteState = function(obj){
   if(!obj || !Array.isArray(obj.holdings)) return;
   window.__applyingRemote = true;
+  /* La sincronización entre dispositivos re-renderiza la página entera; sin esto, cada cambio
+     remoto (incluso un simple refresco de precio) hace que la página "salte" al reflujar el
+     layout. Se fija el scroll antes y se restaura tras pintar, en varios frames, porque las
+     piezas (gráfico, posiciones, tendencia) terminan de redimensionarse de forma asíncrona. */
+  const scrollX0=window.scrollX, scrollY0=window.scrollY;
+  /* refresh()/loadTrend() siguen reflujando el layout tras llegar sus respuestas de red,
+     así que se fija el scroll durante varios segundos, no solo unos pocos frames. Si el
+     usuario scrollea a propósito mientras tanto, se cancela el anclaje para no pelearle. */
+  let userScrolled=false;
+  const onUserScroll=()=>{ userScrolled=true; };
+  window.addEventListener('wheel',onUserScroll,{passive:true,once:true});
+  window.addEventListener('touchmove',onUserScroll,{passive:true,once:true});
+  window.addEventListener('keydown',onUserScroll,{once:true});
+  const pinUntil=(ms)=>{ const end=Date.now()+ms;
+    const tick=()=>{ if(userScrolled){ cleanup(); return; }
+      if(window.scrollX!==scrollX0||window.scrollY!==scrollY0) window.scrollTo(scrollX0,scrollY0);
+      if(Date.now()<end) requestAnimationFrame(tick); else cleanup(); };
+    const cleanup=()=>{ window.removeEventListener('wheel',onUserScroll); window.removeEventListener('touchmove',onUserScroll); window.removeEventListener('keydown',onUserScroll); };
+    tick(); };
   try{
     state = obj;
     if(!state.snapshots) state.snapshots = {};
@@ -1231,6 +1250,7 @@ window.__applyRemoteState = function(obj){
     lastTotal = 0; trendCache = {}; trendView = {};
     render(); refresh(); loadTrend(true);
     if(dispCur!=='EUR') loadDispRate(false).then(ok=>{ if(ok) render(); });
+    pinUntil(3000);
   }catch(e){ console.warn('applyRemoteState', e); }
   finally{ window.__applyingRemote = false; }
 };
@@ -2058,7 +2078,7 @@ function renderEditor(){
 }
 function edSrc(i,v){ editRows[i].src=v; if(v!=='stock')delete editRows[i].stooq; if(v!=='crypto')delete editRows[i].cg; renderEditor(); }
 function edRef(i,v){ const h=editRows[i]; if(h.src==='crypto')h.cg=v.trim().toLowerCase(); else if(h.src==='stock')h.stooq=v.trim().toLowerCase(); }
-function addRow(){ editRows.push({name:'',ticker:'',cls:(editCats[0]?editCats[0].key:'cripto'),qty:0,price:0,costPrice:0,src:'manual'}); renderEditor(); }
+function addRow(){ editRows.unshift({name:'',ticker:'',cls:(editCats[0]?editCats[0].key:'cripto'),qty:0,price:0,costPrice:0,src:'manual'}); renderEditor(); }
 async function delRow(i){ const h=editRows[i]||{};
   if(!await confirmDialog({title:t('dlg_delAssetTitle'), okLabel:t('ed_delete'),
     message:t('dlg_delAssetMsg').replace('{name}',(h.name||t('this_asset')).replace(/</g,'&lt;')).replace('{save}',t('saveUpdate'))})) return;
