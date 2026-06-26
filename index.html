@@ -395,7 +395,10 @@ document.addEventListener('DOMContentLoaded', function(){
     --font-num:'Barlow Condensed','Arial Narrow',sans-serif;
   }
   *{box-sizing:border-box}
-  html,body{margin:0}
+  /* Sin esto, en móvil arrastrar hacia abajo en cualquier punto de la página dispara el
+     gesto nativo "pull-to-refresh" del navegador/PWA, que recarga la app entera: por eso
+     "saltaba" y se reseteaba todo de golpe al hacer scroll. */
+  html,body{margin:0; overscroll-behavior-y:none}
   body{
     font-family:var(--font-body);
     color:var(--tx); font-variant-numeric:tabular-nums; -webkit-font-smoothing:antialiased;
