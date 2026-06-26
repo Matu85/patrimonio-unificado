@@ -37,7 +37,14 @@ window.I18N = {
     brushTitle:"Arrastra la ventana para desplazarte por el histórico",
     start:"Inicio", start_t:"Ir al primer dato histórico", today:"Hoy", today_t:"Ir a hoy", zoomIn_t:"Acercar", zoomOut_t:"Alejar",
     trendHint:"Toca o desliza sobre la línea para ver cada valor · pellizca para zoom · usa la barra inferior para desplazarte",
-    asset:"Activo", category:"Categoría", quantity:"Cantidad", price:"Precio", value:"Valor", pctPortfolio:"% cartera",
+    asset:"Activo", category:"Categoría", quantity:"Cantidad", price:"Precio", value:"Valor", pctPortfolio:"% cartera", pctRend:"% Rend.",
+    ta_btn:"Análisis", ta_t:"Análisis técnico de referencia (RSI/MACD)", ta_title:"Análisis técnico — referencia",
+    ta_rsi:"RSI (14)", ta_macd:"MACD (12,26,9)", ta_overbought:"sobrecompra — posible momento de cautela/venta",
+    ta_oversold:"sobreventa — posible oportunidad de compra", ta_neutral:"neutral",
+    ta_bull:"alcista (MACD > señal)", ta_bear:"bajista (MACD < señal)",
+    ta_insuff:"Aún no hay suficiente historial de precio para calcular este indicador. Para activos manuales, se construye con cada precio que guardes.",
+    ta_disclaimer:"Solo informativo — no es asesoramiento financiero. Basado en el histórico de precio disponible.",
+    ta_points:"puntos de precio usados",
     positionsNote:"Cripto vía CoinGecko · Acciones/ETF vía Stooq · Fondos por VNL manual. Edita la cantidad en línea — se guarda en tu cuenta y se sincroniza.",
     footer1:"Dashboard de patrimonio · precios en vivo · alerta de rebalanceo · resumen semanal con delta.",
     footer2:"Todo editable y <b>privado</b>: con tu sesión iniciada, tus datos se guardan en tu cuenta y se sincronizan entre tus dispositivos.",
@@ -47,7 +54,7 @@ window.I18N = {
     gateFoot:"Tus datos se guardan de forma privada en tu cuenta<br>y se sincronizan entre tus dispositivos.",
     emailPreview:"Email semanal — vista previa", to:"Para:", subject:"Asunto:", summaryLbl:"Resumen:", weeklyMonday:"semanal · lunes 08:00",
     editorTitle:"Editar cartera — ingresa tus activos reales", addAsset:"Añadir activo", clearAll:"Vaciar todo", saveUpdate:"Guardar y actualizar",
-    editorHelp:"<b style='color:var(--cripto)'>Cripto (en vivo):</b> ID de CoinGecko — bitcoin, ethereum, solana, cardano… &nbsp;·&nbsp; <b style='color:var(--broker)'>Acción/ETF (en vivo):</b> símbolo de bolsa — VT, AAPL, MSFT, VWCE.DE… &nbsp;·&nbsp; <b style='color:var(--fondos)'>Manual:</b> escribe tú el precio/VNL.<br>Tras guardar, pulsa <b>Exportar JSON</b> y reemplaza el archivo de la carpeta para que el email del lunes use tus cifras.",
+    editorHelp:"<b style='color:var(--cripto)'>Cripto (en vivo):</b> ID de CoinGecko — bitcoin, ethereum, solana, cardano… &nbsp;·&nbsp; <b style='color:var(--broker)'>Acción/ETF (en vivo):</b> símbolo de bolsa — VT, AAPL, MSFT, VWCE.DE… &nbsp;·&nbsp; <b style='color:var(--fondos)'>Manual:</b> escribe tú el precio/VNL — ideal para fondos sin feed público.<br>Añade el <b>precio de compra</b> de cada activo para ver tu rendimiento %, y abre el icono 📈 en Posiciones para ver RSI/MACD de referencia.",
     display:"Visualización", currency:"Moneda", currencyDesc:"Convierte todos los importes al vuelo. Los datos se siguen calculando en euros.",
     report:"Informe", weeklyEmail:"Email semanal", weeklyEmailDesc:"Vista previa del correo del lunes a las 08:00 con el delta de la semana.", viewEmail:"Ver email",
     data:"Datos", backup:"Copia de seguridad", backupDesc:"Exporta tu cartera a un archivo <b>portfolio.json</b> o impórtala. Importar <b>reemplaza</b> la cartera actual.", export:"Exportar", import:"Importar",
@@ -77,7 +84,9 @@ window.I18N = {
     cfm_confirm:"Confirmar", cfm_sure:"¿Seguro que quieres continuar?", cfm_delete:"Eliminar",
     ed_catName:"Nombre de la categoría", ed_target:"Objetivo", ed_delCat:"Eliminar categoría",
     ed_catsHead:"Categorías de rebalanceo — define las tuyas (nombre, objetivo % y color):", ed_addCat:"Categoría", ed_noCats:"Sin categorías. Añade al menos una.",
-    ed_band:"Banda ±%", ed_emailLbl:"Email para el informe semanal:",
+    ed_band:"Banda ±%",
+    ed_costPrice:"Precio de compra €", ed_costPriceTitle:"Precio al que compraste, para calcular tu rendimiento. Déjalo en 0 si no aplica.",
+    ed_rendNone:"Sin precio de compra — añádelo para ver tu rendimiento", ed_rendLbl:"Rendimiento:",
     ed_name:"Nombre", ed_ticker:"Ticker", ed_category:"Categoría", ed_priceSrc:"Fuente precio",
     ed_srcCrypto:"Cripto (en vivo)", ed_srcStock:"Acción/ETF (en vivo)", ed_srcManual:"Manual",
     ed_qty:"Cantidad", ed_priceEur:"Precio €", ed_fallback:" (fallback)",
@@ -105,7 +114,14 @@ window.I18N = {
     brushTitle:"Drag the window to scroll through history",
     start:"Start", start_t:"Go to the first data point", today:"Today", today_t:"Go to today", zoomIn_t:"Zoom in", zoomOut_t:"Zoom out",
     trendHint:"Tap or drag on the line to see each value · pinch to zoom · use the bottom bar to scroll",
-    asset:"Asset", category:"Category", quantity:"Quantity", price:"Price", value:"Value", pctPortfolio:"% portfolio",
+    asset:"Asset", category:"Category", quantity:"Quantity", price:"Price", value:"Value", pctPortfolio:"% portfolio", pctRend:"% Return",
+    ta_btn:"Analysis", ta_t:"Reference technical analysis (RSI/MACD)", ta_title:"Technical analysis — reference",
+    ta_rsi:"RSI (14)", ta_macd:"MACD (12,26,9)", ta_overbought:"overbought — possible caution/sell signal",
+    ta_oversold:"oversold — possible buy opportunity", ta_neutral:"neutral",
+    ta_bull:"bullish (MACD > signal)", ta_bear:"bearish (MACD < signal)",
+    ta_insuff:"Not enough price history yet to compute this indicator. For manual assets, it builds up with every price you save.",
+    ta_disclaimer:"Informational only — not financial advice. Based on available price history.",
+    ta_points:"price points used",
     positionsNote:"Crypto via CoinGecko · Stocks/ETFs via Stooq · Funds by manual NAV. Edit the quantity inline — it is saved to your account and synced.",
     footer1:"Wealth dashboard · live prices · rebalancing alert · weekly summary with delta.",
     footer2:"Fully editable and <b>private</b>: when signed in, your data is saved to your account and synced across your devices.",
@@ -115,7 +131,7 @@ window.I18N = {
     gateFoot:"Your data is stored privately in your account<br>and synced across your devices.",
     emailPreview:"Weekly email — preview", to:"To:", subject:"Subject:", summaryLbl:"Summary:", weeklyMonday:"weekly · Monday 08:00",
     editorTitle:"Edit portfolio — enter your real assets", addAsset:"Add asset", clearAll:"Clear all", saveUpdate:"Save and update",
-    editorHelp:"<b style='color:var(--cripto)'>Crypto (live):</b> CoinGecko ID — bitcoin, ethereum, solana, cardano… &nbsp;·&nbsp; <b style='color:var(--broker)'>Stock/ETF (live):</b> ticker — VT, AAPL, MSFT, VWCE.DE… &nbsp;·&nbsp; <b style='color:var(--fondos)'>Manual:</b> type the price/NAV yourself.<br>After saving, click <b>Export JSON</b> and replace the file in the folder so Monday's email uses your figures.",
+    editorHelp:"<b style='color:var(--cripto)'>Crypto (live):</b> CoinGecko ID — bitcoin, ethereum, solana, cardano… &nbsp;·&nbsp; <b style='color:var(--broker)'>Stock/ETF (live):</b> ticker — VT, AAPL, MSFT, VWCE.DE… &nbsp;·&nbsp; <b style='color:var(--fondos)'>Manual:</b> type the price/NAV yourself — ideal for funds without a public feed.<br>Add each asset's <b>buy price</b> to see your return %, and open the 📈 icon in Positions for reference RSI/MACD.",
     display:"Display", currency:"Currency", currencyDesc:"Converts all amounts on the fly. Data is still computed in euros.",
     report:"Report", weeklyEmail:"Weekly email", weeklyEmailDesc:"Preview of Monday's 08:00 email with the week's delta.", viewEmail:"View email",
     data:"Data", backup:"Backup", backupDesc:"Export your portfolio to a <b>portfolio.json</b> file or import it. Importing <b>replaces</b> the current portfolio.", export:"Export", import:"Import",
@@ -145,7 +161,9 @@ window.I18N = {
     cfm_confirm:"Confirm", cfm_sure:"Are you sure you want to continue?", cfm_delete:"Delete",
     ed_catName:"Category name", ed_target:"Target", ed_delCat:"Delete category",
     ed_catsHead:"Rebalancing categories — define your own (name, target % and color):", ed_addCat:"Category", ed_noCats:"No categories. Add at least one.",
-    ed_band:"Band ±%", ed_emailLbl:"Email for the weekly report:",
+    ed_band:"Band ±%",
+    ed_costPrice:"Buy price €", ed_costPriceTitle:"Price you paid, used to compute your return. Leave 0 if not applicable.",
+    ed_rendNone:"No buy price — add it to see your return", ed_rendLbl:"Return:",
     ed_name:"Name", ed_ticker:"Ticker", ed_category:"Category", ed_priceSrc:"Price source",
     ed_srcCrypto:"Crypto (live)", ed_srcStock:"Stock/ETF (live)", ed_srcManual:"Manual",
     ed_qty:"Quantity", ed_priceEur:"Price €", ed_fallback:" (fallback)",
@@ -173,7 +191,14 @@ window.I18N = {
     brushTitle:"拖动窗口浏览历史",
     start:"起点", start_t:"跳到最早数据", today:"今天", today_t:"跳到今天", zoomIn_t:"放大", zoomOut_t:"缩小",
     trendHint:"在曲线上点按或滑动查看数值 · 双指缩放 · 用底部条滚动",
-    asset:"资产", category:"类别", quantity:"数量", price:"价格", value:"价值", pctPortfolio:"组合占比",
+    asset:"资产", category:"类别", quantity:"数量", price:"价格", value:"价值", pctPortfolio:"组合占比", pctRend:"收益率",
+    ta_btn:"分析", ta_t:"参考性技术分析（RSI/MACD）", ta_title:"技术分析 — 参考",
+    ta_rsi:"RSI（14）", ta_macd:"MACD（12,26,9）", ta_overbought:"超买 — 可能需谨慎/考虑卖出",
+    ta_oversold:"超卖 — 可能的买入机会", ta_neutral:"中性",
+    ta_bull:"看涨（MACD > 信号线）", ta_bear:"看跌（MACD < 信号线）",
+    ta_insuff:"价格历史还不够，无法计算该指标。对于手动资产，每次保存价格都会积累历史数据。",
+    ta_disclaimer:"仅供参考 — 非投资建议。基于现有价格历史计算。",
+    ta_points:"使用的价格点数",
     positionsNote:"加密货币来自 CoinGecko · 股票/ETF 来自 Stooq · 基金按手动净值。可直接编辑数量 — 自动保存到你的账户并同步。",
     footer1:"资产看板 · 实时价格 · 再平衡提醒 · 每周变化摘要。",
     footer2:"完全可编辑且<b>私密</b>：登录后，你的数据保存在账户中并在设备间同步。",
@@ -183,7 +208,7 @@ window.I18N = {
     gateFoot:"你的数据私密保存在账户中<br>并在设备间同步。",
     emailPreview:"每周邮件 — 预览", to:"收件人：", subject:"主题：", summaryLbl:"摘要：", weeklyMonday:"每周 · 周一 08:00",
     editorTitle:"编辑投资组合 — 输入你的真实资产", addAsset:"添加资产", clearAll:"清空", saveUpdate:"保存并更新",
-    editorHelp:"<b style='color:var(--cripto)'>加密货币（实时）：</b>CoinGecko ID — bitcoin、ethereum、solana、cardano… &nbsp;·&nbsp; <b style='color:var(--broker)'>股票/ETF（实时）：</b>交易代码 — VT、AAPL、MSFT、VWCE.DE… &nbsp;·&nbsp; <b style='color:var(--fondos)'>手动：</b>自行输入价格/净值。<br>保存后，点击<b>导出 JSON</b>并替换文件夹中的文件，使周一邮件使用你的数据。",
+    editorHelp:"<b style='color:var(--cripto)'>加密货币（实时）：</b>CoinGecko ID — bitcoin、ethereum、solana、cardano… &nbsp;·&nbsp; <b style='color:var(--broker)'>股票/ETF（实时）：</b>交易代码 — VT、AAPL、MSFT、VWCE.DE… &nbsp;·&nbsp; <b style='color:var(--fondos)'>手动：</b>自行输入价格/净值 — 适合没有公开数据源的基金。<br>添加每个资产的<b>买入价</b>以查看收益率%，并在持仓中打开 📈 图标查看参考 RSI/MACD。",
     display:"显示", currency:"货币", currencyDesc:"实时换算所有金额。数据仍以欧元计算。",
     report:"报告", weeklyEmail:"每周邮件", weeklyEmailDesc:"预览周一 08:00 的邮件，包含本周变化。", viewEmail:"查看邮件",
     data:"数据", backup:"备份", backupDesc:"将投资组合导出为 <b>portfolio.json</b> 文件或导入。导入会<b>替换</b>当前组合。", export:"导出", import:"导入",
@@ -213,7 +238,9 @@ window.I18N = {
     cfm_confirm:"确认", cfm_sure:"确定要继续吗？", cfm_delete:"删除",
     ed_catName:"类别名称", ed_target:"目标", ed_delCat:"删除类别",
     ed_catsHead:"再平衡类别 — 自定义（名称、目标 % 和颜色）：", ed_addCat:"类别", ed_noCats:"没有类别。请至少添加一个。",
-    ed_band:"区间 ±%", ed_emailLbl:"每周报告的邮箱：",
+    ed_band:"区间 ±%",
+    ed_costPrice:"买入价 €", ed_costPriceTitle:"你买入的价格，用于计算收益率。不适用请填 0。",
+    ed_rendNone:"未设置买入价 — 添加后可查看收益", ed_rendLbl:"收益：",
     ed_name:"名称", ed_ticker:"代码", ed_category:"类别", ed_priceSrc:"价格来源",
     ed_srcCrypto:"加密货币（实时）", ed_srcStock:"股票/ETF（实时）", ed_srcManual:"手动",
     ed_qty:"数量", ed_priceEur:"价格 €", ed_fallback:"（备用）",
@@ -241,7 +268,14 @@ window.I18N = {
     brushTitle:"इतिहास देखने के लिए विंडो खींचें",
     start:"शुरुआत", start_t:"पहले डेटा पर जाएँ", today:"आज", today_t:"आज पर जाएँ", zoomIn_t:"ज़ूम इन", zoomOut_t:"ज़ूम आउट",
     trendHint:"मान देखने के लिए लाइन पर टैप या ड्रैग करें · ज़ूम के लिए पिंच करें · स्क्रॉल के लिए नीचे की पट्टी इस्तेमाल करें",
-    asset:"एसेट", category:"श्रेणी", quantity:"मात्रा", price:"कीमत", value:"मूल्य", pctPortfolio:"% पोर्टफोलियो",
+    asset:"एसेट", category:"श्रेणी", quantity:"मात्रा", price:"कीमत", value:"मूल्य", pctPortfolio:"% पोर्टफोलियो", pctRend:"% रिटर्न",
+    ta_btn:"विश्लेषण", ta_t:"संदर्भ तकनीकी विश्लेषण (RSI/MACD)", ta_title:"तकनीकी विश्लेषण — संदर्भ",
+    ta_rsi:"RSI (14)", ta_macd:"MACD (12,26,9)", ta_overbought:"ओवरबॉट — सावधानी/बिक्री का संभावित समय",
+    ta_oversold:"ओवरसोल्ड — खरीदारी का संभावित मौका", ta_neutral:"न्यूट्रल",
+    ta_bull:"तेज़ी (MACD > सिग्नल)", ta_bear:"मंदी (MACD < सिग्नल)",
+    ta_insuff:"इस इंडिकेटर के लिए अभी पर्याप्त मूल्य इतिहास नहीं है। मैनुअल एसेट के लिए, हर बार कीमत सहेजने पर यह बनता है।",
+    ta_disclaimer:"केवल सूचना के लिए — यह वित्तीय सलाह नहीं है। उपलब्ध मूल्य इतिहास पर आधारित।",
+    ta_points:"उपयोग किए गए मूल्य बिंदु",
     positionsNote:"क्रिप्टो CoinGecko से · स्टॉक/ETF Stooq से · फंड मैनुअल NAV से। मात्रा को इनलाइन संपादित करें — यह आपके खाते में सहेजी और सिंक होती है।",
     footer1:"संपत्ति डैशबोर्ड · लाइव कीमतें · रीबैलेंसिंग अलर्ट · साप्ताहिक सारांश।",
     footer2:"पूरी तरह संपादन योग्य और <b>निजी</b>: साइन इन करने पर आपका डेटा आपके खाते में सहेजा जाता है और डिवाइसों में सिंक होता है।",
@@ -251,7 +285,7 @@ window.I18N = {
     gateFoot:"आपका डेटा आपके खाते में निजी रूप से सहेजा जाता है<br>और डिवाइसों में सिंक होता है।",
     emailPreview:"साप्ताहिक ईमेल — पूर्वावलोकन", to:"किसे:", subject:"विषय:", summaryLbl:"सारांश:", weeklyMonday:"साप्ताहिक · सोमवार 08:00",
     editorTitle:"पोर्टफोलियो संपादित करें — अपनी असली एसेट दर्ज करें", addAsset:"एसेट जोड़ें", clearAll:"सब हटाएँ", saveUpdate:"सहेजें और अपडेट करें",
-    editorHelp:"<b style='color:var(--cripto)'>क्रिप्टो (लाइव):</b> CoinGecko ID — bitcoin, ethereum, solana, cardano… &nbsp;·&nbsp; <b style='color:var(--broker)'>स्टॉक/ETF (लाइव):</b> टिकर — VT, AAPL, MSFT, VWCE.DE… &nbsp;·&nbsp; <b style='color:var(--fondos)'>मैनुअल:</b> कीमत/NAV खुद लिखें।<br>सहेजने के बाद <b>JSON निर्यात करें</b> दबाएँ और फ़ोल्डर की फ़ाइल बदलें ताकि सोमवार का ईमेल आपके आँकड़े इस्तेमाल करे।",
+    editorHelp:"<b style='color:var(--cripto)'>क्रिप्टो (लाइव):</b> CoinGecko ID — bitcoin, ethereum, solana, cardano… &nbsp;·&nbsp; <b style='color:var(--broker)'>स्टॉक/ETF (लाइव):</b> टिकर — VT, AAPL, MSFT, VWCE.DE… &nbsp;·&nbsp; <b style='color:var(--fondos)'>मैनुअल:</b> कीमत/NAV खुद लिखें — सार्वजनिक डेटा फ़ीड न होने वाले फंड के लिए आदर्श।<br>रिटर्न % देखने के लिए हर एसेट का <b>खरीद मूल्य</b> जोड़ें, और संदर्भ RSI/MACD के लिए पोज़िशन में 📈 आइकन खोलें।",
     display:"प्रदर्शन", currency:"मुद्रा", currencyDesc:"सभी राशियों को तुरंत बदलता है। डेटा फिर भी यूरो में गणना होता है।",
     report:"रिपोर्ट", weeklyEmail:"साप्ताहिक ईमेल", weeklyEmailDesc:"सोमवार 08:00 के ईमेल का पूर्वावलोकन, सप्ताह के बदलाव के साथ।", viewEmail:"ईमेल देखें",
     data:"डेटा", backup:"बैकअप", backupDesc:"अपना पोर्टफोलियो <b>portfolio.json</b> फ़ाइल में निर्यात करें या आयात करें। आयात मौजूदा पोर्टफोलियो को <b>बदल</b> देता है।", export:"निर्यात", import:"आयात",
@@ -281,7 +315,9 @@ window.I18N = {
     cfm_confirm:"पुष्टि करें", cfm_sure:"क्या आप वाकई जारी रखना चाहते हैं?", cfm_delete:"हटाएँ",
     ed_catName:"श्रेणी का नाम", ed_target:"लक्ष्य", ed_delCat:"श्रेणी हटाएँ",
     ed_catsHead:"रीबैलेंसिंग श्रेणियाँ — अपनी बनाएँ (नाम, लक्ष्य % और रंग):", ed_addCat:"श्रेणी", ed_noCats:"कोई श्रेणी नहीं। कम से कम एक जोड़ें।",
-    ed_band:"बैंड ±%", ed_emailLbl:"साप्ताहिक रिपोर्ट के लिए ईमेल:",
+    ed_band:"बैंड ±%",
+    ed_costPrice:"खरीद मूल्य €", ed_costPriceTitle:"वह मूल्य जिसपर आपने खरीदा, रिटर्न निकालने के लिए। लागू न हो तो 0 रखें।",
+    ed_rendNone:"खरीद मूल्य नहीं — रिटर्न देखने के लिए इसे जोड़ें", ed_rendLbl:"रिटर्न:",
     ed_name:"नाम", ed_ticker:"टिकर", ed_category:"श्रेणी", ed_priceSrc:"मूल्य स्रोत",
     ed_srcCrypto:"क्रिप्टो (लाइव)", ed_srcStock:"स्टॉक/ETF (लाइव)", ed_srcManual:"मैनुअल",
     ed_qty:"मात्रा", ed_priceEur:"मूल्य €", ed_fallback:" (फ़ॉलबैक)",
@@ -1000,8 +1036,8 @@ document.addEventListener('DOMContentLoaded', function(){
     <div class="card full">
       <div class="card-h"><span class="kicker"><svg class="ic kic"><use href="#i-list"/></svg><span data-i18n="positions">Posiciones</span></span></div>
       <div class="tablewrap"><table id="positions" class="rtable">
-        <colgroup><col style="width:23%"><col style="width:19%"><col style="width:16%"><col style="width:14%"><col style="width:14%"><col style="width:14%"></colgroup>
-        <thead><tr><th data-i18n="asset">Activo</th><th data-i18n="category">Categoría</th><th data-i18n="quantity">Cantidad</th><th data-i18n="price">Precio</th><th data-i18n="value">Valor</th><th data-i18n="pctPortfolio">% cartera</th></tr></thead>
+        <colgroup><col style="width:21%"><col style="width:15%"><col style="width:13%"><col style="width:12%"><col style="width:12%"><col style="width:13%"><col style="width:14%"></colgroup>
+        <thead><tr><th data-i18n="asset">Activo</th><th data-i18n="category">Categoría</th><th data-i18n="quantity">Cantidad</th><th data-i18n="price">Precio</th><th data-i18n="value">Valor</th><th data-i18n="pctPortfolio">% cartera</th><th data-i18n="pctRend">% Rend.</th></tr></thead>
         <tbody></tbody>
       </table></div>
       <div class="muted" style="margin-top:12px" data-i18n="positionsNote">Cripto vía CoinGecko · Acciones/ETF vía Stooq · Fondos por VNL manual. Edita la cantidad en línea — se guarda en tu cuenta y se sincroniza.</div>
@@ -1014,19 +1050,6 @@ document.addEventListener('DOMContentLoaded', function(){
   </div>
 </div>
 
-<!-- Modal email -->
-<div class="modal-bg" id="modal">
-  <div class="modal">
-    <div class="mailhead"><b><svg class="mh-ic"><use href="#i-mail"/></svg><span data-i18n="emailPreview">Email semanal — vista previa</span></b><button class="x" onclick="closeMail()"><svg class="ic"><use href="#i-x"/></svg></button></div>
-    <div class="mailmeta">
-      <div><b data-i18n="to">Para:</b> <span id="mTo"></span></div>
-      <div><b data-i18n="subject">Asunto:</b> <span id="mSubject"></span></div>
-      <div><b data-i18n="summaryLbl">Resumen:</b> <span data-i18n="weeklyMonday">semanal · lunes 08:00</span></div>
-    </div>
-    <div class="mailbody" id="mailbody"></div>
-  </div>
-</div>
-
 <!-- Modal editor -->
 <div class="modal-bg" id="editor">
   <div class="modal" style="max-width:820px">
@@ -1034,7 +1057,6 @@ document.addEventListener('DOMContentLoaded', function(){
     <div class="mailbody">
       <div id="editorBody"></div>
       <div class="edactions">
-        <button class="btn" onclick="addRow()"><svg class="ic"><use href="#i-plus"/></svg> <span data-i18n="addAsset">Añadir activo</span></button>
         <button class="del" onclick="clearAll()"><svg class="ic"><use href="#i-trash"/></svg> <span data-i18n="clearAll">Vaciar todo</span></button>
         <span style="flex:1"></span>
         <button class="btn gold" onclick="saveEditor()"><svg class="ic"><use href="#i-check"/></svg> <span data-i18n="saveUpdate">Guardar y actualizar</span></button>
@@ -1042,10 +1064,18 @@ document.addEventListener('DOMContentLoaded', function(){
       <div class="muted" style="margin-top:14px;line-height:1.8" data-i18n-html="editorHelp">
         <b style="color:var(--cripto)">Cripto (en vivo):</b> ID de CoinGecko — bitcoin, ethereum, solana, cardano… &nbsp;·&nbsp;
         <b style="color:var(--broker)">Acción/ETF (en vivo):</b> símbolo de bolsa — VT, AAPL, MSFT, VWCE.DE… &nbsp;·&nbsp;
-        <b style="color:var(--fondos)">Manual:</b> escribe tú el precio/VNL.<br>
-        Tras guardar, pulsa <b>Exportar JSON</b> y reemplaza el archivo de la carpeta para que el email del lunes use tus cifras.
+        <b style="color:var(--fondos)">Manual:</b> escribe tú el precio/VNL — ideal para fondos sin feed público.<br>
+        Añade el <b>precio de compra</b> de cada activo para ver tu rendimiento %, y abre el icono 📈 en Posiciones para ver RSI/MACD de referencia.
       </div>
     </div>
+  </div>
+</div>
+
+<!-- Modal análisis técnico -->
+<div class="modal-bg" id="taModal" style="z-index:80">
+  <div class="modal" style="max-width:460px">
+    <div class="mailhead"><b><svg class="mh-ic"><use href="#i-activity"/></svg><span id="taTitle" data-i18n="ta_title">Análisis técnico — referencia</span></b><button class="x" onclick="closeTA()"><svg class="ic"><use href="#i-x"/></svg></button></div>
+    <div class="mailbody"><div id="taBody" style="font-size:14px;line-height:1.7;color:var(--soft)"></div></div>
   </div>
 </div>
 
@@ -1065,13 +1095,6 @@ document.addEventListener('DOMContentLoaded', function(){
         <div class="set-row" style="margin-top:16px">
           <div><div class="set-t" data-i18n="currency">Moneda</div><div class="set-d" data-i18n="currencyDesc">Convierte todos los importes al vuelo. Los datos se siguen calculando en euros.</div></div>
           <select class="cur-select" id="curSelect" onchange="setCurrency(this.value)" aria-label="Moneda de visualización"></select>
-        </div>
-      </div>
-      <div class="set-sec">
-        <div class="set-h" data-i18n="report">Informe</div>
-        <div class="set-row">
-          <div><div class="set-t" data-i18n="weeklyEmail">Email semanal</div><div class="set-d" data-i18n="weeklyEmailDesc">Vista previa del correo del lunes a las 08:00 con el delta de la semana.</div></div>
-          <button class="btn" onclick="closeSettings();openMail()"><svg class="ic"><use href="#i-mail"/></svg> <span data-i18n="viewEmail">Ver email</span></button>
         </div>
       </div>
       <div class="set-sec">
@@ -1239,7 +1262,7 @@ async function fetchCrypto(){
   try{
     const r=await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids.join(',')}&vs_currencies=eur`,{cache:'no-store'});
     if(!r.ok) throw 0; const d=await r.json();
-    state.holdings.forEach(h=>{ if(h.src==='crypto'&&d[h.cg]&&d[h.cg].eur){ h.price=d[h.cg].eur; h.live=true; }});
+    state.holdings.forEach(h=>{ if(h.src==='crypto'&&d[h.cg]&&d[h.cg].eur){ h.price=d[h.cg].eur; h.live=true; notePriceHist(h); }});
   }catch(e){ state.holdings.forEach(h=>{ if(h.src==='crypto') h.live=false; }); }
   finally{ _cryptoBusy=false; }
 }
@@ -1306,7 +1329,7 @@ async function fetchStock(h){
   const m=await yMeta(sym); if(!m){ h.live=false; return; }
   let p=m.regularMarketPrice; const cur=m.currency||'USD';
   if(cur!=='EUR'){ const rate=await fxToEur(cur); if(!rate){ h.live=false; return; } p=p*rate; }
-  h.price=p; h.live=true;
+  h.price=p; h.live=true; notePriceHist(h);
 }
 async function refresh(){
   const rb=document.querySelector('.btn.gold'); if(rb) rb.classList.add('loading');
@@ -1819,14 +1842,17 @@ function initTrendGestures(){
 }
 function drawPositions(tot){
   const tb=document.querySelector('#positions tbody');
-  if(!state.holdings.length){ tb.innerHTML=`<tr><td colspan="6" style="text-align:center;color:var(--mut);padding:28px">${t('p_empty').replace('{edit}','<b style="color:var(--gold)">'+t('editPortfolio')+'</b>')}</td></tr>`; return; }
+  if(!state.holdings.length){ tb.innerHTML=`<tr><td colspan="7" style="text-align:center;color:var(--mut);padding:28px">${t('p_empty').replace('{edit}','<b style="color:var(--gold)">'+t('editPortfolio')+'</b>')}</td></tr>`; return; }
   tb.innerHTML=state.holdings.map((h,i)=>{
     const v=valueOf(h);
     const badge=h.src==='manual'?'<span class="badge man">VNL</span>':h.live?'<span class="badge live">LIVE</span>':`<span class="badge stale">${t('badge_last')}</span>`;
-    return `<tr><td data-l="${t('asset')}"><b>${h.name}</b> <span class="muted">${h.ticker||''}</span> ${badge} <button class="sellbtn" title="${t('buy_t')}" onclick="openBuy(${i})">${t('buy')}</button> <button class="sellbtn" title="${t('sell_t')}" onclick="openSell(${i})">${t('sellTransfer')}</button></td>
+    const rend=(h.costPrice>0 && h.price>0) ? ((h.price-h.costPrice)/h.costPrice*100) : null;
+    const rendHtml=rend===null?'<span class="muted">—</span>':`<b style="color:${rend>=0?'var(--good)':'var(--bad)'}">${rend>=0?'+':''}${rend.toFixed(2)}%</b>`;
+    return `<tr><td data-l="${t('asset')}"><b>${h.name}</b> <span class="muted">${h.ticker||''}</span> ${badge} <button class="sellbtn" title="${t('buy_t')}" onclick="openBuy(${i})">${t('buy')}</button> <button class="sellbtn" title="${t('sell_t')}" onclick="openSell(${i})">${t('sellTransfer')}</button> <button class="sellbtn" title="${t('ta_t')}" onclick="openTA(${i})">📈 ${t('ta_btn')}</button></td>
       <td data-l="${t('category')}"><span class="clschip"><span class="dot" style="width:9px;height:9px;background:${catOf(h.cls).color};--c:${catOf(h.cls).color}88"></span>${catOf(h.cls).label}</span></td>
       <td data-l="${t('quantity')}"><input class="q" type="number" step="any" value="${parseFloat(liveQty(h).toFixed(8))}" onchange="setQty(${i},this.value)"></td>
-      <td data-l="${t('price')}">${fmt2(h.price)}</td><td data-l="${t('value')}"><b>${fmt(v)}</b></td><td data-l="${t('pctPortfolio')}">${tot?(v/tot*100).toFixed(1):0}%</td></tr>`;
+      <td data-l="${t('price')}">${fmt2(h.price)}</td><td data-l="${t('value')}"><b>${fmt(v)}</b></td><td data-l="${t('pctPortfolio')}">${tot?(v/tot*100).toFixed(1):0}%</td>
+      <td data-l="${t('pctRend')}">${rendHtml}</td></tr>`;
   }).join('');
 }
 function setQty(i,v){ const h=state.holdings[i]; correctQty(h,parseFloat(v)||0); recordSnapshot(); save(); render(); refreshTrendAfterChange(); }
@@ -1854,35 +1880,75 @@ document.getElementById('txModal').addEventListener('click',e=>{ if(e.target.id=
 function setTarget(k,v){ const c=catOf(k); if(c)c.target=Math.max(0,+v||0); save(); render(); }
 function setBand(v){ state.band=Math.max(0,+v||0); save(); render(); }
 
-/* ----------------------------- Email ----------------------------- */
-function buildMail(){
-  const {cls,tot}=totals(), prev=prevWeekSnapshot();
-  const dTot=prev&&prev.total?tot-prev.total:0, pTot=prev&&prev.total?dTot/prev.total*100:0;
-  const subject=prev&&prev.total?`${t('mail_subject')} ${dTot>=0?'+':''}${fmt(dTot)} (${pct(pTot)})`:`${t('mail_subject')} ${fmt(tot)}`;
-  document.getElementById('mSubject').textContent=subject;
-  const alerts=[];
-  state.categories.forEach(c=>{ const a=tot?cls[c.key]/tot*100:0,tg=c.target,dev=a-tg,diff=cls[c.key]-tot*tg/100;
-    if(dev>state.band) alerts.push(`🔴 <b>${c.label}</b> ${t('mail_at')} ${a.toFixed(1)}% (${t('mail_target')} ${tg}%) — ${t('mail_sell')} ${fmt(diff)}`);
-    else if(dev<-state.band) alerts.push(`🟡 <b>${c.label}</b> ${t('mail_at')} ${a.toFixed(1)}% (${t('mail_target')} ${tg}%) — ${t('mail_buy')} ${fmt(Math.abs(diff))}`); });
-  const rows=state.categories.map(c=>{ const pc=prev&&prev.classes&&prev.classes[c.key]!==undefined?cls[c.key]-prev.classes[c.key]:null;
-    const col=pc===null?'#9aa3b4':(pc>=0?'#3fb950':'#f85149');
-    return `<tr><td style="padding:7px 0">${c.label}</td><td style="text-align:right">${fmt(cls[c.key])}</td>
-      <td style="text-align:right">${tot?(cls[c.key]/tot*100).toFixed(1):0}%</td>
-      <td style="text-align:right;color:${col}">${pc===null?'—':(pc>=0?'+':'')+fmt(pc)}</td></tr>`; }).join('');
-  return `<div style="font-family:system-ui,Arial;color:#eef1f7">
-      <div style="font-size:13px;color:#9aa3b4">${t('mail_summary')} · ${new Date().toLocaleDateString(LOC(),{day:'numeric',month:'long',year:'numeric'})}</div>
-      <div style="font-size:30px;font-weight:700;margin:6px 0;color:#e3c08d">${fmt(tot)}</div>
-      <div style="font-size:15px;color:${dTot>=0?'#3fb950':'#f85149'};font-weight:600;margin-bottom:16px">${dTot>=0?'▲':'▼'} ${fmt(Math.abs(dTot))} (${pct(pTot)}) ${t('mail_vsLastWeek')}</div>
-      <div style="font-weight:700;margin:18px 0 6px;font-size:13px;letter-spacing:.5px;color:#c2c9d6">${t('mail_distDelta')}</div>
-      <table style="width:100%;border-collapse:collapse;font-size:14px">
-        <tr style="color:#9aa3b4;font-size:12px"><td>${t('mail_class')}</td><td style="text-align:right">${t('mail_value')}</td><td style="text-align:right">${t('mail_weight')}</td><td style="text-align:right">${t('mail_deltaWeek')}</td></tr>${rows}</table>
-      <div style="font-weight:700;margin:20px 0 6px;font-size:13px;letter-spacing:.5px;color:#c2c9d6">${t('mail_rebalance')}</div>
-      ${alerts.length?`<div style="font-size:14px;line-height:1.9">${alerts.join('<br>')}</div>`:`<div style="font-size:14px;color:#3fb950">🟢 ${t('mail_balanced').replace('{band}',state.band)}</div>`}
-      <div style="margin-top:22px;font-size:12px;color:#9aa3b4;border-top:1px solid #283142;padding-top:12px">${t('mail_auto')}</div></div>`;
+/* ---- Historial de precio por activo (alimenta los indicadores RSI/MACD) ---- */
+/* Para fuentes en vivo (cripto/acción) se reusa el histórico de mercado ya disponible.
+   Para precio manual no hay feed: cada vez que se guarda un precio distinto se añade
+   un punto fechado, así el indicador se va construyendo con el uso real de la app. */
+function notePriceHist(h){
+  if(!h || !(h.price>0)) return;
+  if(!Array.isArray(h.priceHist)) h.priceHist=[];
+  const last=h.priceHist[h.priceHist.length-1];
+  const now=Date.now(), oneDay=86400000;
+  if(!last || Math.abs(last.p-h.price)>1e-9 || (now-last.t)>oneDay){
+    if(last && (now-last.t)<oneDay && Math.abs(last.p-h.price)>1e-9) h.priceHist.pop();
+    h.priceHist.push({t:now,p:h.price});
+    if(h.priceHist.length>400) h.priceHist.splice(0,h.priceHist.length-400);
+  }
 }
-function openMail(){ document.getElementById('mTo').textContent = state.email || t('mail_configEmail'); document.getElementById('mailbody').innerHTML=buildMail(); document.getElementById('modal').classList.add('show'); }
-function closeMail(){ document.getElementById('modal').classList.remove('show'); }
-document.getElementById('modal').addEventListener('click',e=>{ if(e.target.id==='modal') closeMail(); });
+function rsi14(closes){
+  if(!closes||closes.length<5) return null;
+  const period=Math.min(14,closes.length-1); let gains=0,losses=0;
+  for(let i=closes.length-period;i<closes.length;i++){ const d=closes[i]-closes[i-1]; if(d>0)gains+=d; else losses-=d; }
+  const avgG=gains/period, avgL=losses/period;
+  if(avgL===0) return 100; const rs=avgG/avgL; return 100-(100/(1+rs));
+}
+function emaSeries(values,period){
+  const k=2/(period+1); const out=[values[0]];
+  for(let i=1;i<values.length;i++) out.push(values[i]*k+out[i-1]*(1-k));
+  return out;
+}
+function macdCalc(closes){
+  if(!closes||closes.length<26) return null;
+  const ema12=emaSeries(closes,12), ema26=emaSeries(closes,26);
+  const macdLine=closes.map((_,i)=>ema12[i]-ema26[i]);
+  const signal=emaSeries(macdLine.slice(macdLine.length-Math.min(macdLine.length,26)),9);
+  const macd=macdLine[macdLine.length-1], sig=signal[signal.length-1];
+  return {macd,signal:sig,hist:macd-sig};
+}
+async function priceSeriesFor(h){
+  try{
+    if(h.src==='crypto'&&h.cg){ const pts=await histCrypto(h.cg,180); if(pts&&pts.length) return pts.map(p=>p.p); }
+    else if(h.src==='stock'){ const sym=ysym(h.stooq||h.ticker); if(sym){ const pts=await histStock(sym,'6mo','1d'); if(pts&&pts.length) return pts.map(p=>p.p); } }
+  }catch(e){}
+  return Array.isArray(h.priceHist)?h.priceHist.map(p=>p.p):[];
+}
+async function openTA(i){
+  const h=state.holdings[i]; if(!h) return;
+  document.getElementById('taTitle').textContent=(h.name||h.ticker||'')+' — '+t('ta_title');
+  document.getElementById('taBody').innerHTML=`<div class="muted">${t('updating')}</div>`;
+  document.getElementById('taModal').classList.add('show');
+  const closes=await priceSeriesFor(h);
+  const rsi=rsi14(closes), macd=macdCalc(closes);
+  let rsiHtml, macdHtml;
+  if(rsi===null) rsiHtml=`<div class="muted">${t('ta_insuff')}</div>`;
+  else{
+    const tag=rsi>=70?t('ta_overbought'):rsi<=30?t('ta_oversold'):t('ta_neutral');
+    const col=rsi>=70?'var(--bad)':rsi<=30?'var(--good)':'var(--tx)';
+    rsiHtml=`<b style="font-size:22px;color:${col}">${rsi.toFixed(1)}</b> <span class="muted">${tag}</span>`;
+  }
+  if(macd===null) macdHtml=`<div class="muted">${t('ta_insuff')}</div>`;
+  else{
+    const bull=macd.hist>=0; const col=bull?'var(--good)':'var(--bad)';
+    macdHtml=`<b style="color:${col}">${bull?t('ta_bull'):t('ta_bear')}</b><br><span class="muted">MACD ${macd.macd.toFixed(4)} · signal ${macd.signal.toFixed(4)}</span>`;
+  }
+  document.getElementById('taBody').innerHTML=`
+    <div style="margin-bottom:16px"><div class="muted" style="font-size:12px;letter-spacing:.5px;margin-bottom:4px">${t('ta_rsi')}</div>${rsiHtml}</div>
+    <div style="margin-bottom:16px"><div class="muted" style="font-size:12px;letter-spacing:.5px;margin-bottom:4px">${t('ta_macd')}</div>${macdHtml}</div>
+    <div class="muted" style="font-size:12px">${closes.length} ${t('ta_points')}</div>
+    <div class="muted" style="margin-top:14px;font-size:12px;border-top:1px solid var(--line);padding-top:10px">${t('ta_disclaimer')}</div>`;
+}
+function closeTA(){ document.getElementById('taModal').classList.remove('show'); }
+document.getElementById('taModal').addEventListener('click',e=>{ if(e.target.id==='taModal') closeTA(); });
 
 /* ----------------------------- Configuración ----------------------------- */
 function openSettings(){ document.getElementById('settings').classList.add('show'); }
@@ -1945,8 +2011,8 @@ function importJSON(){
 }
 
 /* ----------------------------- Editor ----------------------------- */
-let editRows=[], editCats=[], editBand=5, editEmail='';
-function openEditor(){ editRows=JSON.parse(JSON.stringify(state.holdings)); editRows.forEach(h=>{ h.apyStartStr = h.apyTs ? new Date(h.apyTs).toISOString().slice(0,10) : ''; }); editCats=JSON.parse(JSON.stringify(state.categories)); editBand=state.band; editEmail=state.email||''; renderEditor(); document.getElementById('editor').classList.add('show'); }
+let editRows=[], editCats=[], editBand=5;
+function openEditor(){ editRows=JSON.parse(JSON.stringify(state.holdings)); editRows.forEach(h=>{ h.apyStartStr = h.apyTs ? new Date(h.apyTs).toISOString().slice(0,10) : ''; }); editCats=JSON.parse(JSON.stringify(state.categories)); editBand=state.band; renderEditor(); document.getElementById('editor').classList.add('show'); }
 function closeEditor(){ document.getElementById('editor').classList.remove('show'); }
 function refLabel(s){ return s==='crypto'?t('ed_refCrypto'):s==='stock'?t('ed_refStock'):t('ed_refNone'); }
 function refPH(s){ return s==='crypto'?'bitcoin':s==='stock'?'VT':''; }
@@ -1963,10 +2029,14 @@ function renderEditor(){
       ${catRows||`<div class="muted" style="padding:8px 0">${t('ed_noCats')}</div>`}
       <div class="edtargets" style="margin-top:12px;border-top:1px solid var(--line);padding-top:12px">
         <label>${t('ed_band')} <input type="number" value="${editBand}" oninput="editBand=+this.value"></label>
-        <span class="muted" style="margin-left:auto">${t('ed_emailLbl')}</span>
-        <label><input type="email" value="${(editEmail||'').replace(/"/g,'&quot;')}" oninput="editEmail=this.value" placeholder="${t('emailPh')}" style="width:220px;color:var(--tx);font-weight:400;text-align:left"></label></div>
+      </div>
     </div>`;
-  const cards=editRows.map((h,i)=>`<div class="edcard"><div class="edgrid">
+  const addBar=`<div class="edactions" style="margin:14px 0">
+      <button class="btn" onclick="addRow()"><svg class="ic"><use href="#i-plus"/></svg> <span data-i18n="addAsset">${t('addAsset')}</span></button>
+    </div>`;
+  const cards=editRows.map((h,i)=>{
+    const rend=(h.costPrice>0 && h.price>0) ? ((h.price-h.costPrice)/h.costPrice*100) : null;
+    return `<div class="edcard"><div class="edgrid">
     <label>${t('ed_name')}<input value="${(h.name||'').replace(/"/g,'&quot;')}" oninput="editRows[${i}].name=this.value"></label>
     <label>${t('ed_ticker')}<input value="${(h.ticker||'').replace(/"/g,'&quot;')}" oninput="editRows[${i}].ticker=this.value.toUpperCase()"></label>
     <label>${t('ed_category')}<select onchange="editRows[${i}].cls=this.value">
@@ -1978,14 +2048,17 @@ function renderEditor(){
     <label>${refLabel(h.src)}<input ${h.src==='manual'?'disabled':''} placeholder="${refPH(h.src)}" value="${refVal(h)}" oninput="edRef(${i},this.value)"></label>
     <label>${t('ed_qty')}<input type="number" step="any" value="${h.qty||0}" oninput="editRows[${i}].qty=+this.value"></label>
     <label>${t('ed_priceEur')}${h.src!=='manual'?t('ed_fallback'):''}<input type="number" step="any" value="${h.price||0}" oninput="editRows[${i}].price=+this.value"></label>
+    <label title="${t('ed_costPriceTitle')}">${t('ed_costPrice')}<input type="number" step="any" value="${h.costPrice||0}" oninput="editRows[${i}].costPrice=+this.value"></label>
     <label title="${t('ed_apyTitle')}">${t('ed_apy')}<input type="number" step="any" value="${h.apy||0}" oninput="editRows[${i}].apy=+this.value"></label>
     <label title="${t('ed_yieldSinceTitle')}">${t('ed_yieldSince')}<input type="date" value="${h.apyStartStr||''}" oninput="editRows[${i}].apyStartStr=this.value"></label>
-    </div><div style="text-align:right;margin-top:10px"><button class="del" onclick="delRow(${i})">${t('ed_delete')}</button></div></div>`).join('');
-  document.getElementById('editorBody').innerHTML=head+(cards||`<div class="muted" style="padding:18px 0">${t('ed_noAssets')}</div>`);
+    </div><div style="display:flex;align-items:center;margin-top:10px">
+      <span class="muted" style="font-size:12.5px">${rend===null?t('ed_rendNone'):(t('ed_rendLbl')+' <b style="color:'+(rend>=0?'var(--good)':'var(--bad)')+'">'+(rend>=0?'+':'')+rend.toFixed(2)+'%</b>')}</span>
+      <span style="flex:1"></span><button class="del" onclick="delRow(${i})">${t('ed_delete')}</button></div></div>`; }).join('');
+  document.getElementById('editorBody').innerHTML=head+addBar+(cards||`<div class="muted" style="padding:18px 0">${t('ed_noAssets')}</div>`);
 }
 function edSrc(i,v){ editRows[i].src=v; if(v!=='stock')delete editRows[i].stooq; if(v!=='crypto')delete editRows[i].cg; renderEditor(); }
 function edRef(i,v){ const h=editRows[i]; if(h.src==='crypto')h.cg=v.trim().toLowerCase(); else if(h.src==='stock')h.stooq=v.trim().toLowerCase(); }
-function addRow(){ editRows.push({name:'',ticker:'',cls:(editCats[0]?editCats[0].key:'cripto'),qty:0,price:0,src:'manual'}); renderEditor(); }
+function addRow(){ editRows.push({name:'',ticker:'',cls:(editCats[0]?editCats[0].key:'cripto'),qty:0,price:0,costPrice:0,src:'manual'}); renderEditor(); }
 async function delRow(i){ const h=editRows[i]||{};
   if(!await confirmDialog({title:t('dlg_delAssetTitle'), okLabel:t('ed_delete'),
     message:t('dlg_delAssetMsg').replace('{name}',(h.name||t('this_asset')).replace(/</g,'&lt;')).replace('{save}',t('saveUpdate'))})) return;
@@ -2005,12 +2078,12 @@ function saveEditor(){
   state.holdings=editRows.filter(h=>(h.name||h.ticker)).map((h,i)=>{
     if(!h.id)h.id=(h.ticker||'act').toLowerCase()+'-'+i+'-'+Date.now();
     if(h.apy>0){ h.apyTs = h.apyStartStr ? new Date(h.apyStartStr).getTime() : (h.apyTs||Date.now()); } else { delete h.apyTs; }
-    delete h.apyStartStr; correctQty(h, h.qty, true); return h; });
+    delete h.apyStartStr; correctQty(h, h.qty, true); if(h.src==='manual') notePriceHist(h); return h; });
   let cats=editCats.filter(c=>(c.label||'').trim()!=='').map(c=>({key:c.key||('cat'+Date.now()+Math.floor(Math.random()*9999)),label:c.label.trim(),color:c.color,target:Math.max(0,+c.target||0)}));
   if(!cats.length) cats=[{key:'general',label:'General',color:PALETTE[0],target:100}];
   state.categories=cats; const _keys=cats.map(c=>c.key), _fb=_keys[0];
   state.holdings.forEach(h=>{ if(!_keys.includes(h.cls)) h.cls=_fb; });
-  state.band=+editBand||0; state.email=(editEmail||'').trim(); state.snapshots={}; lastTotal=0; trendCache={};
+  state.band=+editBand||0; state.snapshots={}; lastTotal=0; trendCache={};
   sanitizeState();
   recordSnapshot(); save(); closeEditor(); render(); refresh(); loadTrend(true);
 }
