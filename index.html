@@ -757,7 +757,10 @@ document.addEventListener('DOMContentLoaded', function(){
     text-align:left;padding:10px 11px;border-radius:9px;display:flex;align-items:center;gap:9px;transition:.14s}
   .umenu-item:hover{background:rgba(255,90,90,.12);color:#ff8585}
   .umenu-item .ic{width:15px;height:15px;opacity:.8}
-  @media(max-width:600px){ #userChip{order:-1} .gate-card{padding:26px 20px 22px} }
+  @media(max-width:600px){ #userChip{order:-1} .gate-card{padding:26px 20px 22px}
+    /* En móvil el chip va a la izquierda (order:-1); el menú debe abrir hacia la DERECHA,
+       si no queda fuera de la pantalla por la izquierda (right:0 → x negativo). */
+    .umenu{right:auto;left:0} }
 
   /* ════════ DESIGN v2 — reskin editorial (papel oscuro · bermejo · oro) ════════ */
   .brand-name{text-transform:uppercase;letter-spacing:2px;font-size:14px;font-weight:700;font-family:var(--font-body)}
@@ -767,10 +770,12 @@ document.addEventListener('DOMContentLoaded', function(){
   /* etiquetas en monoespaciada, estilo terminal financiera */
   .eyebrow,.kicker,.mini-l,.dcell .lbl,.set-h,.muted,.trend-legend,.trend-x,.trend-y,
   th,.badge,.tag,.leg .pc,.leg .am,.trend-now,.trend-hint,.mailmeta,.set-d,.gate-foot,.gate-or,.gate-msg{font-family:var(--font-mono)}
-  .eyebrow{color:var(--mut);letter-spacing:4px;font-size:9.5px;font-weight:600;display:flex;align-items:center;gap:10px}
-  .eyebrow::before{content:"";width:24px;height:1px;background:var(--accent)}
+  .eyebrow{color:var(--mut);letter-spacing:4px;font-size:9.5px;font-weight:600;display:block}
+  /* Look minimalista: sin rayas decorativas ni iconos delante de los títulos (decisión del usuario) */
+  .eyebrow::before{content:none}
   .kicker{color:var(--mut);letter-spacing:3px;font-size:9.5px}
-  .kicker .kic{color:var(--accent)}
+  .kicker .kic{display:none}
+  .mini-head .ic{display:none}
   .mini-l{letter-spacing:2px;font-size:9px}
   .btn{border-radius:var(--rad-sm);text-transform:uppercase;letter-spacing:.4px;font-size:11.5px;font-weight:600;font-family:var(--font-body)}
   .btn.gold{color:#fff;border:1px solid var(--accent);background:var(--accent);
@@ -778,10 +783,8 @@ document.addEventListener('DOMContentLoaded', function(){
   .btn.gold:hover{background:var(--accent-2);border-color:var(--accent-2);filter:none}
   .cur-select{border-radius:var(--rad-sm)}
   .hero{border-radius:var(--rad);background:var(--surface);overflow:hidden}
-  .hero::after{content:'WEALTH';inset:auto;right:-8px;top:50%;transform:translateY(-50%);
-    font-family:var(--font-display);font-size:clamp(90px,14vw,150px);font-weight:900;
-    color:rgba(255,253,240,.025);letter-spacing:-4px;line-height:1;white-space:nowrap;background:none;border-radius:0}
-  @media(max-width:1000px){.hero::after{display:none}}
+  /* Marca de agua 'WEALTH' eliminada: salía cortada por los bordes del hero (decisión del usuario).
+     Sin override, .hero::after vuelve a ser el brillo radial sutil original. */
   .total-num{font-family:var(--font-num);font-weight:700;font-style:normal;letter-spacing:-1px;
     font-size:clamp(54px,8vw,90px);line-height:1;
     background:linear-gradient(160deg,var(--gold-2),var(--gold) 55%,var(--gold-3));-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -1694,7 +1697,7 @@ function drawTrend(){
     </defs>
     ${grid}
     <path d="${area}" fill="url(#ta)"/>
-    <path d="${d}" fill="none" stroke="url(#tline)" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke" filter="url(#tglow)"/>`;
+    <path id="tpath" d="${d}" fill="none" stroke="url(#tline)" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke" filter="url(#tglow)"/>`;
   /* punto “en vivo” al final de la línea (HTML → círculo perfecto y pulso suave, sin deformarse) */
   const liveEl=document.getElementById('trendLive'), lp=plotPos(P[last].x/W, P[last].y/H);
   if(liveEl && lp){ liveEl.style.display='block'; liveEl.style.left=lp.left+'px'; liveEl.style.top=lp.top+'px'; }
@@ -1707,7 +1710,7 @@ function drawTrend(){
   const note = c.synthetic ? t('noteSynthetic') : (c.partial ? t('notePartial') : '');
   const dfmt=new Intl.DateTimeFormat(LOC(),{day:'2-digit',month:'short',year:'2-digit'});
   lbl.textContent=`${dfmt.format(new Date(times[0]))} → ${dfmt.format(new Date(times[last]))} · ${fmt(pts[0])} ${t('trend_to')} ${fmt(pts[last])}${note}`;
-  trendDraw={rows,times,t0:times[0],t1:times[last],min,max,H,pad};
+  trendDraw={rows,times,t0:times[0],t1:times[last],min,max,H,W,pad,path:svg.querySelector('#tpath')};
   drawBrush(v);
 }
 /* --- minimapa/scroll inferior: muestra la ventana sobre todo el histórico y permite arrastrarla --- */
@@ -1738,19 +1741,33 @@ function plotPos(fracX,fracY){
   const sx=s.left-p.left, sy=s.top-p.top;
   return { left:sx+fracX*s.width, top:sy+fracY*s.height, sx, sy, w:s.width, h:s.height };
 }
+/* Devuelve el punto del trazado (en unidades del viewBox) cuya X coincide con xv.
+   Muestrea el path REAL con getPointAtLength → el punto se posa exactamente sobre la
+   línea dibujada (que es una curva bezier suavizada), no sobre la recta de interpolación. */
+function ptOnPath(path,xv){
+  if(!path||!path.getTotalLength) return null;
+  const L=path.getTotalLength(); if(!L) return null;
+  let lo=0,hi=L;
+  for(let i=0;i<22;i++){ const mid=(lo+hi)/2, p=path.getPointAtLength(mid);
+    if(p.x<xv) lo=mid; else hi=mid; }                 /* X es monótona creciente a lo largo del path */
+  return path.getPointAtLength((lo+hi)/2);
+}
 function showCrosshair(frac){
   const cr=document.getElementById('trendCross'), dot=document.getElementById('trendDot'), tip=document.getElementById('trendTip');
   if(!trendDraw||!cr) return;
   frac=Math.max(0,Math.min(1,frac));
-  const t=trendDraw.t0+frac*(trendDraw.t1-trendDraw.t0);
-  const val=valOnSeries(trendDraw.rows,t); if(val==null) return;
-  const {min,max,H,pad}=trendDraw;
-  const yv=H-pad-((val-min)/((max-min)||1))*(H-2*pad);
-  const pos=plotPos(frac, yv/H); if(!pos) return;
+  const {W,H,pad,t0,t1,path,rows}=trendDraw;
+  /* La línea ocupa el dominio [pad, W-pad]; el dedo/cursor recorre 0..1 de TODO el ancho.
+     Llevamos la fracción a ese dominio para que el punto, la cruz y la fecha coincidan con la línea. */
+  const xv=Math.max(pad,Math.min(W-pad,frac*W));
+  const tt=t0+((xv-pad)/((W-2*pad)||1))*(t1-t0);
+  const val=valOnSeries(rows,tt); if(val==null) return;
+  const cp=ptOnPath(path,xv);
+  const pos=cp ? plotPos(cp.x/W,cp.y/H) : plotPos(xv/W,0.5); if(!pos) return;
   cr.style.display='block'; cr.style.left=pos.left+'px'; cr.style.top=pos.sy+'px'; cr.style.height=pos.h+'px';
   dot.style.display='block'; dot.style.left=pos.left+'px'; dot.style.top=pos.top+'px';
   const xf=new Intl.DateTimeFormat('es-ES',{day:'2-digit',month:'short',year:'2-digit',hour:'2-digit',minute:'2-digit'});
-  tip.style.display='block'; tip.innerHTML=`<b>${fmt2(val)}</b><span>${xf.format(new Date(t))}</span>`;
+  tip.style.display='block'; tip.innerHTML=`<b>${fmt2(val)}</b><span>${xf.format(new Date(tt))}</span>`;
   const tw=tip.offsetWidth||120; let tl=pos.left+12; if(tl+tw>pos.sx+pos.w) tl=pos.left-tw-12;
   tip.style.left=Math.max(pos.sx,tl)+'px'; tip.style.top=(pos.sy+6)+'px';
 }
