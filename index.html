@@ -81,6 +81,7 @@ window.I18N = {
     tx_boughtQty:"Cantidad comprada", tx_sellQty:"Cantidad a vender / transferir", tx_youHave:"Tienes", tx_units:"uds.",
     tx_buyNote:"Se suma a tu saldo desde hoy; el histórico anterior se mantiene.", tx_sellNote:"Tu histórico anterior se mantiene; el cambio aplica solo de hoy en adelante.",
     tx_remainPre:"Quedarán", tx_histKept:"El histórico anterior se mantiene.", trend_to:"a",
+    tx_price:"Precio de la operación €", movBtn:"Movimiento", movBtn_t:"Comprar, vender o transferir este activo",
     cfm_confirm:"Confirmar", cfm_sure:"¿Seguro que quieres continuar?", cfm_delete:"Eliminar",
     ed_catName:"Nombre de la categoría", ed_target:"Objetivo", ed_delCat:"Eliminar categoría",
     ed_catsHead:"Categorías de rebalanceo — define las tuyas (nombre, objetivo % y color):", ed_addCat:"Categoría", ed_noCats:"Sin categorías. Añade al menos una.",
@@ -158,6 +159,7 @@ window.I18N = {
     tx_boughtQty:"Quantity bought", tx_sellQty:"Quantity to sell / transfer", tx_youHave:"You have", tx_units:"units",
     tx_buyNote:"Added to your balance from today; prior history is kept.", tx_sellNote:"Your prior history is kept; the change applies from today onward.",
     tx_remainPre:"You'll have", tx_histKept:"Prior history is kept.", trend_to:"to",
+    tx_price:"Trade price €", movBtn:"Trade", movBtn_t:"Buy, sell or transfer this asset",
     cfm_confirm:"Confirm", cfm_sure:"Are you sure you want to continue?", cfm_delete:"Delete",
     ed_catName:"Category name", ed_target:"Target", ed_delCat:"Delete category",
     ed_catsHead:"Rebalancing categories — define your own (name, target % and color):", ed_addCat:"Category", ed_noCats:"No categories. Add at least one.",
@@ -235,6 +237,7 @@ window.I18N = {
     tx_boughtQty:"买入数量", tx_sellQty:"卖出 / 转出数量", tx_youHave:"你持有", tx_units:"单位",
     tx_buyNote:"从今天起加入你的余额；之前的历史保留。", tx_sellNote:"之前的历史保留；变更从今天起生效。",
     tx_remainPre:"将剩余", tx_histKept:"之前的历史保留。", trend_to:"至",
+    tx_price:"成交价格 €", movBtn:"操作", movBtn_t:"买入、卖出或转出此资产",
     cfm_confirm:"确认", cfm_sure:"确定要继续吗？", cfm_delete:"删除",
     ed_catName:"类别名称", ed_target:"目标", ed_delCat:"删除类别",
     ed_catsHead:"再平衡类别 — 自定义（名称、目标 % 和颜色）：", ed_addCat:"类别", ed_noCats:"没有类别。请至少添加一个。",
@@ -312,6 +315,7 @@ window.I18N = {
     tx_boughtQty:"खरीदी गई मात्रा", tx_sellQty:"बेचने / ट्रांसफ़र करने की मात्रा", tx_youHave:"आपके पास है", tx_units:"इकाई",
     tx_buyNote:"आज से आपके बैलेंस में जुड़ता है; पिछला इतिहास बना रहता है।", tx_sellNote:"आपका पिछला इतिहास बना रहता है; बदलाव आज से लागू होता है।",
     tx_remainPre:"शेष रहेगा", tx_histKept:"पिछला इतिहास बना रहता है।", trend_to:"से",
+    tx_price:"लेन-देन मूल्य €", movBtn:"लेन-देन", movBtn_t:"यह एसेट खरीदें, बेचें या ट्रांसफ़र करें",
     cfm_confirm:"पुष्टि करें", cfm_sure:"क्या आप वाकई जारी रखना चाहते हैं?", cfm_delete:"हटाएँ",
     ed_catName:"श्रेणी का नाम", ed_target:"लक्ष्य", ed_delCat:"श्रेणी हटाएँ",
     ed_catsHead:"रीबैलेंसिंग श्रेणियाँ — अपनी बनाएँ (नाम, लक्ष्य % और रंग):", ed_addCat:"श्रेणी", ed_noCats:"कोई श्रेणी नहीं। कम से कम एक जोड़ें।",
@@ -509,6 +513,10 @@ document.addEventListener('DOMContentLoaded', function(){
   .bar .tgt{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--gold);border-radius:2px;box-shadow:0 0 8px var(--gold)}
   .cc-meta{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--mut);margin-top:10px;gap:10px;flex-wrap:wrap}
   .cc-meta b{color:var(--tx)}
+  .cc-alert{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--soft);margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+  .cc-alert .ic{width:14px;height:14px;flex:none}
+  .cc-alert.over .ic{color:var(--bad)} .cc-alert.under .ic{color:var(--warn)}
+  .cc-alert b{color:var(--tx)}
   .tgt-input{width:52px;background:rgba(0,0,0,.35);border:1px solid var(--line2);color:var(--gold);border-radius:7px;padding:4px 6px;font-size:12.5px;text-align:right;font-weight:700;font-family:inherit}
   .tgt-input:focus{outline:none;border-color:var(--gold)}
   .tag{font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;letter-spacing:.2px}
@@ -571,6 +579,11 @@ document.addEventListener('DOMContentLoaded', function(){
   @keyframes livePulse{0%{box-shadow:0 0 0 0 rgba(227,192,141,.55)}70%{box-shadow:0 0 0 13px rgba(227,192,141,0)}100%{box-shadow:0 0 0 0 rgba(227,192,141,0)}}
   @media(prefers-reduced-motion:reduce){.trend-live::after{animation:none}}
   .sellbtn{margin-left:8px;font-family:inherit;font-size:11px;padding:3px 9px;border-radius:7px;border:1px solid var(--line2);background:transparent;color:var(--mut);cursor:pointer;white-space:nowrap;vertical-align:middle;transition:color .15s,border-color .15s}
+  .rendwrap{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+  .movmenu{display:none;position:fixed;background:var(--surface2);border:1px solid var(--line2);border-radius:10px;padding:6px;z-index:90;min-width:160px;box-shadow:0 10px 26px rgba(0,0,0,.45)}
+  .movmenu.show{display:block}
+  .movmenu button{display:block;width:100%;text-align:left;background:transparent;border:none;color:var(--tx);padding:8px 11px;border-radius:7px;font-size:12.5px;cursor:pointer;font-family:inherit;white-space:nowrap}
+  .movmenu button:hover{background:rgba(255,255,255,.07);color:var(--gold)}
   .sellbtn:hover{color:var(--gold);border-color:var(--gold)}
   .sell-grid{display:flex;gap:10px;align-items:flex-end}
   .sell-grid .sell-l{flex:1;display:flex;flex-direction:column;gap:6px;font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px}
@@ -994,11 +1007,6 @@ document.addEventListener('DOMContentLoaded', function(){
     </div>
 
     <div class="card full">
-      <div class="card-h"><span class="kicker"><svg class="ic kic"><use href="#i-bell"/></svg><span data-i18n="rebalanceAlerts">Alertas de rebalanceo</span></span></div>
-      <div id="alerts"></div>
-    </div>
-
-    <div class="card full">
       <div class="card-h"><span class="kicker"><svg class="ic kic"><use href="#i-activity"/></svg><span data-i18n="evolution">Evolución del patrimonio · delta semanal</span></span></div>
       <div class="delta-grid" id="deltas"></div>
       <div class="trend-head">
@@ -1031,11 +1039,6 @@ document.addEventListener('DOMContentLoaded', function(){
       <div class="muted" id="trendLbl" style="margin-top:8px"></div>
     </div>
 
-    <div class="card full" id="yieldCard" style="display:none">
-      <div class="card-h"><span class="kicker"><svg class="ic kic"><use href="#i-percent"/></svg><span data-i18n="estimatedYields">Rendimientos estimados</span></span></div>
-      <div id="yields"></div>
-    </div>
-
     <div class="card full">
       <div class="card-h"><span class="kicker"><svg class="ic kic"><use href="#i-list"/></svg><span data-i18n="positions">Posiciones</span></span></div>
       <div class="tablewrap"><table id="positions" class="rtable">
@@ -1044,6 +1047,11 @@ document.addEventListener('DOMContentLoaded', function(){
         <tbody></tbody>
       </table></div>
       <div class="muted" style="margin-top:12px" data-i18n="positionsNote">Cripto vía CoinGecko · Acciones/ETF vía Stooq · Fondos por VNL manual. Edita la cantidad en línea — se guarda en tu cuenta y se sincroniza.</div>
+    </div>
+
+    <div class="card full" id="yieldCard" style="display:none">
+      <div class="card-h"><span class="kicker"><svg class="ic kic"><use href="#i-percent"/></svg><span data-i18n="estimatedYields">Rendimientos estimados</span></span></div>
+      <div id="yields"></div>
     </div>
   </div>
 
@@ -1114,12 +1122,17 @@ document.addEventListener('DOMContentLoaded', function(){
   </div>
 </div>
 
+<div class="movmenu" id="globalMovMenu"></div>
+
 <!-- Modal Comprar / Vender / Transferir -->
 <div class="modal-bg" id="txModal" style="z-index:80">
   <div class="modal" style="max-width:430px">
     <div class="mailhead"><b><svg class="mh-ic"><use href="#i-activity"/></svg><span id="txTitle" data-i18n="movement">Movimiento</span></b><button class="x" onclick="closeTx()"><svg class="ic"><use href="#i-x"/></svg></button></div>
     <div class="mailbody">
       <div id="txInfo" style="font-size:14px;line-height:1.6;color:var(--soft);margin-bottom:14px"></div>
+      <div class="sell-grid" style="margin-bottom:10px">
+        <label class="sell-l"><span data-i18n="tx_price">Precio de la operación €</span><input id="txPrice" type="number" step="any" min="0" placeholder="0" oninput="txPreview()"></label>
+      </div>
       <div class="sell-grid">
         <label class="sell-l"><span id="txLbl" data-i18n="quantity">Cantidad</span><input id="txQty" type="number" step="any" min="0" placeholder="0" oninput="txPreview()"></label>
         <button class="btn" type="button" id="txAllBtn" onclick="txAll()" data-i18n="all">Todo</button>
@@ -1439,7 +1452,7 @@ function render(){
   document.getElementById('updated').textContent=t('updated')+' '+new Date().toLocaleTimeString(LOC(),{hour:'2-digit',minute:'2-digit'});
 
   drawDonut(cls,tot); drawLegend(cls,tot); drawClasses(cls,tot);
-  drawAlerts(cls,tot); drawDeltas(cls,tot); renderTrendRanges(); noteLiveTrend(); drawTrend(); drawYields(); drawPositions(tot);
+  drawDeltas(cls,tot); renderTrendRanges(); noteLiveTrend(); drawTrend(); drawYields(); drawPositions(tot);
 }
 function drawDonut(cls,tot){
   const svg=document.getElementById('donut'), r=74, cx=105, cy=105, C=2*Math.PI*r, gap=C*0.02;
@@ -1465,11 +1478,13 @@ function drawLegend(cls,tot){
 }
 function drawClasses(cls,tot){
   document.getElementById('classes').innerHTML=state.categories.map(c=>{
-    const actual=tot?cls[c.key]/tot*100:0, tgt=c.target, dev=actual-tgt;
-    let tag='ok',txt=t('onTargetTxt');
+    const actual=tot?cls[c.key]/tot*100:0, tgt=c.target, dev=actual-tgt, diff=cls[c.key]-tot*tgt/100;
+    let tag='ok',txt=t('onTargetTxt'),alertLine='';
     if(!tot){tag='neutral';txt=t('cc_target')+' '+tgt+'%';}
-    else if(dev>state.band){tag='over';txt='+'+dev.toFixed(1)+'% '+t('overTarget');}
-    else if(dev<-state.band){tag='under';txt=dev.toFixed(1)+'% '+t('underTarget');}
+    else if(dev>state.band){tag='over';txt='+'+dev.toFixed(1)+'% '+t('overTarget');
+      alertLine=`<div class="cc-alert over">${ic('up')} ${t('al_considerSell')} <b>${fmt(diff)}</b> ${t('al_toBalance')}</div>`;}
+    else if(dev<-state.band){tag='under';txt=dev.toFixed(1)+'% '+t('underTarget');
+      alertLine=`<div class="cc-alert under">${ic('down')} ${t('al_considerBuy')} <b>${fmt(Math.abs(diff))}</b> ${t('al_toBalance')}</div>`;}
     return `<div class="classcard">
       <div class="cc-top"><div class="cc-name"><span class="dot" style="background:${c.color};--c:${c.color}88"></span>${c.label}</div>
         <span class="tag ${tag}">${txt}</span></div>
@@ -1477,20 +1492,9 @@ function drawClasses(cls,tot){
         <div class="tgt" style="left:${Math.min(100,tgt)}%"></div></div>
       <div class="cc-meta"><span>${t('cc_actual')} <b>${actual.toFixed(1)}%</b> · ${fmt(cls[c.key])}</span>
         <span>${t('cc_target')} <input class="tgt-input" type="number" min="0" value="${tgt}" onchange="setTarget('${c.key}',this.value)">%</span></div>
+      ${alertLine}
     </div>`;
   }).join('');
-}
-function drawAlerts(cls,tot){
-  if(!tot){ document.getElementById('alerts').innerHTML=`<div class="alert calm"><span class="ico calm">${ic('plus')}</span><div><b>${t('al_emptyTitle')}</b><br>${t('al_emptyBody').replace('{edit}',t('editPortfolio'))}</div></div>`; return; }
-  const al=[];
-  state.categories.forEach(c=>{ const actual=cls[c.key]/tot*100, tgt=c.target, dev=actual-tgt, diff=cls[c.key]-tot*tgt/100;
-    if(dev>state.band) al.push(`<div class="alert over"><span class="ico over">${ic('up')}</span><div>
-      <b>${c.label} ${t('al_exceeds')}</b><br>${t('al_weighs')} <b>${actual.toFixed(1)}%</b> ${t('al_vsTarget')} ${tgt}% (${t('al_band')} ±${state.band}%). ${t('al_considerSell')} <b>${fmt(diff)}</b> ${t('al_toBalance')}</div></div>`);
-    else if(dev<-state.band) al.push(`<div class="alert under"><span class="ico under">${ic('down')}</span><div>
-      <b>${c.label} ${t('al_below')}</b><br>${t('al_weighs')} <b>${actual.toFixed(1)}%</b> ${t('al_vs')} ${tgt}%. ${t('al_considerBuy')} <b>${fmt(Math.abs(diff))}</b>.</div></div>`);
-  });
-  document.getElementById('alerts').innerHTML = al.length? al.join('')
-    : `<div class="alert calm"><span class="ico calm">${ic('check')}</span><div>${t('al_balanced')}</div></div>`;
 }
 function drawDeltas(cls,tot){
   const prev=prevWeekSnapshot(), cells=[];
@@ -1884,13 +1888,27 @@ function drawPositions(tot){
     const badge=h.src==='manual'?'<span class="badge man">VNL</span>':h.live?'<span class="badge live">LIVE</span>':`<span class="badge stale">${t('badge_last')}</span>`;
     const rend=(h.costPrice>0 && h.price>0) ? ((h.price-h.costPrice)/h.costPrice*100) : null;
     const rendHtml=rend===null?'<span class="muted">—</span>':`<b style="color:${rend>=0?'var(--good)':'var(--bad)'}">${rend>=0?'+':''}${rend.toFixed(2)}%</b>`;
-    return `<tr><td data-l="${t('asset')}"><b>${h.name}</b> <span class="muted">${h.ticker||''}</span> ${badge} <button class="sellbtn" title="${t('buy_t')}" onclick="openBuy(${i})">${t('buy')}</button> <button class="sellbtn" title="${t('sell_t')}" onclick="openSell(${i})">${t('sellTransfer')}</button> <button class="sellbtn" title="${t('ta_t')}" onclick="openTA(${i})">📈 ${t('ta_btn')}</button></td>
+    return `<tr><td data-l="${t('asset')}"><b>${h.name}</b> <span class="muted">${h.ticker||''}</span> ${badge} <button class="sellbtn" title="${t('ta_t')}" onclick="openTA(${i})">${t('ta_btn')}</button></td>
       <td data-l="${t('category')}"><span class="clschip"><span class="dot" style="width:9px;height:9px;background:${catOf(h.cls).color};--c:${catOf(h.cls).color}88"></span>${catOf(h.cls).label}</span></td>
       <td data-l="${t('quantity')}"><input class="q" type="number" step="any" value="${parseFloat(liveQty(h).toFixed(8))}" onchange="setQty(${i},this.value)"></td>
       <td data-l="${t('price')}">${fmt2(h.price)}</td><td data-l="${t('value')}"><b>${fmt(v)}</b></td><td data-l="${t('pctPortfolio')}">${tot?(v/tot*100).toFixed(1):0}%</td>
-      <td data-l="${t('pctRend')}">${rendHtml}</td></tr>`;
+      <td data-l="${t('pctRend')}"><span class="rendwrap">${rendHtml}
+        <button class="sellbtn movbtn" title="${t('movBtn_t')}" onclick="toggleMov(event,${i})">${t('movBtn')} ▾</button>
+      </span></td></tr>`;
   }).join('');
 }
+function toggleMov(e,i){ e.stopPropagation(); const menu=document.getElementById('globalMovMenu'); if(!menu) return;
+  const wasOpenSame = menu.classList.contains('show') && menu.dataset.idx===String(i);
+  closeMov(); if(wasOpenSame) return;
+  menu.dataset.idx=i;
+  menu.innerHTML=`<button onclick="closeMov();openBuy(${i})">${t('buy')}</button><button onclick="closeMov();openSell(${i})">${t('sellTransfer')}</button>`;
+  const r=e.currentTarget.getBoundingClientRect();
+  menu.style.top=(r.bottom+6)+'px'; menu.style.right=(window.innerWidth-r.right)+'px'; menu.style.left='auto';
+  menu.classList.add('show'); }
+function closeMov(){ const menu=document.getElementById('globalMovMenu'); if(menu) menu.classList.remove('show'); }
+document.addEventListener('click',closeMov);
+window.addEventListener('scroll',closeMov,true);
+window.addEventListener('resize',closeMov);
 function setQty(i,v){ const h=state.holdings[i]; correctQty(h,parseFloat(v)||0); recordSnapshot(); save(); render(); refreshTrendAfterChange(); }
 /* ---- Comprar / Vender / Transferir: registra un cambio de saldo fechado conservando el histórico ---- */
 let _txIdx=-1, _txMode='sell';
@@ -1902,15 +1920,19 @@ function openTx(i,mode){ const h=state.holdings[i]; if(!h) return; _txIdx=i; _tx
   document.getElementById('txAllBtn').style.display=buy?'none':'';
   document.getElementById('txInfo').innerHTML=`<b>${(h.name||'').replace(/</g,'&lt;')}</b> <span class="muted">${h.ticker||''}</span><br>${t('tx_youHave')} <b style="color:var(--tx)">${parseFloat(q.toFixed(8))}</b> ${h.ticker||t('tx_units')} · ${fmt(valueOf(h))}`;
   const inp=document.getElementById('txQty'); inp.value=''; if(buy) inp.removeAttribute('max'); else inp.max=q;
+  document.getElementById('txPrice').value=h.price?parseFloat(h.price.toFixed(8)):'';
   document.getElementById('txPreview').textContent=buy?t('tx_buyNote'):t('tx_sellNote');
   document.getElementById('txModal').classList.add('show'); setTimeout(()=>inp.focus(),60); }
 function closeTx(){ document.getElementById('txModal').classList.remove('show'); _txIdx=-1; }
 function txAll(){ const h=state.holdings[_txIdx]; if(!h)return; document.getElementById('txQty').value=parseFloat(liveQty(h).toFixed(8)); txPreview(); }
 function txPreview(){ const h=state.holdings[_txIdx]; if(!h)return; const q=liveQty(h); const buy=_txMode==='buy';
   let amt=+document.getElementById('txQty').value||0; if(amt<0)amt=0; if(!buy&&amt>q)amt=q; const nv=buy?q+amt:q-amt;
-  document.getElementById('txPreview').innerHTML=`${t('tx_remainPre')} <b style="color:var(--tx)">${parseFloat(nv.toFixed(8))}</b> ${h.ticker||t('tx_units')} (${fmt(nv*(h.price||0))}). ${t('tx_histKept')}`; }
+  const price=+document.getElementById('txPrice').value||h.price||0;
+  document.getElementById('txPreview').innerHTML=`${t('tx_remainPre')} <b style="color:var(--tx)">${parseFloat(nv.toFixed(8))}</b> ${h.ticker||t('tx_units')} (${fmt(nv*price)}). ${t('tx_histKept')}`; }
 function confirmTx(){ const h=state.holdings[_txIdx]; if(!h){ closeTx(); return; } const q=liveQty(h); const buy=_txMode==='buy';
   let amt=+document.getElementById('txQty').value||0; if(amt<=0){ closeTx(); return; } if(!buy&&amt>q)amt=q;
+  const price=+document.getElementById('txPrice').value||h.price||0;
+  if(buy && price>0){ const newQty=q+amt; h.costPrice=(h.costPrice>0)?(((q*h.costPrice)+(amt*price))/newQty):price; }
   applyQtyChange(h, buy?q+amt:q-amt); recordSnapshot(); save(); closeTx(); render(); refreshTrendAfterChange(); }
 document.getElementById('txModal').addEventListener('click',e=>{ if(e.target.id==='txModal') closeTx(); });
 function setTarget(k,v){ const c=catOf(k); if(c)c.target=Math.max(0,+v||0); save(); render(); }
