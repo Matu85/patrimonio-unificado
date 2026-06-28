@@ -579,7 +579,6 @@ document.addEventListener('DOMContentLoaded', function(){
   @keyframes livePulse{0%{box-shadow:0 0 0 0 rgba(227,192,141,.55)}70%{box-shadow:0 0 0 13px rgba(227,192,141,0)}100%{box-shadow:0 0 0 0 rgba(227,192,141,0)}}
   @media(prefers-reduced-motion:reduce){.trend-live::after{animation:none}}
   .sellbtn{margin-left:8px;font-family:inherit;font-size:11px;padding:3px 9px;border-radius:7px;border:1px solid var(--line2);background:transparent;color:var(--mut);cursor:pointer;white-space:nowrap;vertical-align:middle;transition:color .15s,border-color .15s}
-  .rendwrap{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
   .movmenu{display:none;position:fixed;background:var(--surface2);border:1px solid var(--line2);border-radius:10px;padding:6px;z-index:90;min-width:160px;box-shadow:0 10px 26px rgba(0,0,0,.45)}
   .movmenu.show{display:block}
   .movmenu button{display:block;width:100%;text-align:left;background:transparent;border:none;color:var(--tx);padding:8px 11px;border-radius:7px;font-size:12.5px;cursor:pointer;font-family:inherit;white-space:nowrap}
@@ -1888,13 +1887,11 @@ function drawPositions(tot){
     const badge=h.src==='manual'?'<span class="badge man">VNL</span>':h.live?'<span class="badge live">LIVE</span>':`<span class="badge stale">${t('badge_last')}</span>`;
     const rend=(h.costPrice>0 && h.price>0) ? ((h.price-h.costPrice)/h.costPrice*100) : null;
     const rendHtml=rend===null?'<span class="muted">—</span>':`<b style="color:${rend>=0?'var(--good)':'var(--bad)'}">${rend>=0?'+':''}${rend.toFixed(2)}%</b>`;
-    return `<tr><td data-l="${t('asset')}"><b>${h.name}</b> <span class="muted">${h.ticker||''}</span> ${badge} <button class="sellbtn" title="${t('ta_t')}" onclick="openTA(${i})">${t('ta_btn')}</button></td>
+    return `<tr><td data-l="${t('asset')}"><b>${h.name}</b> <span class="muted">${h.ticker||''}</span> ${badge} <button class="sellbtn" title="${t('ta_t')}" onclick="openTA(${i})">${t('ta_btn')}</button> <button class="sellbtn movbtn" title="${t('movBtn_t')}" onclick="toggleMov(event,${i})">${t('movBtn')} ▾</button></td>
       <td data-l="${t('category')}"><span class="clschip"><span class="dot" style="width:9px;height:9px;background:${catOf(h.cls).color};--c:${catOf(h.cls).color}88"></span>${catOf(h.cls).label}</span></td>
       <td data-l="${t('quantity')}"><input class="q" type="number" step="any" value="${parseFloat(liveQty(h).toFixed(8))}" onchange="setQty(${i},this.value)"></td>
       <td data-l="${t('price')}">${fmt2(h.price)}</td><td data-l="${t('value')}"><b>${fmt(v)}</b></td><td data-l="${t('pctPortfolio')}">${tot?(v/tot*100).toFixed(1):0}%</td>
-      <td data-l="${t('pctRend')}"><span class="rendwrap">${rendHtml}
-        <button class="sellbtn movbtn" title="${t('movBtn_t')}" onclick="toggleMov(event,${i})">${t('movBtn')} ▾</button>
-      </span></td></tr>`;
+      <td data-l="${t('pctRend')}">${rendHtml}</td></tr>`;
   }).join('');
 }
 function toggleMov(e,i){ e.stopPropagation(); const menu=document.getElementById('globalMovMenu'); if(!menu) return;
